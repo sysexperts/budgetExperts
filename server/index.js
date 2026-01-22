@@ -401,11 +401,11 @@ app.get('/api/installment-plans', (req, res) => {
       startDate: row.start_date,
       endDate: row.end_date,
       monthlyAmount: row.monthly_amount,
-      totalAmount: row.total_amount,
-      downPayment: row.down_payment,
-      interestRate: row.interest_rate,
-      paymentDay: row.payment_day,
-      notes: row.notes,
+      totalAmount: row.total_amount ?? undefined,
+      downPayment: row.down_payment ?? undefined,
+      interestRate: row.interest_rate ?? undefined,
+      paymentDay: row.payment_day ?? undefined,
+      notes: row.notes ?? undefined,
       familyMemberId: row.family_member_id,
       householdId: row.household_id
     });

@@ -282,9 +282,9 @@ export default function InstallmentPlans({ installmentPlans, familyMembers, hous
                       <p className="text-xs text-gray-500">monatliche Rate</p>
                     </div>
                     <div className="text-right text-xs text-gray-500 space-y-1">
-                      {plan.totalAmount !== undefined && <p>Gesamt: {plan.totalAmount.toFixed(2)}€</p>}
-                      {plan.downPayment !== undefined && <p>Anzahlung: {plan.downPayment.toFixed(2)}€</p>}
-                      {plan.interestRate !== undefined && (
+                      {plan.totalAmount != null && <p>Gesamt: {plan.totalAmount.toFixed(2)}€</p>}
+                      {plan.downPayment != null && <p>Anzahlung: {plan.downPayment.toFixed(2)}€</p>}
+                      {plan.interestRate != null && (
                         <p className="flex items-center justify-end gap-1">
                           <Percent className="h-3 w-3" /> {plan.interestRate.toFixed(2)}%
                         </p>
