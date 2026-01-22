@@ -1,18 +1,17 @@
 import { useState, useEffect } from 'react'
-import { Users, DollarSign, Download } from 'lucide-react'
+import { Users, DollarSign, Download, Languages } from 'lucide-react'
 import Dashboard from './components/Dashboard'
-import FamilyMembers from './components/FamilyMembers'
 import FixedCosts from './components/FixedCosts'
 import Subscriptions from './components/Subscriptions'
 import Analytics from './components/Analytics'
 import ThisMonth from './components/ThisMonth'
-import Households from './components/Households'
-import Categories from './components/Categories'
+import Settings from './components/Settings'
 import SetupWizard from './components/SetupWizard'
 import TutorialTooltip from './components/TutorialTooltip'
 import { FamilyMember, FixedCost, Subscription, Household, Category } from './types'
 
-type Tab = 'dashboard' | 'analytics' | 'subscriptions' | 'households' | 'members' | 'costs' | 'thismonth' | 'categories'
+type Tab = 'dashboard' | 'analytics' | 'subscriptions' | 'costs' | 'thismonth' | 'settings'
+type Language = 'de' | 'en'
 
 function App() {
   const [activeTab, setActiveTab] = useState<Tab>('dashboard')
@@ -23,6 +22,7 @@ function App() {
   const [categories, setCategories] = useState<Category[]>([])
   const [showSetup, setShowSetup] = useState(false)
   const [showTutorial, setShowTutorial] = useState(false)
+  const [language, setLanguage] = useState<Language>('de')
 
   useEffect(() => {
     // Prüfe ob Setup bereits abgeschlossen wurde
@@ -123,26 +123,6 @@ function App() {
                   Dieser Monat
                 </button>
                 <button
-                  onClick={() => setActiveTab('households')}
-                  className={`${
-                    activeTab === 'households'
-                      ? 'border-blue-500 text-gray-900'
-                      : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
-                  } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium`}
-                >
-                  Haushalte
-                </button>
-                <button
-                  onClick={() => setActiveTab('members')}
-                  className={`${
-                    activeTab === 'members'
-                      ? 'border-blue-500 text-gray-900'
-                      : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
-                  } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium`}
-                >
-                  Mitglieder
-                </button>
-                <button
                   onClick={() => setActiveTab('costs')}
                   className={`${
                     activeTab === 'costs'
@@ -163,16 +143,6 @@ function App() {
                   Abonnements
                 </button>
                 <button
-                  onClick={() => setActiveTab('categories')}
-                  className={`${
-                    activeTab === 'categories'
-                      ? 'border-blue-500 text-gray-900'
-                      : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
-                  } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium`}
-                >
-                  Kategorien
-                </button>
-                <button
                   onClick={() => setActiveTab('analytics')}
                   className={`${
                     activeTab === 'analytics'
@@ -182,9 +152,27 @@ function App() {
                 >
                   Statistik
                 </button>
+                <button
+                  onClick={() => setActiveTab('settings')}
+                  className={`${
+                    activeTab === 'settings'
+                      ? 'border-blue-500 text-gray-900'
+                      : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
+                  } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium`}
+                >
+                  Einstellungen
+                </button>
               </div>
             </div>
             <div className="flex items-center space-x-4">
+              <button
+                onClick={() => setLanguage(language === 'de' ? 'en' : 'de')}
+                className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+                title="Sprache wechseln"
+              >
+                <Languages className="h-5 w-5" />
+                <span className="font-bold">{language.toUpperCase()}</span>
+              </button>
               <button
                 onClick={() => handleExport('csv')}
                 className="text-gray-500 hover:text-gray-700"
@@ -211,16 +199,6 @@ function App() {
         {activeTab === 'thismonth' && (
           <ThisMonth />
         )}
-        {activeTab === 'households' && (
-          <Households onUpdate={loadData} />
-        )}
-        {activeTab === 'members' && (
-          <FamilyMembers 
-            familyMembers={familyMembers}
-            households={households}
-            onUpdate={loadData}
-          />
-        )}
         {activeTab === 'costs' && (
           <FixedCosts 
             fixedCosts={fixedCosts}
@@ -239,8 +217,12 @@ function App() {
             onUpdate={loadData}
           />
         )}
-        {activeTab === 'categories' && (
-          <Categories onUpdate={loadData} />
+        {activeTab === 'settings' && (
+          <Settings 
+            households={households}
+            familyMembers={familyMembers}
+            onUpdate={loadData}
+          />
         )}
         {activeTab === 'analytics' && (
           <Analytics 

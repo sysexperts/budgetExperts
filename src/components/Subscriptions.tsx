@@ -65,14 +65,14 @@ export default function Subscriptions({ subscriptions, familyMembers, categories
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Subscriptions</h1>
-        <p className="text-gray-600 mt-1">Manage your recurring subscriptions</p>
+        <h1 className="text-3xl font-bold text-gray-900">Abonnements</h1>
+        <p className="text-gray-600 mt-1">Verwalte deine wiederkehrenden Abonnements</p>
       </div>
 
       <div className="bg-white rounded-lg shadow p-6">
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h2 className="text-xl font-bold text-gray-900">Total Monthly Cost</h2>
+            <h2 className="text-xl font-bold text-gray-900">Monatliche Gesamtkosten</h2>
             <p className="text-3xl font-bold text-blue-600 mt-2">${totalMonthly.toFixed(2)}</p>
           </div>
           <button
@@ -80,7 +80,7 @@ export default function Subscriptions({ subscriptions, familyMembers, categories
             className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
           >
             <Plus className="h-5 w-5" />
-            <span>Add Subscription</span>
+            <span>Abonnement hinzufügen</span>
           </button>
         </div>
 
@@ -88,7 +88,7 @@ export default function Subscriptions({ subscriptions, familyMembers, categories
           <form onSubmit={handleSubmit} className="mb-6 p-4 bg-gray-50 rounded-lg">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
                 <input
                   type="text"
                   value={name}
@@ -114,7 +114,7 @@ export default function Subscriptions({ subscriptions, familyMembers, categories
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Amount</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Betrag (€) *</label>
                 <input
                   type="number"
                   step="0.01"
@@ -125,18 +125,18 @@ export default function Subscriptions({ subscriptions, familyMembers, categories
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Interval</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Intervall *</label>
                 <select
                   value={interval}
                   onChange={(e) => setInterval(e.target.value as 'monthly' | 'yearly')}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
-                  <option value="monthly">Monthly</option>
-                  <option value="yearly">Yearly</option>
+                  <option value="monthly">Monatlich</option>
+                  <option value="yearly">Jährlich</option>
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Payment Date (Day of Month)</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Zahlungstag *</label>
                 <input
                   type="number"
                   min="1"
@@ -148,13 +148,13 @@ export default function Subscriptions({ subscriptions, familyMembers, categories
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Family Member (optional)</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Familienmitglied (optional)</label>
                 <select
                   value={familyMemberId || ''}
                   onChange={(e) => setFamilyMemberId(e.target.value ? parseInt(e.target.value) : undefined)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
-                  <option value="">Household</option>
+                  <option value="">Keins</option>
                   {familyMembers.map((member) => (
                     <option key={member.id} value={member.id}>
                       {member.name}
@@ -168,14 +168,14 @@ export default function Subscriptions({ subscriptions, familyMembers, categories
                 type="submit"
                 className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
               >
-                Save
+                Speichern
               </button>
               <button
                 type="button"
                 onClick={() => setShowForm(false)}
                 className="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400"
               >
-                Cancel
+                Abbrechen
               </button>
             </div>
           </form>
@@ -183,7 +183,7 @@ export default function Subscriptions({ subscriptions, familyMembers, categories
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {subscriptions.length === 0 ? (
-            <p className="text-gray-500 text-center py-8 col-span-full">No subscriptions added yet</p>
+            <p className="text-gray-500 text-center py-8 col-span-full">Noch keine Abonnements hinzugefügt</p>
           ) : (
             subscriptions.map((sub) => {
               const member = familyMembers.find(m => m.id === sub.familyMemberId)
@@ -209,12 +209,12 @@ export default function Subscriptions({ subscriptions, familyMembers, categories
                   <p className="text-sm text-gray-600 mb-3">{sub.category}</p>
                   <div className="flex justify-between items-end">
                     <div>
-                      <p className="text-2xl font-bold text-blue-600">${monthlyAmount.toFixed(2)}</p>
-                      <p className="text-xs text-gray-500">per month</p>
+                      <p className="text-2xl font-bold text-blue-600">{monthlyAmount.toFixed(2)}€</p>
+                      <p className="text-xs text-gray-500">pro Monat</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm text-gray-600">Due: {sub.paymentDate}th</p>
-                      <p className="text-xs text-gray-500">{member ? member.name : 'Household'}</p>
+                      <p className="text-sm text-gray-600">Fällig: {sub.paymentDate}.</p>
+                      <p className="text-xs text-gray-500">{member ? member.name : 'Haushalt'}</p>
                     </div>
                   </div>
                 </div>
