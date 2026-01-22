@@ -12,16 +12,71 @@ let db;
 
 const dbPath = 'budget.db';
 
+function createBackup() {
+  if (fs.existsSync(dbPath)) {
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const backupPath = `budget_backup_${timestamp}.db`;
+    fs.copyFileSync(dbPath, backupPath);
+    console.log(`Backup erstellt: ${backupPath}`);
+  }
+}
+
+function runMigrations() {
+  console.log('Führe Datenbank-Migrationen durch...');
+  
+  // Erstelle Backup vor Migrationen
+  createBackup();
+  
+  // Hilfsfunktion um zu prüfen ob eine Spalte existiert
+  function columnExists(tableName, columnName) {
+    try {
+      const stmt = db.prepare(`PRAGMA table_info(${tableName})`);
+      const columns = [];
+      while (stmt.step()) {
+        columns.push(stmt.getAsObject().name);
+      }
+      stmt.free();
+      return columns.includes(columnName);
+    } catch (error) {
+      return false;
+    }
+  }
+  
+  // Migration 1: Füge household_id zu family_members hinzu
+  if (!columnExists('family_members', 'household_id')) {
+    console.log('Migration: Füge household_id zu family_members hinzu');
+    db.run('ALTER TABLE family_members ADD COLUMN household_id INTEGER');
+  }
+  
+  // Migration 2: Füge household_id zu fixed_costs hinzu
+  if (!columnExists('fixed_costs', 'household_id')) {
+    console.log('Migration: Füge household_id zu fixed_costs hinzu');
+    db.run('ALTER TABLE fixed_costs ADD COLUMN household_id INTEGER');
+  }
+  
+  // Migration 3: Füge household_id zu subscriptions hinzu
+  if (!columnExists('subscriptions', 'household_id')) {
+    console.log('Migration: Füge household_id zu subscriptions hinzu');
+    db.run('ALTER TABLE subscriptions ADD COLUMN household_id INTEGER');
+  }
+  
+  console.log('Migrationen abgeschlossen');
+  saveDatabase();
+}
+
 async function initDatabase() {
   const SQL = await initSqlJs();
   
   if (fs.existsSync(dbPath)) {
     const buffer = fs.readFileSync(dbPath);
     db = new SQL.Database(buffer);
+    console.log('Bestehende Datenbank geladen');
   } else {
     db = new SQL.Database();
+    console.log('Neue Datenbank erstellt');
   }
 
+  // Erstelle Tabellen nur wenn sie nicht existieren
   db.run(`
     CREATE TABLE IF NOT EXISTS households (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -68,6 +123,9 @@ async function initDatabase() {
       FOREIGN KEY (household_id) REFERENCES households(id) ON DELETE CASCADE
     );
   `);
+  
+  // Führe Migrationen durch um fehlende Spalten hinzuzufügen
+  runMigrations();
   
   // Erstelle Standard-Kategorien falls noch keine existieren
   const stmt = db.prepare('SELECT COUNT(*) as count FROM categories');

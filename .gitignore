@@ -6,6 +6,7 @@ build/
 *.db
 *.sqlite
 *.sqlite3
+budget_backup_*.db
 .DS_Store
 .vscode/
 .idea/
