@@ -170,7 +170,7 @@ function App() {
           <ThisMonth />
         )}
         {activeTab === 'households' && (
-          <Households />
+          <Households onUpdate={loadData} />
         )}
         {activeTab === 'members' && (
           <FamilyMembers 

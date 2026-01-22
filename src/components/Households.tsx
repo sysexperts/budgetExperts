@@ -2,7 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Home, Plus, Trash2 } from 'lucide-react';
 import { Household } from '../types';
 
-export default function Households() {
+interface HouseholdsProps {
+  onUpdate?: () => void;
+}
+
+export default function Households({ onUpdate }: HouseholdsProps) {
   const [households, setHouseholds] = useState<Household[]>([]);
   const [newHousehold, setNewHousehold] = useState({ name: '', description: '' });
 
@@ -35,6 +39,7 @@ export default function Households() {
 
       setNewHousehold({ name: '', description: '' });
       await fetchHouseholds();
+      if (onUpdate) onUpdate();
     } catch (error) {
       console.error('Fehler beim Hinzufügen des Haushalts:', error);
       alert('Fehler beim Hinzufügen des Haushalts: ' + error);
@@ -44,7 +49,8 @@ export default function Households() {
   const deleteHousehold = async (id: number) => {
     if (confirm('Möchten Sie diesen Haushalt wirklich löschen? Alle zugehörigen Daten werden ebenfalls gelöscht.')) {
       await fetch(`/api/households/${id}`, { method: 'DELETE' });
-      fetchHouseholds();
+      await fetchHouseholds();
+      if (onUpdate) onUpdate();
     }
   };
 
