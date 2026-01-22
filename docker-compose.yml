@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  budget-planner:
+    build: .
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./budget.db:/app/budget.db
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+    restart: unless-stopped
