@@ -4,6 +4,12 @@ export interface Household {
   description?: string;
 }
 
+export interface Category {
+  id: number;
+  name: string;
+  type: 'expense' | 'income';
+}
+
 export interface FamilyMember {
   id: number;
   name: string;

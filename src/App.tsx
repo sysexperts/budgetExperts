@@ -7,9 +7,10 @@ import Subscriptions from './components/Subscriptions'
 import Analytics from './components/Analytics'
 import ThisMonth from './components/ThisMonth'
 import Households from './components/Households'
-import { FamilyMember, FixedCost, Subscription, Household } from './types'
+import Categories from './components/Categories'
+import { FamilyMember, FixedCost, Subscription, Household, Category } from './types'
 
-type Tab = 'dashboard' | 'analytics' | 'subscriptions' | 'households' | 'members' | 'costs' | 'thismonth'
+type Tab = 'dashboard' | 'analytics' | 'subscriptions' | 'households' | 'members' | 'costs' | 'thismonth' | 'categories'
 
 function App() {
   const [activeTab, setActiveTab] = useState<Tab>('dashboard')
@@ -17,6 +18,7 @@ function App() {
   const [fixedCosts, setFixedCosts] = useState<FixedCost[]>([])
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([])
   const [households, setHouseholds] = useState<Household[]>([])
+  const [categories, setCategories] = useState<Category[]>([])
 
   useEffect(() => {
     loadData()
@@ -24,17 +26,19 @@ function App() {
 
   const loadData = async () => {
     try {
-      const [membersRes, costsRes, subsRes, householdsRes] = await Promise.all([
+      const [membersRes, costsRes, subsRes, householdsRes, categoriesRes] = await Promise.all([
         fetch('/api/family-members'),
         fetch('/api/fixed-costs'),
         fetch('/api/subscriptions'),
-        fetch('/api/households')
+        fetch('/api/households'),
+        fetch('/api/categories')
       ])
       
       setFamilyMembers(await membersRes.json())
       setFixedCosts(await costsRes.json())
       setSubscriptions(await subsRes.json())
       setHouseholds(await householdsRes.json())
+      setCategories(await categoriesRes.json())
     } catch (error) {
       console.error('Fehler beim Laden der Daten:', error)
     }
@@ -131,6 +135,16 @@ function App() {
                   Abonnements
                 </button>
                 <button
+                  onClick={() => setActiveTab('categories')}
+                  className={`${
+                    activeTab === 'categories'
+                      ? 'border-blue-500 text-gray-900'
+                      : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
+                  } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium`}
+                >
+                  Kategorien
+                </button>
+                <button
                   onClick={() => setActiveTab('analytics')}
                   className={`${
                     activeTab === 'analytics'
@@ -184,6 +198,7 @@ function App() {
             fixedCosts={fixedCosts}
             familyMembers={familyMembers}
             households={households}
+            categories={categories}
             onUpdate={loadData}
           />
         )}
@@ -192,8 +207,12 @@ function App() {
             subscriptions={subscriptions}
             familyMembers={familyMembers}
             households={households}
+            categories={categories}
             onUpdate={loadData}
           />
+        )}
+        {activeTab === 'categories' && (
+          <Categories onUpdate={loadData} />
         )}
         {activeTab === 'analytics' && (
           <Analytics 

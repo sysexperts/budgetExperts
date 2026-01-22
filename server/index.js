@@ -29,6 +29,12 @@ async function initDatabase() {
       description TEXT
     );
 
+    CREATE TABLE IF NOT EXISTS categories (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL UNIQUE,
+      type TEXT NOT NULL DEFAULT 'expense'
+    );
+
     CREATE TABLE IF NOT EXISTS family_members (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL,
@@ -62,6 +68,29 @@ async function initDatabase() {
       FOREIGN KEY (household_id) REFERENCES households(id) ON DELETE CASCADE
     );
   `);
+  
+  // Erstelle Standard-Kategorien falls noch keine existieren
+  const stmt = db.prepare('SELECT COUNT(*) as count FROM categories');
+  stmt.step();
+  const count = stmt.getAsObject().count;
+  stmt.free();
+  
+  if (count === 0) {
+    const defaultCategories = [
+      'Wohnen',
+      'Versicherung',
+      'Lebensmittel',
+      'Transport',
+      'Unterhaltung',
+      'Gesundheit',
+      'Bildung',
+      'Sonstiges'
+    ];
+    
+    defaultCategories.forEach(category => {
+      db.run('INSERT INTO categories (name, type) VALUES (?, ?)', [category, 'expense']);
+    });
+  }
   
   saveDatabase();
 }
@@ -100,6 +129,70 @@ app.post('/api/households', (req, res) => {
 
 app.delete('/api/households/:id', (req, res) => {
   db.run('DELETE FROM households WHERE id = ?', [req.params.id]);
+  saveDatabase();
+  res.json({ success: true });
+});
+
+// Categories API
+app.get('/api/categories', (req, res) => {
+  const stmt = db.prepare('SELECT * FROM categories ORDER BY name');
+  const categories = [];
+  while (stmt.step()) {
+    const row = stmt.getAsObject();
+    categories.push({
+      id: row.id,
+      name: row.name,
+      type: row.type
+    });
+  }
+  stmt.free();
+  res.json(categories);
+});
+
+app.post('/api/categories', (req, res) => {
+  const { name, type } = req.body;
+  
+  // Prüfe ob Kategorie bereits existiert
+  const checkStmt = db.prepare('SELECT COUNT(*) as count FROM categories WHERE name = ?');
+  checkStmt.bind([name]);
+  checkStmt.step();
+  const exists = checkStmt.getAsObject().count > 0;
+  checkStmt.free();
+  
+  if (exists) {
+    return res.status(400).json({ error: 'Kategorie existiert bereits' });
+  }
+  
+  db.run('INSERT INTO categories (name, type) VALUES (?, ?)', [name, type || 'expense']);
+  const stmt = db.prepare('SELECT last_insert_rowid() as id');
+  stmt.step();
+  const id = stmt.getAsObject().id;
+  stmt.free();
+  saveDatabase();
+  res.json({ id, name, type: type || 'expense' });
+});
+
+app.put('/api/categories/:id', (req, res) => {
+  const { name } = req.body;
+  
+  // Prüfe ob Kategorie mit diesem Namen bereits existiert (außer die aktuelle)
+  const checkStmt = db.prepare('SELECT COUNT(*) as count FROM categories WHERE name = ? AND id != ?');
+  checkStmt.bind([name, req.params.id]);
+  checkStmt.step();
+  const exists = checkStmt.getAsObject().count > 0;
+  checkStmt.free();
+  
+  if (exists) {
+    return res.status(400).json({ error: 'Kategorie existiert bereits' });
+  }
+  
+  db.run('UPDATE categories SET name = ? WHERE id = ?', [name, req.params.id]);
+  saveDatabase();
+  res.json({ success: true });
+});
+
+app.delete('/api/categories/:id', (req, res) => {
+  db.run('DELETE FROM categories WHERE id = ?', [req.params.id]);
   saveDatabase();
   res.json({ success: true });
 });

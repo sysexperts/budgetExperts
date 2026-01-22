@@ -1,15 +1,16 @@
 import { useState } from 'react'
-import { FamilyMember, Subscription, Household } from '../types'
+import { FamilyMember, Subscription, Household, Category } from '../types'
 import { Plus, Trash2, CreditCard } from 'lucide-react'
 
 interface SubscriptionsProps {
   subscriptions: Subscription[]
   familyMembers: FamilyMember[]
   households: Household[]
+  categories: Category[]
   onUpdate: () => void
 }
 
-export default function Subscriptions({ subscriptions, familyMembers, households, onUpdate }: SubscriptionsProps) {
+export default function Subscriptions({ subscriptions, familyMembers, households, categories, onUpdate }: SubscriptionsProps) {
   const [showForm, setShowForm] = useState(false)
   const [name, setName] = useState('')
   const [category, setCategory] = useState('')
@@ -99,14 +100,20 @@ export default function Subscriptions({ subscriptions, familyMembers, households
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
-                <input
-                  type="text"
+                <label className="block text-sm font-medium text-gray-700 mb-1">Kategorie *</label>
+                <select
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
                   required
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
+                >
+                  <option value="">Kategorie wählen</option>
+                  {categories.map((cat) => (
+                    <option key={cat.id} value={cat.name}>
+                      {cat.name}
+                    </option>
+                  ))}
+                </select>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Amount</label>
