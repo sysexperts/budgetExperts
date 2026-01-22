@@ -10,12 +10,16 @@ const __dirname = path.dirname(__filename);
 const app = express();
 let db;
 
-const dbPath = 'budget.db';
+// Verwende /app/data für Docker, sonst aktuelles Verzeichnis
+const dbPath = process.env.NODE_ENV === 'production' 
+  ? '/app/data/budget.db' 
+  : 'budget.db';
 
 function createBackup() {
   if (fs.existsSync(dbPath)) {
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-    const backupPath = `budget_backup_${timestamp}.db`;
+    const backupDir = process.env.NODE_ENV === 'production' ? '/app/data' : '.';
+    const backupPath = path.join(backupDir, `budget_backup_${timestamp}.db`);
     fs.copyFileSync(dbPath, backupPath);
     console.log(`Backup erstellt: ${backupPath}`);
   }

@@ -10,7 +10,7 @@ interface SubscriptionsProps {
   onUpdate: () => void
 }
 
-export default function Subscriptions({ subscriptions, familyMembers, households, categories, onUpdate }: SubscriptionsProps) {
+export default function Subscriptions({ subscriptions, familyMembers, categories, onUpdate }: SubscriptionsProps) {
   const [showForm, setShowForm] = useState(false)
   const [name, setName] = useState('')
   const [category, setCategory] = useState('')
@@ -18,7 +18,6 @@ export default function Subscriptions({ subscriptions, familyMembers, households
   const [interval, setInterval] = useState<'monthly' | 'yearly'>('monthly')
   const [paymentDate, setPaymentDate] = useState('1')
   const [familyMemberId, setFamilyMemberId] = useState<number | undefined>()
-  const [householdId, setHouseholdId] = useState<number | undefined>()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -31,7 +30,6 @@ export default function Subscriptions({ subscriptions, familyMembers, households
           name,
           category,
           amount: parseFloat(amount),
-          householdId: householdId || undefined,
           interval,
           paymentDate: parseInt(paymentDate),
           familyMemberId: familyMemberId || undefined

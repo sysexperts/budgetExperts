@@ -8,8 +8,6 @@ interface DashboardProps {
 }
 
 export default function Dashboard({ familyMembers, fixedCosts, subscriptions }: DashboardProps) {
-  const currentMonth = new Date().getMonth()
-  const currentYear = new Date().getFullYear()
 
   const calculateMonthlyTotal = () => {
     const fixedTotal = fixedCosts.reduce((sum, cost) => {

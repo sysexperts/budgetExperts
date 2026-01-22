@@ -103,7 +103,7 @@ export default function Analytics({ familyMembers, fixedCosts, subscriptions }: 
                 fill="#8884d8"
                 dataKey="value"
               >
-                {categoryData.map((entry, index) => (
+                {categoryData.map((_, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
