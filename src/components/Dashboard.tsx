@@ -43,7 +43,9 @@ export default function Dashboard({ familyMembers, fixedCosts, subscriptions }: 
               <p className="text-3xl font-bold text-gray-900 mt-2">
                 {monthlyTotal.toFixed(2)}€
               </p>
-              <p className="text-sm text-green-600 mt-2">+6.2% vom letzten Monat</p>
+              {monthlyTotal > 0 && (
+                <p className="text-sm text-green-600 mt-2">+6.2% vom letzten Monat</p>
+              )}
             </div>
             <div className="bg-blue-100 p-3 rounded-lg">
               <DollarSign className="h-8 w-8 text-blue-600" />
@@ -58,7 +60,9 @@ export default function Dashboard({ familyMembers, fixedCosts, subscriptions }: 
               <p className="text-3xl font-bold text-gray-900 mt-2">
                 {subscriptionTotal.toFixed(2)}€
               </p>
-              <p className="text-sm text-green-600 mt-2">+2.1% (Neu: Disney+)</p>
+              {subscriptionTotal > 0 && (
+                <p className="text-sm text-green-600 mt-2">+2.1% (Neu: Disney+)</p>
+              )}
             </div>
             <div className="bg-blue-100 p-3 rounded-lg">
               <CreditCard className="h-8 w-8 text-blue-600" />
@@ -73,7 +77,9 @@ export default function Dashboard({ familyMembers, fixedCosts, subscriptions }: 
               <p className="text-3xl font-bold text-gray-900 mt-2">
                 {fixedCostRatio.toFixed(0)}%
               </p>
-              <p className="text-sm text-red-600 mt-2">-1.5% optimiert</p>
+              {fixedCostRatio > 0 && (
+                <p className="text-sm text-red-600 mt-2">-1.5% optimiert</p>
+              )}
             </div>
             <div className="bg-blue-100 p-3 rounded-lg">
               <TrendingUp className="h-8 w-8 text-blue-600" />
