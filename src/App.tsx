@@ -97,12 +97,12 @@ function App() {
             <div className="flex">
               <div className="flex-shrink-0 flex items-center gap-2">
                 <div className="flex items-center">
-                  <span className="text-3xl font-black bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 bg-clip-text text-transparent tracking-tight">
-                    MONETA
+                  <span className="text-3xl font-black bg-gradient-to-r from-blue-300 via-blue-500 to-blue-700 bg-clip-text text-transparent tracking-tight">
+                    moneta
                   </span>
                   <div className="ml-1 flex flex-col items-center justify-center">
                     <div className="w-2 h-2 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full animate-pulse"></div>
-                    <div className="w-1 h-1 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full mt-0.5"></div>
+                    <div className="w-1 h-1 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full mt-0.5"></div>
                   </div>
                 </div>
               </div>
