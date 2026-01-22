@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Users, DollarSign, Download, Languages } from 'lucide-react'
+import { Users, Download, Languages } from 'lucide-react'
 import Dashboard from './components/Dashboard'
 import FixedCosts from './components/FixedCosts'
 import Subscriptions from './components/Subscriptions'
@@ -95,11 +95,16 @@ function App() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             <div className="flex">
-              <div className="flex-shrink-0 flex items-center">
-                <div className="bg-blue-600 text-white p-2 rounded-lg">
-                  <DollarSign className="h-6 w-6" />
+              <div className="flex-shrink-0 flex items-center gap-2">
+                <div className="flex items-center">
+                  <span className="text-3xl font-black bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 bg-clip-text text-transparent tracking-tight">
+                    MONETA
+                  </span>
+                  <div className="ml-1 flex flex-col items-center justify-center">
+                    <div className="w-2 h-2 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full animate-pulse"></div>
+                    <div className="w-1 h-1 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full mt-0.5"></div>
+                  </div>
                 </div>
-                <span className="ml-3 text-xl font-bold text-gray-900">Budget Planer</span>
               </div>
               <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
                 <button
