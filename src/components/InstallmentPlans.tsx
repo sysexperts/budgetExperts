@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { Calendar, Plus, Trash2, Percent, Coins } from 'lucide-react'
+import { Plus, Trash2, Coins } from 'lucide-react'
 import { FamilyMember, Household, InstallmentPlan } from '../types'
 
 interface InstallmentPlansProps {
@@ -250,9 +250,9 @@ export default function InstallmentPlans({ installmentPlans, familyMembers, hous
           </form>
         )}
 
-        <div className="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="mt-6 space-y-3">
           {installmentPlans.length === 0 ? (
-            <p className="text-gray-500 text-center py-8 col-span-full">Noch keine Ratenpläne erfasst</p>
+            <p className="text-gray-500 text-center py-8">Noch keine Ratenpläne erfasst</p>
           ) : (
             installmentPlans.map((plan) => {
               const member = familyMembers.find((m) => m.id === plan.familyMemberId)
@@ -260,45 +260,46 @@ export default function InstallmentPlans({ installmentPlans, familyMembers, hous
               const durationMonths = monthsBetween(plan.startDate, plan.endDate)
 
               return (
-                <div key={plan.id} className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4 hover:shadow-lg transition-shadow">
-                  <div className="flex justify-between items-start mb-3">
-                    <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
-                      <Coins className="h-5 w-5 text-white" />
+                <div
+                  key={plan.id}
+                  className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100"
+                >
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 bg-blue-200 rounded-full flex items-center justify-center">
+                      <Coins className="h-5 w-5 text-blue-700" />
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-900">{plan.name}</p>
+                      <p className="text-sm text-gray-500">
+                        {plan.startDate} – {plan.endDate} {durationMonths > 0 && `(${durationMonths} Monate)`}
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        {member ? member.name : household ? household.name : 'Allgemein'}
+                        {plan.paymentDay ? ` • Zahlungstag ${plan.paymentDay}.` : ''}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-4">
+                    <div className="text-right">
+                      <p className="font-semibold text-gray-900">{plan.monthlyAmount.toFixed(2)} €</p>
+                      <p className="text-sm text-gray-500">Monatliche Rate</p>
+                      {(plan.totalAmount != null || plan.downPayment != null || plan.interestRate != null) && (
+                        <p className="text-xs text-gray-400">
+                          {plan.totalAmount != null ? `Gesamt ${plan.totalAmount.toFixed(2)}€` : ''}
+                          {plan.totalAmount != null && plan.downPayment != null ? ' • ' : ''}
+                          {plan.downPayment != null ? `Anzahlung ${plan.downPayment.toFixed(2)}€` : ''}
+                          {(plan.totalAmount != null || plan.downPayment != null) && plan.interestRate != null ? ' • ' : ''}
+                          {plan.interestRate != null ? `Zins ${plan.interestRate.toFixed(2)}%` : ''}
+                        </p>
+                      )}
                     </div>
                     <button
                       onClick={() => handleDelete(plan.id)}
                       className="text-red-600 hover:text-red-800"
+                      title="Ratenplan löschen"
                     >
                       <Trash2 className="h-5 w-5" />
                     </button>
-                  </div>
-                  <h3 className="font-bold text-gray-900 text-lg mb-1">{plan.name}</h3>
-                  <p className="text-sm text-gray-600 mb-2">
-                    {plan.startDate} – {plan.endDate} {durationMonths > 0 && `(${durationMonths} Monate)`}
-                  </p>
-                  <div className="flex justify-between items-end">
-                    <div>
-                      <p className="text-2xl font-bold text-blue-600">{plan.monthlyAmount.toFixed(2)}€</p>
-                      <p className="text-xs text-gray-500">monatliche Rate</p>
-                    </div>
-                    <div className="text-right text-xs text-gray-500 space-y-1">
-                      {plan.totalAmount != null && <p>Gesamt: {plan.totalAmount.toFixed(2)}€</p>}
-                      {plan.downPayment != null && <p>Anzahlung: {plan.downPayment.toFixed(2)}€</p>}
-                      {plan.interestRate != null && (
-                        <p className="flex items-center justify-end gap-1">
-                          <Percent className="h-3 w-3" /> {plan.interestRate.toFixed(2)}%
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                  <div className="mt-3 text-xs text-gray-500">
-                    <p className="flex items-center gap-1">
-                      <Calendar className="h-3 w-3" /> Zahlungstag: {plan.paymentDay ? `${plan.paymentDay}.` : 'nicht gesetzt'}
-                    </p>
-                    {(member || household) && (
-                      <p className="mt-1">Zugeordnet: {member ? member.name : household?.name}</p>
-                    )}
-                    {plan.notes && <p className="mt-1">Notiz: {plan.notes}</p>}
                   </div>
                 </div>
               )

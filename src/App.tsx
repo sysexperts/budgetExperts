@@ -213,6 +213,7 @@ function App() {
             familyMembers={familyMembers}
             fixedCosts={fixedCosts}
             subscriptions={subscriptions}
+            installmentPlans={installmentPlans}
           />
         )}
         {activeTab === 'thismonth' && (

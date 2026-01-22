@@ -1,13 +1,14 @@
-import { FamilyMember, FixedCost, Subscription } from '../types'
-import { DollarSign, TrendingUp, CreditCard } from 'lucide-react'
+import { FamilyMember, FixedCost, Subscription, InstallmentPlan } from '../types'
+import { DollarSign, TrendingUp, CreditCard, Coins } from 'lucide-react'
 
 interface DashboardProps {
   familyMembers: FamilyMember[]
   fixedCosts: FixedCost[]
   subscriptions: Subscription[]
+  installmentPlans: InstallmentPlan[]
 }
 
-export default function Dashboard({ familyMembers, fixedCosts, subscriptions }: DashboardProps) {
+export default function Dashboard({ familyMembers, fixedCosts, subscriptions, installmentPlans }: DashboardProps) {
 
   const calculateMonthlyTotal = () => {
     const fixedTotal = fixedCosts.reduce((sum, cost) => {
@@ -26,7 +27,10 @@ export default function Dashboard({ familyMembers, fixedCosts, subscriptions }: 
     return sum + (sub.interval === 'monthly' ? sub.amount : sub.amount / 12)
   }, 0)
 
+  const installmentTotal = installmentPlans.reduce((sum, plan) => sum + plan.monthlyAmount, 0)
+
   const fixedCostRatio = monthlyTotal > 0 ? ((monthlyTotal - subscriptionTotal) / monthlyTotal * 100) : 0
+  const combinedMonthly = monthlyTotal + installmentTotal
 
   return (
     <div className="space-y-6">
@@ -35,15 +39,15 @@ export default function Dashboard({ familyMembers, fixedCosts, subscriptions }: 
         <p className="text-gray-600 mt-1">Verfolge familiäre Ausgabentrends und Fixkosten für das aktuelle Jahr.</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600">Monatliche Gesamtausgaben</p>
               <p className="text-3xl font-bold text-gray-900 mt-2">
-                {monthlyTotal.toFixed(2)}€
+                {combinedMonthly.toFixed(2)}€
               </p>
-              {monthlyTotal > 0 && (
+              {combinedMonthly > 0 && (
                 <p className="text-sm text-green-600 mt-2">+6.2% vom letzten Monat</p>
               )}
             </div>
@@ -73,6 +77,23 @@ export default function Dashboard({ familyMembers, fixedCosts, subscriptions }: 
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
+              <p className="text-sm text-gray-600">Ratenpläne</p>
+              <p className="text-3xl font-bold text-gray-900 mt-2">
+                {installmentTotal.toFixed(2)}€
+              </p>
+              {installmentTotal > 0 && (
+                <p className="text-sm text-green-600 mt-2">Aktive Ratenzahlungen</p>
+              )}
+            </div>
+            <div className="bg-blue-100 p-3 rounded-lg">
+              <Coins className="h-8 w-8 text-blue-600" />
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-lg shadow p-6">
+          <div className="flex items-center justify-between">
+            <div>
               <p className="text-sm text-gray-600">Fixkosten-Anteil</p>
               <p className="text-3xl font-bold text-gray-900 mt-2">
                 {fixedCostRatio.toFixed(0)}%
@@ -93,15 +114,19 @@ export default function Dashboard({ familyMembers, fixedCosts, subscriptions }: 
         <div className="space-y-4">
           <div className="flex justify-between items-center py-3 border-b">
             <span className="text-gray-600">Gesamtausgaben</span>
-            <span className="font-semibold">{monthlyTotal.toFixed(2)}€</span>
+            <span className="font-semibold">{combinedMonthly.toFixed(2)}€</span>
           </div>
           <div className="flex justify-between items-center py-3 border-b">
             <span className="text-gray-600">Fixkosten</span>
             <span className="font-semibold">{(monthlyTotal - subscriptionTotal).toFixed(2)}€</span>
           </div>
-          <div className="flex justify-between items-center py-3">
+          <div className="flex justify-between items-center py-3 border-b">
             <span className="text-gray-600">Abonnements</span>
             <span className="font-semibold">{subscriptionTotal.toFixed(2)}€</span>
+          </div>
+          <div className="flex justify-between items-center py-3">
+            <span className="text-gray-600">Ratenpläne</span>
+            <span className="font-semibold">{installmentTotal.toFixed(2)}€</span>
           </div>
         </div>
       </div>
