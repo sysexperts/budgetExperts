@@ -18,11 +18,18 @@ export default function FamilyMembers({ familyMembers, households, onUpdate }: F
     e.preventDefault()
     
     try {
-      await fetch('/api/family-members', {
+      const response = await fetch('/api/family-members', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, role: role || undefined, householdId })
       })
+      
+      if (!response.ok) {
+        const errorText = await response.text()
+        console.error('Fehler beim Hinzufügen des Mitglieds:', errorText)
+        alert('Fehler beim Hinzufügen des Mitglieds: ' + errorText)
+        return
+      }
       
       setName('')
       setRole('')
@@ -31,6 +38,7 @@ export default function FamilyMembers({ familyMembers, households, onUpdate }: F
       onUpdate()
     } catch (error) {
       console.error('Fehler beim Hinzufügen des Mitglieds:', error)
+      alert('Fehler beim Hinzufügen des Mitglieds: ' + error)
     }
   }
 
