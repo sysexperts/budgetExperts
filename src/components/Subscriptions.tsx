@@ -1,14 +1,15 @@
 import { useState } from 'react'
-import { FamilyMember, Subscription } from '../types'
+import { FamilyMember, Subscription, Household } from '../types'
 import { Plus, Trash2, CreditCard } from 'lucide-react'
 
 interface SubscriptionsProps {
   subscriptions: Subscription[]
   familyMembers: FamilyMember[]
+  households: Household[]
   onUpdate: () => void
 }
 
-export default function Subscriptions({ subscriptions, familyMembers, onUpdate }: SubscriptionsProps) {
+export default function Subscriptions({ subscriptions, familyMembers, households, onUpdate }: SubscriptionsProps) {
   const [showForm, setShowForm] = useState(false)
   const [name, setName] = useState('')
   const [category, setCategory] = useState('')
@@ -16,6 +17,7 @@ export default function Subscriptions({ subscriptions, familyMembers, onUpdate }
   const [interval, setInterval] = useState<'monthly' | 'yearly'>('monthly')
   const [paymentDate, setPaymentDate] = useState('1')
   const [familyMemberId, setFamilyMemberId] = useState<number | undefined>()
+  const [householdId, setHouseholdId] = useState<number | undefined>()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -28,6 +30,7 @@ export default function Subscriptions({ subscriptions, familyMembers, onUpdate }
           name,
           category,
           amount: parseFloat(amount),
+          householdId: householdId || undefined,
           interval,
           paymentDate: parseInt(paymentDate),
           familyMemberId: familyMemberId || undefined

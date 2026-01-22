@@ -1,7 +1,14 @@
+export interface Household {
+  id: number;
+  name: string;
+  description?: string;
+}
+
 export interface FamilyMember {
   id: number;
   name: string;
   role?: string;
+  householdId?: number;
 }
 
 export interface FixedCost {
@@ -11,6 +18,7 @@ export interface FixedCost {
   amount: number;
   interval: 'monthly' | 'yearly';
   familyMemberId?: number;
+  householdId?: number;
 }
 
 export interface Subscription {
@@ -21,6 +29,7 @@ export interface Subscription {
   interval: 'monthly' | 'yearly';
   paymentDate: number;
   familyMemberId?: number;
+  householdId?: number;
 }
 
 export interface Transaction {
@@ -32,6 +41,7 @@ export interface Transaction {
   paid: boolean;
   type: 'fixed' | 'subscription' | 'variable';
   familyMemberId?: number;
+  householdId?: number;
 }
 
 export interface MonthSummary {

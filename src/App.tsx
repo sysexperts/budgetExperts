@@ -1,20 +1,22 @@
 import { useState, useEffect } from 'react'
-import { Users, DollarSign, CreditCard, BarChart3, Download, Calendar } from 'lucide-react'
+import { Users, DollarSign, Download } from 'lucide-react'
 import Dashboard from './components/Dashboard'
 import FamilyMembers from './components/FamilyMembers'
 import FixedCosts from './components/FixedCosts'
 import Subscriptions from './components/Subscriptions'
 import Analytics from './components/Analytics'
 import ThisMonth from './components/ThisMonth'
-import { FamilyMember, FixedCost, Subscription } from './types'
+import Households from './components/Households'
+import { FamilyMember, FixedCost, Subscription, Household } from './types'
 
-type Tab = 'dashboard' | 'analytics' | 'subscriptions' | 'settings'
+type Tab = 'dashboard' | 'analytics' | 'subscriptions' | 'households' | 'members' | 'costs' | 'thismonth'
 
 function App() {
   const [activeTab, setActiveTab] = useState<Tab>('dashboard')
   const [familyMembers, setFamilyMembers] = useState<FamilyMember[]>([])
   const [fixedCosts, setFixedCosts] = useState<FixedCost[]>([])
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([])
+  const [households, setHouseholds] = useState<Household[]>([])
 
   useEffect(() => {
     loadData()
@@ -22,17 +24,19 @@ function App() {
 
   const loadData = async () => {
     try {
-      const [membersRes, costsRes, subsRes] = await Promise.all([
+      const [membersRes, costsRes, subsRes, householdsRes] = await Promise.all([
         fetch('/api/family-members'),
         fetch('/api/fixed-costs'),
-        fetch('/api/subscriptions')
+        fetch('/api/subscriptions'),
+        fetch('/api/households')
       ])
       
       setFamilyMembers(await membersRes.json())
       setFixedCosts(await costsRes.json())
       setSubscriptions(await subsRes.json())
+      setHouseholds(await householdsRes.json())
     } catch (error) {
-      console.error('Error loading data:', error)
+      console.error('Fehler beim Laden der Daten:', error)
     }
   }
 
@@ -49,7 +53,7 @@ function App() {
       window.URL.revokeObjectURL(url)
       document.body.removeChild(a)
     } catch (error) {
-      console.error('Error exporting data:', error)
+      console.error('Fehler beim Exportieren:', error)
     }
   }
 
@@ -63,7 +67,7 @@ function App() {
                 <div className="bg-blue-600 text-white p-2 rounded-lg">
                   <DollarSign className="h-6 w-6" />
                 </div>
-                <span className="ml-3 text-xl font-bold text-gray-900">Budget Planner</span>
+                <span className="ml-3 text-xl font-bold text-gray-900">Budget Planer</span>
               </div>
               <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
                 <button
@@ -74,17 +78,47 @@ function App() {
                       : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
                   } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium`}
                 >
-                  Dashboard
+                  Übersicht
                 </button>
                 <button
-                  onClick={() => setActiveTab('analytics')}
+                  onClick={() => setActiveTab('thismonth')}
                   className={`${
-                    activeTab === 'analytics'
+                    activeTab === 'thismonth'
                       ? 'border-blue-500 text-gray-900'
                       : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
                   } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium`}
                 >
-                  Analytics
+                  Dieser Monat
+                </button>
+                <button
+                  onClick={() => setActiveTab('households')}
+                  className={`${
+                    activeTab === 'households'
+                      ? 'border-blue-500 text-gray-900'
+                      : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
+                  } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium`}
+                >
+                  Haushalte
+                </button>
+                <button
+                  onClick={() => setActiveTab('members')}
+                  className={`${
+                    activeTab === 'members'
+                      ? 'border-blue-500 text-gray-900'
+                      : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
+                  } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium`}
+                >
+                  Mitglieder
+                </button>
+                <button
+                  onClick={() => setActiveTab('costs')}
+                  className={`${
+                    activeTab === 'costs'
+                      ? 'border-blue-500 text-gray-900'
+                      : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
+                  } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium`}
+                >
+                  Fixkosten
                 </button>
                 <button
                   onClick={() => setActiveTab('subscriptions')}
@@ -94,17 +128,17 @@ function App() {
                       : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
                   } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium`}
                 >
-                  Subscriptions
+                  Abonnements
                 </button>
                 <button
-                  onClick={() => setActiveTab('settings')}
+                  onClick={() => setActiveTab('analytics')}
                   className={`${
-                    activeTab === 'settings'
+                    activeTab === 'analytics'
                       ? 'border-blue-500 text-gray-900'
                       : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
                   } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium`}
                 >
-                  Settings
+                  Statistik
                 </button>
               </div>
             </div>
@@ -132,32 +166,41 @@ function App() {
             subscriptions={subscriptions}
           />
         )}
-        {activeTab === 'analytics' && (
-          <Analytics 
+        {activeTab === 'thismonth' && (
+          <ThisMonth />
+        )}
+        {activeTab === 'households' && (
+          <Households />
+        )}
+        {activeTab === 'members' && (
+          <FamilyMembers 
             familyMembers={familyMembers}
+            households={households}
+            onUpdate={loadData}
+          />
+        )}
+        {activeTab === 'costs' && (
+          <FixedCosts 
             fixedCosts={fixedCosts}
-            subscriptions={subscriptions}
+            familyMembers={familyMembers}
+            households={households}
+            onUpdate={loadData}
           />
         )}
         {activeTab === 'subscriptions' && (
           <Subscriptions 
             subscriptions={subscriptions}
             familyMembers={familyMembers}
+            households={households}
             onUpdate={loadData}
           />
         )}
-        {activeTab === 'settings' && (
-          <div className="space-y-6">
-            <FamilyMembers 
-              familyMembers={familyMembers}
-              onUpdate={loadData}
-            />
-            <FixedCosts 
-              fixedCosts={fixedCosts}
-              familyMembers={familyMembers}
-              onUpdate={loadData}
-            />
-          </div>
+        {activeTab === 'analytics' && (
+          <Analytics 
+            familyMembers={familyMembers}
+            fixedCosts={fixedCosts}
+            subscriptions={subscriptions}
+          />
         )}
       </main>
     </div>

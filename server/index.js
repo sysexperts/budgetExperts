@@ -23,10 +23,18 @@ async function initDatabase() {
   }
 
   db.run(`
+    CREATE TABLE IF NOT EXISTS households (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      description TEXT
+    );
+
     CREATE TABLE IF NOT EXISTS family_members (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL,
-      role TEXT
+      role TEXT,
+      household_id INTEGER,
+      FOREIGN KEY (household_id) REFERENCES households(id) ON DELETE CASCADE
     );
 
     CREATE TABLE IF NOT EXISTS fixed_costs (
@@ -36,7 +44,9 @@ async function initDatabase() {
       amount REAL NOT NULL,
       interval TEXT NOT NULL,
       family_member_id INTEGER,
-      FOREIGN KEY (family_member_id) REFERENCES family_members(id)
+      household_id INTEGER,
+      FOREIGN KEY (family_member_id) REFERENCES family_members(id) ON DELETE SET NULL,
+      FOREIGN KEY (household_id) REFERENCES households(id) ON DELETE CASCADE
     );
 
     CREATE TABLE IF NOT EXISTS subscriptions (
@@ -47,7 +57,9 @@ async function initDatabase() {
       interval TEXT NOT NULL,
       payment_date INTEGER NOT NULL,
       family_member_id INTEGER,
-      FOREIGN KEY (family_member_id) REFERENCES family_members(id)
+      household_id INTEGER,
+      FOREIGN KEY (family_member_id) REFERENCES family_members(id) ON DELETE SET NULL,
+      FOREIGN KEY (household_id) REFERENCES households(id) ON DELETE CASCADE
     );
   `);
   
@@ -63,26 +75,61 @@ function saveDatabase() {
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '../dist')));
 
+// Households API
+app.get('/api/households', (req, res) => {
+  const stmt = db.prepare('SELECT * FROM households');
+  const households = [];
+  while (stmt.step()) {
+    const row = stmt.getAsObject();
+    households.push(row);
+  }
+  stmt.free();
+  res.json(households);
+});
+
+app.post('/api/households', (req, res) => {
+  const { name, description } = req.body;
+  db.run('INSERT INTO households (name, description) VALUES (?, ?)', [name, description || null]);
+  const stmt = db.prepare('SELECT last_insert_rowid() as id');
+  stmt.step();
+  const id = stmt.getAsObject().id;
+  stmt.free();
+  saveDatabase();
+  res.json({ id, name, description });
+});
+
+app.delete('/api/households/:id', (req, res) => {
+  db.run('DELETE FROM households WHERE id = ?', [req.params.id]);
+  saveDatabase();
+  res.json({ success: true });
+});
+
+// Family Members API
 app.get('/api/family-members', (req, res) => {
   const stmt = db.prepare('SELECT * FROM family_members');
   const members = [];
   while (stmt.step()) {
     const row = stmt.getAsObject();
-    members.push(row);
+    members.push({
+      id: row.id,
+      name: row.name,
+      role: row.role,
+      householdId: row.household_id
+    });
   }
   stmt.free();
   res.json(members);
 });
 
 app.post('/api/family-members', (req, res) => {
-  const { name, role } = req.body;
-  db.run('INSERT INTO family_members (name, role) VALUES (?, ?)', [name, role || null]);
+  const { name, role, householdId } = req.body;
+  db.run('INSERT INTO family_members (name, role, household_id) VALUES (?, ?, ?)', [name, role || null, householdId || null]);
   const stmt = db.prepare('SELECT last_insert_rowid() as id');
   stmt.step();
   const id = stmt.getAsObject().id;
   stmt.free();
   saveDatabase();
-  res.json({ id, name, role });
+  res.json({ id, name, role, householdId });
 });
 
 app.delete('/api/family-members/:id', (req, res) => {
@@ -102,7 +149,8 @@ app.get('/api/fixed-costs', (req, res) => {
       category: row.category,
       amount: row.amount,
       interval: row.interval,
-      familyMemberId: row.family_member_id
+      familyMemberId: row.family_member_id,
+      householdId: row.household_id
     });
   }
   stmt.free();
@@ -110,17 +158,17 @@ app.get('/api/fixed-costs', (req, res) => {
 });
 
 app.post('/api/fixed-costs', (req, res) => {
-  const { name, category, amount, interval, familyMemberId } = req.body;
+  const { name, category, amount, interval, familyMemberId, householdId } = req.body;
   db.run(
-    'INSERT INTO fixed_costs (name, category, amount, interval, family_member_id) VALUES (?, ?, ?, ?, ?)',
-    [name, category, amount, interval, familyMemberId || null]
+    'INSERT INTO fixed_costs (name, category, amount, interval, family_member_id, household_id) VALUES (?, ?, ?, ?, ?, ?)',
+    [name, category, amount, interval, familyMemberId || null, householdId || null]
   );
   const stmt = db.prepare('SELECT last_insert_rowid() as id');
   stmt.step();
   const id = stmt.getAsObject().id;
   stmt.free();
   saveDatabase();
-  res.json({ id, name, category, amount, interval, familyMemberId });
+  res.json({ id, name, category, amount, interval, familyMemberId, householdId });
 });
 
 app.delete('/api/fixed-costs/:id', (req, res) => {
@@ -141,7 +189,8 @@ app.get('/api/subscriptions', (req, res) => {
       amount: row.amount,
       interval: row.interval,
       paymentDate: row.payment_date,
-      familyMemberId: row.family_member_id
+      familyMemberId: row.family_member_id,
+      householdId: row.household_id
     });
   }
   stmt.free();
@@ -149,17 +198,17 @@ app.get('/api/subscriptions', (req, res) => {
 });
 
 app.post('/api/subscriptions', (req, res) => {
-  const { name, category, amount, interval, paymentDate, familyMemberId } = req.body;
+  const { name, category, amount, interval, paymentDate, familyMemberId, householdId } = req.body;
   db.run(
-    'INSERT INTO subscriptions (name, category, amount, interval, payment_date, family_member_id) VALUES (?, ?, ?, ?, ?, ?)',
-    [name, category, amount, interval, paymentDate, familyMemberId || null]
+    'INSERT INTO subscriptions (name, category, amount, interval, payment_date, family_member_id, household_id) VALUES (?, ?, ?, ?, ?, ?, ?)',
+    [name, category, amount, interval, paymentDate, familyMemberId || null, householdId || null]
   );
   const stmt = db.prepare('SELECT last_insert_rowid() as id');
   stmt.step();
   const id = stmt.getAsObject().id;
   stmt.free();
   saveDatabase();
-  res.json({ id, name, category, amount, interval, paymentDate, familyMemberId });
+  res.json({ id, name, category, amount, interval, paymentDate, familyMemberId, householdId });
 });
 
 app.delete('/api/subscriptions/:id', (req, res) => {
