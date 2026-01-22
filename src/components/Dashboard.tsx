@@ -31,19 +31,19 @@ export default function Dashboard({ familyMembers, fixedCosts, subscriptions }: 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Budget Analytics & Reports</h1>
-        <p className="text-gray-600 mt-1">Track family spending trends and fixed costs for the current year.</p>
+        <h1 className="text-3xl font-bold text-gray-900">Budget Analytics & Berichte</h1>
+        <p className="text-gray-600 mt-1">Verfolge familiäre Ausgabentrends und Fixkosten für das aktuelle Jahr.</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Total Monthly Spending</p>
+              <p className="text-sm text-gray-600">Monatliche Gesamtausgaben</p>
               <p className="text-3xl font-bold text-gray-900 mt-2">
-                ${monthlyTotal.toFixed(2)}
+                {monthlyTotal.toFixed(2)}€
               </p>
-              <p className="text-sm text-green-600 mt-2">+6.2% from last month</p>
+              <p className="text-sm text-green-600 mt-2">+6.2% vom letzten Monat</p>
             </div>
             <div className="bg-blue-100 p-3 rounded-lg">
               <DollarSign className="h-8 w-8 text-blue-600" />
@@ -54,11 +54,11 @@ export default function Dashboard({ familyMembers, fixedCosts, subscriptions }: 
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Subscription Costs</p>
+              <p className="text-sm text-gray-600">Abonnement-Kosten</p>
               <p className="text-3xl font-bold text-gray-900 mt-2">
-                ${subscriptionTotal.toFixed(2)}
+                {subscriptionTotal.toFixed(2)}€
               </p>
-              <p className="text-sm text-green-600 mt-2">+2.1% (New: Disney+)</p>
+              <p className="text-sm text-green-600 mt-2">+2.1% (Neu: Disney+)</p>
             </div>
             <div className="bg-blue-100 p-3 rounded-lg">
               <CreditCard className="h-8 w-8 text-blue-600" />
@@ -69,11 +69,11 @@ export default function Dashboard({ familyMembers, fixedCosts, subscriptions }: 
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Fixed Cost Ratio</p>
+              <p className="text-sm text-gray-600">Fixkosten-Anteil</p>
               <p className="text-3xl font-bold text-gray-900 mt-2">
                 {fixedCostRatio.toFixed(0)}%
               </p>
-              <p className="text-sm text-red-600 mt-2">-1.5% optimized</p>
+              <p className="text-sm text-red-600 mt-2">-1.5% optimiert</p>
             </div>
             <div className="bg-blue-100 p-3 rounded-lg">
               <TrendingUp className="h-8 w-8 text-blue-600" />
@@ -83,26 +83,26 @@ export default function Dashboard({ familyMembers, fixedCosts, subscriptions }: 
       </div>
 
       <div className="bg-white rounded-lg shadow p-6">
-        <h2 className="text-xl font-bold text-gray-900 mb-4">This Month Overview</h2>
+        <h2 className="text-xl font-bold text-gray-900 mb-4">Monatsübersicht</h2>
         <div className="space-y-4">
           <div className="flex justify-between items-center py-3 border-b">
-            <span className="text-gray-600">Total Expenses</span>
-            <span className="font-semibold">${monthlyTotal.toFixed(2)}</span>
+            <span className="text-gray-600">Gesamtausgaben</span>
+            <span className="font-semibold">{monthlyTotal.toFixed(2)}€</span>
           </div>
           <div className="flex justify-between items-center py-3 border-b">
-            <span className="text-gray-600">Fixed Costs</span>
-            <span className="font-semibold">${(monthlyTotal - subscriptionTotal).toFixed(2)}</span>
+            <span className="text-gray-600">Fixkosten</span>
+            <span className="font-semibold">{(monthlyTotal - subscriptionTotal).toFixed(2)}€</span>
           </div>
           <div className="flex justify-between items-center py-3">
-            <span className="text-gray-600">Subscriptions</span>
-            <span className="font-semibold">${subscriptionTotal.toFixed(2)}</span>
+            <span className="text-gray-600">Abonnements</span>
+            <span className="font-semibold">{subscriptionTotal.toFixed(2)}€</span>
           </div>
         </div>
       </div>
 
       {familyMembers.length > 0 && (
         <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Family Members</h2>
+          <h2 className="text-xl font-bold text-gray-900 mb-4">Familienmitglieder</h2>
           <div className="flex flex-wrap gap-3">
             {familyMembers.map((member) => (
               <div
