@@ -20,14 +20,25 @@ export default function Households() {
     e.preventDefault();
     if (!newHousehold.name.trim()) return;
 
-    await fetch('/api/households', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(newHousehold),
-    });
+    try {
+      const response = await fetch('/api/households', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newHousehold),
+      });
+      
+      if (!response.ok) {
+        console.error('Fehler beim Hinzufügen des Haushalts:', await response.text());
+        alert('Fehler beim Hinzufügen des Haushalts');
+        return;
+      }
 
-    setNewHousehold({ name: '', description: '' });
-    fetchHouseholds();
+      setNewHousehold({ name: '', description: '' });
+      await fetchHouseholds();
+    } catch (error) {
+      console.error('Fehler beim Hinzufügen des Haushalts:', error);
+      alert('Fehler beim Hinzufügen des Haushalts: ' + error);
+    }
   };
 
   const deleteHousehold = async (id: number) => {
