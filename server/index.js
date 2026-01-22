@@ -126,6 +126,23 @@ async function initDatabase() {
       FOREIGN KEY (family_member_id) REFERENCES family_members(id) ON DELETE SET NULL,
       FOREIGN KEY (household_id) REFERENCES households(id) ON DELETE CASCADE
     );
+
+    CREATE TABLE IF NOT EXISTS installment_plans (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      start_date TEXT NOT NULL,
+      end_date TEXT NOT NULL,
+      monthly_amount REAL NOT NULL,
+      total_amount REAL,
+      down_payment REAL,
+      interest_rate REAL,
+      payment_day INTEGER,
+      notes TEXT,
+      family_member_id INTEGER,
+      household_id INTEGER,
+      FOREIGN KEY (family_member_id) REFERENCES family_members(id) ON DELETE SET NULL,
+      FOREIGN KEY (household_id) REFERENCES households(id) ON DELETE CASCADE
+    );
   `);
   
   // Führe Migrationen durch um fehlende Spalten hinzuzufügen
@@ -372,6 +389,91 @@ app.delete('/api/subscriptions/:id', (req, res) => {
   res.json({ success: true });
 });
 
+// Installment Plans API
+app.get('/api/installment-plans', (req, res) => {
+  const stmt = db.prepare('SELECT * FROM installment_plans');
+  const plans = [];
+  while (stmt.step()) {
+    const row = stmt.getAsObject();
+    plans.push({
+      id: row.id,
+      name: row.name,
+      startDate: row.start_date,
+      endDate: row.end_date,
+      monthlyAmount: row.monthly_amount,
+      totalAmount: row.total_amount,
+      downPayment: row.down_payment,
+      interestRate: row.interest_rate,
+      paymentDay: row.payment_day,
+      notes: row.notes,
+      familyMemberId: row.family_member_id,
+      householdId: row.household_id
+    });
+  }
+  stmt.free();
+  res.json(plans);
+});
+
+app.post('/api/installment-plans', (req, res) => {
+  const {
+    name,
+    startDate,
+    endDate,
+    monthlyAmount,
+    totalAmount,
+    downPayment,
+    interestRate,
+    paymentDay,
+    notes,
+    familyMemberId,
+    householdId
+  } = req.body;
+
+  db.run(
+    `INSERT INTO installment_plans 
+     (name, start_date, end_date, monthly_amount, total_amount, down_payment, interest_rate, payment_day, notes, family_member_id, household_id)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)` ,
+    [
+      name,
+      startDate,
+      endDate,
+      monthlyAmount,
+      totalAmount || null,
+      downPayment || null,
+      interestRate || null,
+      paymentDay || null,
+      notes || null,
+      familyMemberId || null,
+      householdId || null
+    ]
+  );
+  const stmt = db.prepare('SELECT last_insert_rowid() as id');
+  stmt.step();
+  const id = stmt.getAsObject().id;
+  stmt.free();
+  saveDatabase();
+  res.json({
+    id,
+    name,
+    startDate,
+    endDate,
+    monthlyAmount,
+    totalAmount,
+    downPayment,
+    interestRate,
+    paymentDay,
+    notes,
+    familyMemberId,
+    householdId
+  });
+});
+
+app.delete('/api/installment-plans/:id', (req, res) => {
+  db.run('DELETE FROM installment_plans WHERE id = ?', [req.params.id]);
+  saveDatabase();
+  res.json({ success: true });
+});
+
 app.get('/api/month-summary', (req, res) => {
   let stmt = db.prepare('SELECT * FROM fixed_costs');
   const costs = [];
@@ -384,6 +486,13 @@ app.get('/api/month-summary', (req, res) => {
   const subs = [];
   while (stmt.step()) {
     subs.push(stmt.getAsObject());
+  }
+  stmt.free();
+
+  stmt = db.prepare('SELECT * FROM installment_plans');
+  const installmentPlans = [];
+  while (stmt.step()) {
+    installmentPlans.push(stmt.getAsObject());
   }
   stmt.free();
   
@@ -456,11 +565,12 @@ app.get('/api/export', (req, res) => {
     familyMembers: members,
     fixedCosts: costs,
     subscriptions: subs,
+    installmentPlans,
     exportDate: new Date().toISOString()
   };
   
   if (format === 'csv') {
-    let csv = 'Type,Name,Category,Amount,Interval,PaymentDate,FamilyMember\n';
+    let csv = 'Type,Name,Category,Amount,Interval,PaymentDate,FamilyMember,StartDate,EndDate,MonthlyAmount,TotalAmount,DownPayment,InterestRate,Notes\n';
     
     costs.forEach(c => {
       const member = members.find(m => m.id === c.family_member_id);
@@ -469,7 +579,12 @@ app.get('/api/export', (req, res) => {
     
     subs.forEach(s => {
       const member = members.find(m => m.id === s.family_member_id);
-      csv += `Subscription,${s.name},${s.category},${s.amount},${s.interval},${s.payment_date},${member ? member.name : 'Household'}\n`;
+      csv += `Subscription,${s.name},${s.category},${s.amount},${s.interval},${s.payment_date},${member ? member.name : 'Household'},,,,,,,\n`;
+    });
+
+    installmentPlans.forEach(p => {
+      const member = members.find(m => m.id === p.family_member_id);
+      csv += `Installment Plan,${p.name},,${p.monthly_amount},Monthly,,${member ? member.name : 'Household'},${p.start_date},${p.end_date},${p.monthly_amount},${p.total_amount ?? ''},${p.down_payment ?? ''},${p.interest_rate ?? ''},${(p.notes || '').replace(/\n/g, ' ')}\n`;
     });
     
     res.setHeader('Content-Type', 'text/csv');

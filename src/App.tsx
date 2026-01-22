@@ -6,11 +6,12 @@ import Subscriptions from './components/Subscriptions'
 import Analytics from './components/Analytics'
 import ThisMonth from './components/ThisMonth'
 import Settings from './components/Settings'
+import InstallmentPlans from './components/InstallmentPlans'
 import SetupWizard from './components/SetupWizard'
 import TutorialTooltip from './components/TutorialTooltip'
-import { FamilyMember, FixedCost, Subscription, Household, Category } from './types'
+import { FamilyMember, FixedCost, Subscription, Household, Category, InstallmentPlan } from './types'
 
-type Tab = 'dashboard' | 'analytics' | 'subscriptions' | 'costs' | 'thismonth' | 'settings'
+type Tab = 'dashboard' | 'analytics' | 'subscriptions' | 'costs' | 'thismonth' | 'settings' | 'installments'
 type Language = 'de' | 'en'
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
   const [familyMembers, setFamilyMembers] = useState<FamilyMember[]>([])
   const [fixedCosts, setFixedCosts] = useState<FixedCost[]>([])
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([])
+  const [installmentPlans, setInstallmentPlans] = useState<InstallmentPlan[]>([])
   const [households, setHouseholds] = useState<Household[]>([])
   const [categories, setCategories] = useState<Category[]>([])
   const [showSetup, setShowSetup] = useState(false)
@@ -40,10 +42,11 @@ function App() {
 
   const loadData = async () => {
     try {
-      const [membersRes, costsRes, subsRes, householdsRes, categoriesRes] = await Promise.all([
+      const [membersRes, costsRes, subsRes, installmentRes, householdsRes, categoriesRes] = await Promise.all([
         fetch('/api/family-members'),
         fetch('/api/fixed-costs'),
         fetch('/api/subscriptions'),
+        fetch('/api/installment-plans'),
         fetch('/api/households'),
         fetch('/api/categories')
       ])
@@ -51,6 +54,7 @@ function App() {
       setFamilyMembers(await membersRes.json())
       setFixedCosts(await costsRes.json())
       setSubscriptions(await subsRes.json())
+      setInstallmentPlans(await installmentRes.json())
       setHouseholds(await householdsRes.json())
       setCategories(await categoriesRes.json())
     } catch (error) {
@@ -148,6 +152,16 @@ function App() {
                   Abonnements
                 </button>
                 <button
+                  onClick={() => setActiveTab('installments')}
+                  className={`${
+                    activeTab === 'installments'
+                      ? 'border-blue-500 text-gray-900'
+                      : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
+                  } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium`}
+                >
+                  Ratenpläne
+                </button>
+                <button
                   onClick={() => setActiveTab('analytics')}
                   className={`${
                     activeTab === 'analytics'
@@ -219,6 +233,14 @@ function App() {
             familyMembers={familyMembers}
             households={households}
             categories={categories}
+            onUpdate={loadData}
+          />
+        )}
+        {activeTab === 'installments' && (
+          <InstallmentPlans
+            installmentPlans={installmentPlans}
+            familyMembers={familyMembers}
+            households={households}
             onUpdate={loadData}
           />
         )}

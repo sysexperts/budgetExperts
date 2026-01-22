@@ -38,6 +38,21 @@ export interface Subscription {
   householdId?: number;
 }
 
+export interface InstallmentPlan {
+  id: number;
+  name: string;
+  startDate: string;
+  endDate: string;
+  monthlyAmount: number;
+  totalAmount?: number;
+  downPayment?: number;
+  interestRate?: number;
+  paymentDay?: number;
+  notes?: string;
+  familyMemberId?: number;
+  householdId?: number;
+}
+
 export interface Transaction {
   id: number;
   name: string;
