@@ -8,6 +8,8 @@ import Analytics from './components/Analytics'
 import ThisMonth from './components/ThisMonth'
 import Households from './components/Households'
 import Categories from './components/Categories'
+import SetupWizard from './components/SetupWizard'
+import TutorialTooltip from './components/TutorialTooltip'
 import { FamilyMember, FixedCost, Subscription, Household, Category } from './types'
 
 type Tab = 'dashboard' | 'analytics' | 'subscriptions' | 'households' | 'members' | 'costs' | 'thismonth' | 'categories'
@@ -19,8 +21,20 @@ function App() {
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([])
   const [households, setHouseholds] = useState<Household[]>([])
   const [categories, setCategories] = useState<Category[]>([])
+  const [showSetup, setShowSetup] = useState(false)
+  const [showTutorial, setShowTutorial] = useState(false)
 
   useEffect(() => {
+    // Prüfe ob Setup bereits abgeschlossen wurde
+    const setupCompleted = localStorage.getItem('setupCompleted')
+    const tutorialCompleted = localStorage.getItem('tutorialCompleted')
+    
+    if (!setupCompleted) {
+      setShowSetup(true)
+    } else if (!tutorialCompleted) {
+      setShowTutorial(true)
+    }
+    
     loadData()
   }, [])
 
@@ -61,8 +75,22 @@ function App() {
     }
   }
 
+  const handleSetupComplete = () => {
+    setShowSetup(false)
+    setShowTutorial(true)
+    loadData()
+  }
+
+  const handleTutorialComplete = () => {
+    setShowTutorial(false)
+  }
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <>
+      {showSetup && <SetupWizard onComplete={handleSetupComplete} />}
+      {showTutorial && <TutorialTooltip onComplete={handleTutorialComplete} />}
+      
+      <div className="min-h-screen bg-gray-50">
       <nav className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
@@ -223,6 +251,7 @@ function App() {
         )}
       </main>
     </div>
+    </>
   )
 }
 
