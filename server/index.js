@@ -127,6 +127,13 @@ async function initDatabase() {
       FOREIGN KEY (household_id) REFERENCES households(id) ON DELETE CASCADE
     );
 
+    CREATE TABLE IF NOT EXISTS paid_items (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      item_id TEXT NOT NULL UNIQUE,
+      item_type TEXT NOT NULL,
+      paid_at TEXT NOT NULL
+    );
+
     CREATE TABLE IF NOT EXISTS installment_plans (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL,
@@ -535,6 +542,40 @@ app.get('/api/month-summary', (req, res) => {
     remaining: totalExpenses,
     transactions
   });
+});
+
+// API für bezahlte Einträge
+app.get('/api/paid-items', (req, res) => {
+  let stmt = db.prepare('SELECT * FROM paid_items');
+  const paidItems = [];
+  while (stmt.step()) {
+    paidItems.push(stmt.getAsObject());
+  }
+  stmt.free();
+  res.json(paidItems);
+});
+
+app.post('/api/paid-items', (req, res) => {
+  const { itemId, itemType, paid } = req.body;
+  
+  // Prüfe ob Eintrag bereits existiert
+  const checkStmt = db.prepare('SELECT COUNT(*) as count FROM paid_items WHERE item_id = ?');
+  checkStmt.bind([itemId]);
+  checkStmt.step();
+  const exists = checkStmt.getAsObject().count > 0;
+  checkStmt.free();
+  
+  if (paid && !exists) {
+    // Als bezahlt markieren
+    db.run('INSERT INTO paid_items (item_id, item_type, paid_at) VALUES (?, ?, ?)', 
+           [itemId, itemType, new Date().toISOString()]);
+  } else if (!paid && exists) {
+    // Als nicht bezahlt markieren
+    db.run('DELETE FROM paid_items WHERE item_id = ?', [itemId]);
+  }
+  
+  saveDatabase();
+  res.json({ success: true });
 });
 
 app.get('/api/export', (req, res) => {
