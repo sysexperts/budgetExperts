@@ -1,19 +1,23 @@
 import { useState } from 'react';
-import { Settings as SettingsIcon, ChevronRight } from 'lucide-react';
+import { Settings as SettingsIcon, ChevronRight, Download } from 'lucide-react';
 import Households from './Households';
 import FamilyMembers from './FamilyMembers';
 import Categories from './Categories';
+import ExportReports from './ExportReports';
 import { Household, FamilyMember } from '../types';
 
 interface SettingsProps {
-  households: Household[];
-  familyMembers: FamilyMember[];
+  households: Household[]
+  familyMembers: FamilyMember[]
+  fixedCosts: any[]
+  subscriptions: any[]
+  installmentPlans: any[]
   onUpdate: () => void;
 }
 
-type SettingsTab = 'households' | 'members' | 'categories';
+type SettingsTab = 'households' | 'members' | 'categories' | 'export';
 
-export default function Settings({ households, familyMembers, onUpdate }: SettingsProps) {
+export default function Settings({ households, familyMembers, fixedCosts, subscriptions, installmentPlans, onUpdate }: SettingsProps) {
   const [activeTab, setActiveTab] = useState<SettingsTab>('households');
 
   return (
@@ -56,6 +60,17 @@ export default function Settings({ households, familyMembers, onUpdate }: Settin
             >
               Kategorien
             </button>
+            <button
+              onClick={() => setActiveTab('export')}
+              className={`flex-1 px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
+                activeTab === 'export'
+                  ? 'border-blue-500 text-blue-600 bg-blue-50'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+              }`}
+            >
+              <Download className="w-4 h-4 mr-2" />
+              Export
+            </button>
           </nav>
         </div>
 
@@ -72,6 +87,14 @@ export default function Settings({ households, familyMembers, onUpdate }: Settin
           )}
           {activeTab === 'categories' && (
             <Categories onUpdate={onUpdate} />
+          )}
+          {activeTab === 'export' && (
+            <ExportReports 
+              familyMembers={familyMembers}
+              fixedCosts={fixedCosts}
+              subscriptions={subscriptions}
+              installmentPlans={installmentPlans}
+            />
           )}
         </div>
       </div>

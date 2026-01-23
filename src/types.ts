@@ -73,6 +73,23 @@ export interface MonthSummary {
   transactions: Transaction[];
 }
 
+export interface SavingsGoal {
+  id: number;
+  name: string;
+  description?: string;
+  targetAmount: number;
+  currentAmount: number;
+  targetDate: string;
+  category: 'vacation' | 'emergency' | 'purchase' | 'education' | 'home' | 'car' | 'other';
+  priority: 'low' | 'medium' | 'high';
+  status: 'active' | 'completed' | 'paused';
+  monthlyContribution: number;
+  householdId?: number;
+  familyMemberId?: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface Statistics {
   byCategory: { [key: string]: number };
   fixedVsVariable: { fixed: number; variable: number };

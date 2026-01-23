@@ -33,8 +33,61 @@ export default function InstallmentPlans({ installmentPlans, familyMembers, hous
   const [notes, setNotes] = useState('')
   const [familyMemberId, setFamilyMemberId] = useState<number | undefined>()
   const [householdId, setHouseholdId] = useState<number | undefined>()
+  const [selectedMonth, setSelectedMonth] = useState(new Date().toISOString().slice(0, 7)) // YYYY-MM format
+  const [paidInstallments, setPaidInstallments] = useState<Record<string, boolean>>(() => {
+    const saved = localStorage.getItem('paid-installments')
+    return saved ? JSON.parse(saved) : {}
+  })
 
   const totalMonthly = useMemo(() => installmentPlans.reduce((sum, plan) => sum + plan.monthlyAmount, 0), [installmentPlans])
+
+  // Speichere bezahlte Raten im localStorage
+  const togglePaidInstallment = (planId: number, month: string) => {
+    const key = `${planId}-${month}`
+    const newPaidInstallments = {
+      ...paidInstallments,
+      [key]: !paidInstallments[key]
+    }
+    setPaidInstallments(newPaidInstallments)
+    localStorage.setItem('paid-installments', JSON.stringify(newPaidInstallments))
+  }
+
+  // Generiere Monate für den Filter
+  const generateMonthOptions = () => {
+    const options = []
+    const currentDate = new Date()
+    const currentYear = currentDate.getFullYear()
+    const currentMonth = currentDate.getMonth()
+    
+    // Letzte 6 Monate + nächste 6 Monate
+    for (let i = -6; i <= 6; i++) {
+      const date = new Date(currentYear, currentMonth + i, 1)
+      const year = date.getFullYear()
+      const month = String(date.getMonth() + 1).padStart(2, '0')
+      const monthName = date.toLocaleString('de-DE', { month: 'long', year: 'numeric' })
+      options.push({
+        value: `${year}-${month}`,
+        label: monthName,
+        isCurrent: i === 0
+      })
+    }
+    return options
+  }
+
+  // Prüfe ob eine Rate für den ausgewählten Monat bezahlt wurde
+  const isInstallmentPaid = (planId: number, month: string) => {
+    const key = `${planId}-${month}`
+    return paidInstallments[key] || false
+  }
+
+  // Berechne unbezahlte Raten für den ausgewählten Monat
+  const getUnpaidInstallmentsForMonth = () => {
+    return installmentPlans.filter(plan => !isInstallmentPaid(plan.id, selectedMonth))
+  }
+
+  const unpaidMonthlyTotal = useMemo(() => {
+    return getUnpaidInstallmentsForMonth().reduce((sum, plan) => sum + plan.monthlyAmount, 0)
+  }, [installmentPlans, selectedMonth, paidInstallments])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -89,7 +142,33 @@ export default function InstallmentPlans({ installmentPlans, familyMembers, hous
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold text-gray-900">Ratenpläne</h1>
-        <p className="text-gray-600 mt-1">Behalte den Überblick über laufende Ratenzahlungen</p>
+        <p className="text-gray-600 mt-1">Verwalte deine Ratenzahlungen und tracke bezahlte Raten.</p>
+      </div>
+
+      {/* Monatsfilter und Zusammenfassung */}
+      <div className="bg-white rounded-lg shadow p-6">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Monat auswählen</label>
+            <select
+              value={selectedMonth}
+              onChange={(e) => setSelectedMonth(e.target.value)}
+              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              {generateMonthOptions().map(option => (
+                <option key={option.value} value={option.value}>
+                  {option.label} {option.isCurrent && '(Aktuell)'}
+                </option>
+              ))}
+            </select>
+          </div>
+          
+          <div className="text-right">
+            <div className="text-sm text-gray-600">Unbezahlte Raten im {new Date(selectedMonth + '-01').toLocaleString('de-DE', { month: 'long', year: 'numeric' })}</div>
+            <div className="text-2xl font-bold text-gray-900">{unpaidMonthlyTotal.toFixed(2)} €</div>
+            <div className="text-xs text-gray-500">von {totalMonthly.toFixed(2)} € gesamt</div>
+          </div>
+        </div>
       </div>
 
       <div className="bg-white rounded-lg shadow p-6">
@@ -280,8 +359,24 @@ export default function InstallmentPlans({ installmentPlans, familyMembers, hous
                     </div>
                   </div>
                   <div className="flex items-center space-x-4">
+                    {/* Checkbox für bezahlte Rate */}
+                    <div className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={isInstallmentPaid(plan.id, selectedMonth)}
+                        onChange={() => togglePaidInstallment(plan.id, selectedMonth)}
+                        className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                        title={`Rate für ${new Date(selectedMonth + '-01').toLocaleString('de-DE', { month: 'long', year: 'numeric' })} als bezahlt markieren`}
+                      />
+                      <label className="ml-2 text-xs text-gray-500 cursor-pointer">
+                        {isInstallmentPaid(plan.id, selectedMonth) ? 'Bezahlt' : 'Offen'}
+                      </label>
+                    </div>
+                    
                     <div className="text-right">
-                      <p className="font-semibold text-gray-900">{plan.monthlyAmount.toFixed(2)} €</p>
+                      <p className={`font-semibold ${isInstallmentPaid(plan.id, selectedMonth) ? 'text-gray-400 line-through' : 'text-gray-900'}`}>
+                        {plan.monthlyAmount.toFixed(2)} €
+                      </p>
                       <p className="text-sm text-gray-500">Monatliche Rate</p>
                       {(plan.totalAmount != null || plan.downPayment != null || plan.interestRate != null) && (
                         <p className="text-xs text-gray-400">

@@ -150,6 +150,25 @@ async function initDatabase() {
       FOREIGN KEY (family_member_id) REFERENCES family_members(id) ON DELETE SET NULL,
       FOREIGN KEY (household_id) REFERENCES households(id) ON DELETE CASCADE
     );
+
+    CREATE TABLE IF NOT EXISTS savings_goals (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      description TEXT,
+      target_amount REAL NOT NULL,
+      current_amount REAL DEFAULT 0,
+      target_date TEXT NOT NULL,
+      category TEXT NOT NULL,
+      priority TEXT NOT NULL,
+      status TEXT NOT NULL DEFAULT 'active',
+      monthly_contribution REAL NOT NULL,
+      household_id INTEGER,
+      family_member_id INTEGER,
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL,
+      FOREIGN KEY (family_member_id) REFERENCES family_members(id) ON DELETE SET NULL,
+      FOREIGN KEY (household_id) REFERENCES households(id) ON DELETE CASCADE
+    );
   `);
   
   // Führe Migrationen durch um fehlende Spalten hinzuzufügen
@@ -542,6 +561,123 @@ app.get('/api/month-summary', (req, res) => {
     remaining: totalExpenses,
     transactions
   });
+});
+
+// API für Sparziele
+app.get('/api/savings-goals', (req, res) => {
+  let stmt = db.prepare('SELECT * FROM savings_goals ORDER BY priority DESC, target_date ASC');
+  const goals = [];
+  while (stmt.step()) {
+    goals.push(stmt.getAsObject());
+  }
+  stmt.free();
+  res.json(goals);
+});
+
+// Debug route to check table schema
+app.get('/api/debug/savings-goals-schema', (req, res) => {
+  try {
+    let stmt = db.prepare('PRAGMA table_info(savings_goals)');
+    const columns = [];
+    while (stmt.step()) {
+      columns.push(stmt.getAsObject());
+    }
+    stmt.free();
+    res.json({ columns });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/savings-goals', (req, res) => {
+  console.log('Received savings goal data:', JSON.stringify(req.body, null, 2));
+  
+  const { name, description, targetAmount, targetDate, category, priority, monthlyContribution, householdId, familyMemberId } = req.body;
+  
+  // Validierung
+  if (!name || !targetAmount || !targetDate || !category || !priority || monthlyContribution === undefined) {
+    console.log('Validation failed:', { name, targetAmount, targetDate, category, priority, monthlyContribution });
+    return res.status(400).json({ error: 'Alle Pflichtfelder müssen ausgefüllt sein' });
+  }
+  
+  if (isNaN(parseFloat(targetAmount)) || isNaN(parseFloat(monthlyContribution))) {
+    return res.status(400).json({ error: 'Betrag und monatlicher Beitrag müssen gültige Zahlen sein' });
+  }
+  
+  try {
+    // Versuche mit direktem SQL statt Parameter-Binding
+    const sql = `
+      INSERT INTO savings_goals (name, description, target_amount, current_amount, target_date, category, priority, status, monthly_contribution, household_id, family_member_id, created_at, updated_at)
+      VALUES ('${name}', '${description || ''}', ${parseFloat(targetAmount)}, 0, '${targetDate}', '${category}', '${priority}', 'active', ${parseFloat(monthlyContribution)}, ${householdId || null}, ${familyMemberId || null}, datetime('now'), datetime('now'))
+    `;
+    
+    console.log('Direct SQL:', sql);
+    
+    db.run(sql);
+    
+    console.log('Savings goal created successfully');
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Database error:', error.message);
+    console.error('Error details:', error);
+    res.status(500).json({ error: 'Datenbankfehler: ' + error.message });
+  }
+});
+
+app.put('/api/savings-goals/:id', (req, res) => {
+  const { id } = req.params;
+  const { name, description, targetAmount, currentAmount, targetDate, category, priority, status, monthlyContribution } = req.body;
+  
+  // Validierung
+  if (!name || !targetAmount || !targetDate || !category || !priority || monthlyContribution === undefined) {
+    return res.status(400).json({ error: 'Alle Pflichtfelder müssen ausgefüllt sein' });
+  }
+  
+  if (isNaN(parseFloat(targetAmount)) || (currentAmount !== undefined && isNaN(parseFloat(currentAmount))) || isNaN(parseFloat(monthlyContribution))) {
+    return res.status(400).json({ error: 'Alle Beträge müssen gültige Zahlen sein' });
+  }
+  
+  try {
+    const stmt = db.prepare(`
+      UPDATE savings_goals 
+      SET name = ?, description = ?, target_amount = ?, current_amount = ?, target_date = ?, category = ?, priority = ?, status = ?, monthly_contribution = ?, updated_at = datetime('now')
+      WHERE id = ?
+    `);
+    
+    stmt.run(name, description, parseFloat(targetAmount), parseFloat(currentAmount), targetDate, category, priority, status, parseFloat(monthlyContribution), id);
+    stmt.free();
+    
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Database error:', error.message);
+    res.status(500).json({ error: 'Datenbankfehler: ' + error.message });
+  }
+});
+
+app.delete('/api/savings-goals/:id', (req, res) => {
+  const { id } = req.params;
+  
+  const stmt = db.prepare('DELETE FROM savings_goals WHERE id = ?');
+  stmt.run(id);
+  stmt.free();
+  
+  res.json({ success: true });
+});
+
+app.post('/api/savings-goals/:id/contribute', (req, res) => {
+  const { id } = req.params;
+  const { amount } = req.body;
+  
+  const stmt = db.prepare(`
+    UPDATE savings_goals 
+    SET current_amount = current_amount + ?, updated_at = datetime('now')
+    WHERE id = ?
+  `);
+  
+  stmt.run(amount, id);
+  stmt.free();
+  
+  res.json({ success: true });
 });
 
 // API für bezahlte Einträge
