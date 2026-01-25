@@ -33,46 +33,13 @@ Invoke-WebRequest -Uri "https://raw.githubusercontent.com/sysexperts/budgetExper
 - **Icons**: Lucide React
 - **Build**: Vite
 
-## Default User
-
-- **Email**: vapurserdar@gmail.com
-- **Password**: Kayseri3838
-
-## Project Structure
-
-```
-moneta/
-├── src/                 # React frontend
-│   ├── components/      # UI components
-│   ├── types.ts        # TypeScript definitions
-│   └── App.tsx         # Main application
-├── server/             # Express backend
-│   └── index.js        # API server
-├── dist/               # Production build
-└── package.json        # Dependencies
-```
-
-## Manual Installation
-
-### Docker (Recommended)
-```bash
-git clone https://github.com/sysexperts/budgetExperts.git
-cd budgetExperts
-docker compose up -d
-```
-
-### Node.js
-```bash
-git clone https://github.com/sysexperts/budgetExperts.git
-cd budgetExperts
-npm install
-npm run build
-npm start
-```
-
 ## Access
 
 Application runs on `http://localhost:3001`
+
+## Authentication
+
+The application uses a local authentication system. No registration required - simply login with any credentials to access your local budget data.
 
 ## License
 
