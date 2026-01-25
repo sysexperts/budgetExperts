@@ -1,0 +1,36 @@
+directories:
+  output: release
+  buildResources: build
+appId: com.moneta.budgetplanner
+productName: Moneta Budget Planner - Local
+files:
+  - filter:
+      - dist/**/*
+      - server/**/*
+      - public/electron.cjs
+      - public/preload.js
+      - node_modules/**/*
+extraResources:
+  - from: server
+    to: server
+win:
+  target:
+    - target: nsis
+      arch:
+        - x64
+  sign: false
+  publisherName: Local
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  allowElevation: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: Moneta Budget Planner
+mac:
+  target: dmg
+  icon: public/icon.icns
+linux:
+  target: AppImage
+  icon: public/icon.png
+electronVersion: 28.3.3

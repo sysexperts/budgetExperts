@@ -17,31 +17,24 @@ export default function Categories({ onUpdate }: CategoriesProps) {
   }, []);
 
   const fetchCategories = async () => {
-    const sessionId = localStorage.getItem('sessionId');
-    if (!sessionId) return;
-    
-    const response = await fetch('/api/categories', {
-      headers: {
-        'Authorization': `Bearer ${sessionId}`
-      }
-    });
-    const data = await response.json();
-    setCategories(data);
+    try {
+      const response = await fetch('/api/categories');
+      const data = await response.json();
+      setCategories(data);
+    } catch (error) {
+      console.error('Fehler beim Laden der Kategorien:', error);
+    }
   };
 
   const addCategory = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newCategory.trim()) return;
 
-    const sessionId = localStorage.getItem('sessionId');
-    if (!sessionId) return;
-
     try {
       const response = await fetch('/api/categories', {
         method: 'POST',
         headers: { 
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${sessionId}`
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({ name: newCategory, type: 'expense' }),
       });
@@ -73,15 +66,11 @@ export default function Categories({ onUpdate }: CategoriesProps) {
   const saveEdit = async (id: number) => {
     if (!editingName.trim()) return;
 
-    const sessionId = localStorage.getItem('sessionId');
-    if (!sessionId) return;
-
     try {
       const response = await fetch(`/api/categories/${id}`, {
         method: 'PUT',
         headers: { 
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${sessionId}`
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({ name: editingName }),
       });
@@ -104,15 +93,9 @@ export default function Categories({ onUpdate }: CategoriesProps) {
   const deleteCategory = async (id: number) => {
     if (!confirm('Möchten Sie diese Kategorie wirklich löschen?')) return;
 
-    const sessionId = localStorage.getItem('sessionId');
-    if (!sessionId) return;
-
     try {
       await fetch(`/api/categories/${id}`, { 
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${sessionId}`
-        }
+        method: 'DELETE'
       });
       await fetchCategories();
       if (onUpdate) onUpdate();
