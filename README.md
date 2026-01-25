@@ -2,7 +2,7 @@
 
 <div align="center">
 
-<img src="public/favicon-small.svg" alt="monetaX Logo" width="32" height="32">
+<img src="public/logo.svg" alt="monetaX Logo" width="120" height="40">
 <br>
 
 **Eine moderne, web-basierte Anwendung zur Budget-Planung und Finanzverwaltung für Einzelpersonen und Familien**
@@ -12,7 +12,7 @@
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Tech Stack](https://img.shields.io/badge/Tech%20Stack-React%20%7C%20TypeScript%20%7C%20TailwindCSS-blue)](https://github.com/sysexperts/moneta-x)
 
-[Live Demo](http://localhost:3001) • [Report Bug](https://github.com/sysexperts/moneta-x/issues) • [Request Feature](https://github.com/sysexperts/moneta-x/issues)
+[Report Bug](https://github.com/sysexperts/moneta-x/issues) • [Request Feature](https://github.com/sysexperts/moneta-x/issues)
 
 </div>
 
