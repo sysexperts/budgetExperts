@@ -6,6 +6,7 @@ import Subscriptions from './components/Subscriptions'
 import Analytics from './components/Analytics'
 import Settings from './components/Settings'
 import MonthlyPayments from './components/MonthlyPayments'
+import InstallmentPlans from './components/InstallmentPlans'
 import SavingsGoalsSimple from './components/SavingsGoalsSimple'
 import { FamilyMember, FixedCost, Subscription, Household, Category, InstallmentPlan } from './types'
 
@@ -127,16 +128,6 @@ function App() {
                       </div>
                       <div className="hidden sm:ml-10 sm:flex sm:space-x-8">
                         <button
-                          onClick={() => setActiveTab('dashboard')}
-                          className={`${
-                            activeTab === 'dashboard'
-                              ? 'text-gray-900 border-b-2 border-gray-900'
-                              : 'text-gray-500 border-b-2 border-transparent hover:text-gray-700 hover:border-gray-300'
-                          } px-1 pt-1 border-b-2 text-sm font-medium transition-colors duration-200`}
-                        >
-                          Übersicht
-                        </button>
-                        <button
                           onClick={() => setActiveTab('costs')}
                           className={`${
                             activeTab === 'costs'
@@ -155,6 +146,16 @@ function App() {
                           } px-1 pt-1 border-b-2 text-sm font-medium transition-colors duration-200`}
                         >
                           Abonnements
+                        </button>
+                        <button
+                          onClick={() => setActiveTab('installments')}
+                          className={`${
+                            activeTab === 'installments'
+                              ? 'text-gray-900 border-b-2 border-gray-900'
+                              : 'text-gray-500 border-b-2 border-transparent hover:text-gray-700 hover:border-gray-300'
+                          } px-1 pt-1 border-b-2 text-sm font-medium transition-colors duration-200`}
+                        >
+                          Ratenzahlungen
                         </button>
                         <button
                           onClick={() => setActiveTab('monthly')}
@@ -234,6 +235,14 @@ function App() {
                   familyMembers={familyMembers}
                   households={households}
                   categories={categories}
+                  onUpdate={loadData}
+                />
+              )}
+              {activeTab === 'installments' && (
+                <InstallmentPlans
+                  installmentPlans={installmentPlans}
+                  familyMembers={familyMembers}
+                  households={households}
                   onUpdate={loadData}
                 />
               )}
