@@ -48,13 +48,13 @@ export default function Login({ onLogin }: LoginProps) {
         <div>
           <div className="flex justify-center">
             <div className="flex items-center">
-              <span className="text-4xl font-black text-black tracking-tight">
-                monetaX
+              <span className="text-4xl font-light tracking-tight text-gray-900" style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif' }}>
+                moneta
               </span>
-              <div className="ml-1 flex flex-col items-center justify-center">
-                <div className="w-2 h-2 bg-black rounded-full animate-pulse"></div>
-                <div className="w-1 h-1 bg-black rounded-full mt-0.5"></div>
-              </div>
+              <span className="text-4xl font-bold tracking-tight text-blue-600" style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif' }}>
+                X
+              </span>
+              <div className="ml-2 w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
             </div>
           </div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">

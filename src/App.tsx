@@ -10,8 +10,13 @@ import SavingsGoalsSimple from './components/SavingsGoalsSimple'
 import { FamilyMember, FixedCost, Subscription, Household, Category, InstallmentPlan } from './types'
 
 type Tab = 'dashboard' | 'analytics' | 'subscriptions' | 'costs' | 'settings' | 'installments' | 'savings' | 'monthly'
+
 function App() {
-  const [activeTab, setActiveTab] = useState<Tab>('dashboard')
+  const [activeTab, setActiveTab] = useState<Tab>(() => {
+    // Tab aus URL auslesen oder Dashboard als Default
+    const savedTab = localStorage.getItem('activeTab')
+    return (savedTab as Tab) || 'dashboard'
+  })
   const [familyMembers, setFamilyMembers] = useState<FamilyMember[]>([])
   const [fixedCosts, setFixedCosts] = useState<FixedCost[]>([])
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([])
@@ -19,6 +24,24 @@ function App() {
   const [households, setHouseholds] = useState<Household[]>([])
   const [categories, setCategories] = useState<Category[]>([])
   const sessionId = 'local-user' // Lokaler Benutzer - kein Login nötig
+
+  // Tab in localStorage speichern und URL aktualisieren
+  useEffect(() => {
+    localStorage.setItem('activeTab', activeTab)
+    // URL aktualisieren ohne Page Reload
+    const url = new URL(window.location.href)
+    url.searchParams.set('tab', activeTab)
+    window.history.replaceState({}, '', url.toString())
+  }, [activeTab])
+
+  // Tab aus URL beim Laden wiederherstellen
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search)
+    const tabFromUrl = urlParams.get('tab') as Tab
+    if (tabFromUrl && ['dashboard', 'analytics', 'subscriptions', 'costs', 'settings', 'installments', 'savings', 'monthly'].includes(tabFromUrl)) {
+      setActiveTab(tabFromUrl)
+    }
+  }, [])
 
   useEffect(() => {
     // Login entfernt - direkt zur Anwendung
@@ -92,95 +115,92 @@ function App() {
                 <nav className="bg-white border-b border-gray-200">
                   <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between h-16">
-                      <div className="flex">
-                        <div className="flex-shrink-0 flex items-center gap-2">
-                          <div className="flex items-center">
-                            <span className="text-3xl font-black text-black tracking-tight">
-                              monetaX
-                            </span>
-                            <div className="ml-1 flex flex-col items-center justify-center">
-                              <div className="w-2 h-2 bg-black rounded-full animate-pulse"></div>
-                              <div className="w-1 h-1 bg-black rounded-full mt-0.5"></div>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
-                          <button
-                            onClick={() => setActiveTab('dashboard')}
-                            className={`${
-                              activeTab === 'dashboard'
-                                ? 'border-blue-500 text-gray-900'
-                                : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
-                            } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium`}
-                          >
-                            Übersicht
-                          </button>
-                          <button
-                            onClick={() => setActiveTab('costs')}
-                            className={`${
-                              activeTab === 'costs'
-                                ? 'border-blue-500 text-gray-900'
-                                : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
-                            } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium`}
-                          >
-                            Fixkosten
-                          </button>
-                          <button
-                            onClick={() => setActiveTab('subscriptions')}
-                            className={`${
-                              activeTab === 'subscriptions'
-                                ? 'border-blue-500 text-gray-900'
-                                : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
-                            } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium`}
-                          >
-                            Abonnements
-                          </button>
-                          <button
-                            onClick={() => setActiveTab('monthly')}
-                            className={`${
-                              activeTab === 'monthly'
-                                ? 'border-blue-500 text-gray-900'
-                                : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
-                            } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium`}
-                          >
-                            Monatliche Zahlungen
-                          </button>
-                          <button
-                            onClick={() => setActiveTab('savings')}
-                            className={`${
-                              activeTab === 'savings'
-                                ? 'border-blue-500 text-gray-900'
-                                : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
-                            } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium`}
-                          >
-                            Sparziele
-                          </button>
-                          <button
-                            onClick={() => setActiveTab('analytics')}
-                            className={`${
-                              activeTab === 'analytics'
-                                ? 'border-blue-500 text-gray-900'
-                                : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
-                            } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium`}
-                          >
-                            Statistik
-                          </button>
-                          <button
-                            onClick={() => setActiveTab('settings')}
-                            className={`${
-                              activeTab === 'settings'
-                                ? 'border-blue-500 text-gray-900'
-                                : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
-                            } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium`}
-                          >
-                            Einstellungen
-                          </button>
+                      <div className="flex items-center">
+                        <div className="flex items-center cursor-pointer" onClick={() => setActiveTab('dashboard')}>
+                          <span className="text-2xl font-light tracking-tight text-gray-900" style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif' }}>
+                            moneta
+                          </span>
+                          <span className="text-2xl font-bold tracking-tight text-blue-600" style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif' }}>
+                            X
+                          </span>
                         </div>
                       </div>
-                      <div className="flex items-center space-x-4">
+                      <div className="hidden sm:ml-10 sm:flex sm:space-x-8">
+                        <button
+                          onClick={() => setActiveTab('dashboard')}
+                          className={`${
+                            activeTab === 'dashboard'
+                              ? 'text-gray-900 border-b-2 border-gray-900'
+                              : 'text-gray-500 border-b-2 border-transparent hover:text-gray-700 hover:border-gray-300'
+                          } px-1 pt-1 border-b-2 text-sm font-medium transition-colors duration-200`}
+                        >
+                          Übersicht
+                        </button>
+                        <button
+                          onClick={() => setActiveTab('costs')}
+                          className={`${
+                            activeTab === 'costs'
+                              ? 'text-gray-900 border-b-2 border-gray-900'
+                              : 'text-gray-500 border-b-2 border-transparent hover:text-gray-700 hover:border-gray-300'
+                          } px-1 pt-1 border-b-2 text-sm font-medium transition-colors duration-200`}
+                        >
+                          Fixkosten
+                        </button>
+                        <button
+                          onClick={() => setActiveTab('subscriptions')}
+                          className={`${
+                            activeTab === 'subscriptions'
+                              ? 'text-gray-900 border-b-2 border-gray-900'
+                              : 'text-gray-500 border-b-2 border-transparent hover:text-gray-700 hover:border-gray-300'
+                          } px-1 pt-1 border-b-2 text-sm font-medium transition-colors duration-200`}
+                        >
+                          Abonnements
+                        </button>
+                        <button
+                          onClick={() => setActiveTab('monthly')}
+                          className={`${
+                            activeTab === 'monthly'
+                              ? 'text-gray-900 border-b-2 border-gray-900'
+                              : 'text-gray-500 border-b-2 border-transparent hover:text-gray-700 hover:border-gray-300'
+                          } px-1 pt-1 border-b-2 text-sm font-medium transition-colors duration-200`}
+                        >
+                          Monatliche Zahlungen
+                        </button>
+                        <button
+                          onClick={() => setActiveTab('savings')}
+                          className={`${
+                            activeTab === 'savings'
+                              ? 'text-gray-900 border-b-2 border-gray-900'
+                              : 'text-gray-500 border-b-2 border-transparent hover:text-gray-700 hover:border-gray-300'
+                          } px-1 pt-1 border-b-2 text-sm font-medium transition-colors duration-200`}
+                        >
+                          Sparziele
+                        </button>
+                        <button
+                          onClick={() => setActiveTab('analytics')}
+                          className={`${
+                            activeTab === 'analytics'
+                              ? 'text-gray-900 border-b-2 border-gray-900'
+                              : 'text-gray-500 border-b-2 border-transparent hover:text-gray-700 hover:border-gray-300'
+                          } px-1 pt-1 border-b-2 text-sm font-medium transition-colors duration-200`}
+                        >
+                          Statistik
+                        </button>
+                        <button
+                          onClick={() => setActiveTab('settings')}
+                          className={`${
+                            activeTab === 'settings'
+                              ? 'text-gray-900 border-b-2 border-gray-900'
+                              : 'text-gray-500 border-b-2 border-transparent hover:text-gray-700 hover:border-gray-300'
+                          } px-1 pt-1 border-b-2 text-sm font-medium transition-colors duration-200`}
+                        >
+                          Einstellungen
+                        </button>
+                      </div>
+                      <div className="flex items-center">
                         <button
                           onClick={() => handleExport('csv')}
-                          className="text-gray-500 hover:text-gray-700"
+                          className="text-gray-400 hover:text-gray-600 p-2 rounded-md hover:bg-gray-100 transition-colors duration-200"
                           title="Export CSV"
                         >
                           <Download className="h-5 w-5" />

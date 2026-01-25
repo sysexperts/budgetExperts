@@ -147,13 +147,13 @@ export default function MonthlyPayments({
   const getIcon = (type: string) => {
     switch (type) {
       case 'installment':
-        return <Coins className="h-5 w-5 text-blue-700" />
+        return <Coins className="h-5 w-5 text-orange-600" />
       case 'fixed':
-        return <DollarSign className="h-5 w-5 text-green-700" />
+        return <DollarSign className="h-5 w-5 text-emerald-600" />
       case 'subscription':
-        return <CreditCard className="h-5 w-5 text-purple-700" />
+        return <CreditCard className="h-5 w-5 text-indigo-600" />
       default:
-        return <DollarSign className="h-5 w-5 text-gray-700" />
+        return <DollarSign className="h-5 w-5 text-gray-600" />
     }
   }
 
@@ -161,13 +161,13 @@ export default function MonthlyPayments({
   const getBgColor = (type: string) => {
     switch (type) {
       case 'installment':
-        return 'bg-blue-200'
+        return 'bg-orange-100'
       case 'fixed':
-        return 'bg-green-200'
+        return 'bg-emerald-100'
       case 'subscription':
-        return 'bg-purple-200'
+        return 'bg-indigo-100'
       default:
-        return 'bg-gray-200'
+        return 'bg-gray-100'
     }
   }
 
@@ -193,14 +193,14 @@ export default function MonthlyPayments({
       </div>
 
       {/* Monatsfilter und Zusammenfassung */}
-      <div className="bg-white rounded-lg shadow p-6">
+      <div className="bg-white p-6 rounded-lg border border-gray-200">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Monat auswählen</label>
             <select
               value={selectedMonth}
               onChange={(e) => setSelectedMonth(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               {generateMonthOptions().map(option => (
                 <option key={option.value} value={option.value}>
@@ -212,17 +212,17 @@ export default function MonthlyPayments({
           
           <div className="text-right">
             <div className="text-sm text-gray-600">Offen im {new Date(selectedMonth + '-01').toLocaleString('de-DE', { month: 'long', year: 'numeric' })}</div>
-            <div className="text-2xl font-bold text-gray-900">{unpaidMonthlyTotal.toFixed(2)} €</div>
+            <div className="text-2xl font-semibold text-gray-900">{unpaidMonthlyTotal.toFixed(2)} €</div>
             <div className="text-xs text-gray-500">von {totalMonthly.toFixed(2)} € gesamt</div>
           </div>
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow p-6">
+      <div className="bg-white p-6 rounded-lg border border-gray-200">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
-            <h2 className="text-xl font-bold text-gray-900">Gesamt monatlich</h2>
-            <p className="text-3xl font-bold text-blue-600 mt-2">{totalMonthly.toFixed(2)}€</p>
+            <h2 className="text-lg font-semibold text-gray-900">Gesamt monatlich</h2>
+            <p className="text-2xl font-semibold text-gray-900 mt-1">{totalMonthly.toFixed(2)}€</p>
           </div>
         </div>
 
@@ -238,7 +238,7 @@ export default function MonthlyPayments({
               return (
                 <div
                   key={payment.id}
-                  className={`flex items-center justify-between p-4 rounded-lg hover:bg-gray-100 ${isPaid ? 'bg-gray-50 opacity-75' : 'bg-gray-50'}`}
+                  className={`flex items-center justify-between p-4 rounded-md border ${isPaid ? 'bg-gray-50 border-gray-200' : 'bg-white border-gray-200'} hover:bg-gray-50 transition-colors duration-200`}
                 >
                   <div className="flex items-center space-x-3">
                     {/* Checkbox ganz links */}
