@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Download, Languages } from 'lucide-react'
+import { Download } from 'lucide-react'
 import Dashboard from './components/Dashboard'
 import FixedCosts from './components/FixedCosts'
 import Subscriptions from './components/Subscriptions'
@@ -10,8 +10,6 @@ import SavingsGoalsSimple from './components/SavingsGoalsSimple'
 import { FamilyMember, FixedCost, Subscription, Household, Category, InstallmentPlan } from './types'
 
 type Tab = 'dashboard' | 'analytics' | 'subscriptions' | 'costs' | 'settings' | 'installments' | 'savings'
-type Language = 'de' | 'en'
-
 function App() {
   const [activeTab, setActiveTab] = useState<Tab>('dashboard')
   const [familyMembers, setFamilyMembers] = useState<FamilyMember[]>([])
@@ -20,7 +18,6 @@ function App() {
   const [installmentPlans, setInstallmentPlans] = useState<InstallmentPlan[]>([])
   const [households, setHouseholds] = useState<Household[]>([])
   const [categories, setCategories] = useState<Category[]>([])
-  const [language, setLanguage] = useState<Language>('de')
   const sessionId = 'local-user' // Lokaler Benutzer - kein Login nötig
 
   useEffect(() => {
@@ -181,14 +178,6 @@ function App() {
                         </div>
                       </div>
                       <div className="flex items-center space-x-4">
-                        <button
-                          onClick={() => setLanguage(language === 'de' ? 'en' : 'de')}
-                          className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
-                          title="Sprache wechseln"
-                        >
-                          <Languages className="h-5 w-5" />
-                          <span className="font-bold">{language.toUpperCase()}</span>
-                        </button>
                         <button
                           onClick={() => handleExport('csv')}
                           className="text-gray-500 hover:text-gray-700"
