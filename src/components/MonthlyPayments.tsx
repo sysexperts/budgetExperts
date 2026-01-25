@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import { Coins, DollarSign, CreditCard } from 'lucide-react'
 import { FamilyMember, Household, InstallmentPlan, FixedCost, Subscription } from '../types'
 
@@ -18,10 +18,22 @@ export default function MonthlyPayments({
   households
 }: MonthlyPaymentsProps) {
   const [selectedMonth, setSelectedMonth] = useState(new Date().toISOString().slice(0, 7)) // YYYY-MM format
-  const [paidItems, setPaidItems] = useState<Record<string, boolean>>(() => {
+  const [paidItems, setPaidItems] = useState<Record<string, boolean>>({})
+
+  // Lade paid-Items für den aktuellen Monat
+  useEffect(() => {
     const saved = localStorage.getItem('paid-monthly-items')
-    return saved ? JSON.parse(saved) : {}
-  })
+    const allPaidItems = saved ? JSON.parse(saved) : {}
+    // Nur die Items für den aktuellen Monat laden
+    const monthPaidItems = Object.keys(allPaidItems)
+      .filter(key => key.startsWith(`${selectedMonth}-`))
+      .reduce((acc, key) => {
+        const itemId = key.replace(`${selectedMonth}-`, '')
+        acc[itemId] = allPaidItems[key]
+        return acc
+      }, {} as Record<string, boolean>)
+    setPaidItems(monthPaidItems)
+  }, [selectedMonth])
 
   // Alle monatlichen Zahlungen für den ausgewählten Monat
   const getAllMonthlyPayments = useMemo(() => {
@@ -97,12 +109,22 @@ export default function MonthlyPayments({
 
   // Toggle bezahlten Status
   const togglePaidItem = (itemId: string) => {
+    const monthKey = `${selectedMonth}-${itemId}`
+    const saved = localStorage.getItem('paid-monthly-items')
+    const allPaidItems = saved ? JSON.parse(saved) : {}
+    
+    // Toggle den Status für den spezifischen Monat
+    allPaidItems[monthKey] = !allPaidItems[monthKey]
+    
+    // Speichere alle Items zurück
+    localStorage.setItem('paid-monthly-items', JSON.stringify(allPaidItems))
+    
+    // Update local state mit nur den Items für aktuellen Monat
     const newPaidItems = {
       ...paidItems,
       [itemId]: !paidItems[itemId]
     }
     setPaidItems(newPaidItems)
-    localStorage.setItem('paid-monthly-items', JSON.stringify(newPaidItems))
   }
 
   // Prüfe ob ein Item bezahlt wurde
