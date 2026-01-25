@@ -5,11 +5,11 @@ import FixedCosts from './components/FixedCosts'
 import Subscriptions from './components/Subscriptions'
 import Analytics from './components/Analytics'
 import Settings from './components/Settings'
-import InstallmentPlans from './components/InstallmentPlans'
+import MonthlyPayments from './components/MonthlyPayments'
 import SavingsGoalsSimple from './components/SavingsGoalsSimple'
 import { FamilyMember, FixedCost, Subscription, Household, Category, InstallmentPlan } from './types'
 
-type Tab = 'dashboard' | 'analytics' | 'subscriptions' | 'costs' | 'settings' | 'installments' | 'savings'
+type Tab = 'dashboard' | 'analytics' | 'subscriptions' | 'costs' | 'settings' | 'installments' | 'savings' | 'monthly'
 function App() {
   const [activeTab, setActiveTab] = useState<Tab>('dashboard')
   const [familyMembers, setFamilyMembers] = useState<FamilyMember[]>([])
@@ -136,14 +136,14 @@ function App() {
                             Abonnements
                           </button>
                           <button
-                            onClick={() => setActiveTab('installments')}
+                            onClick={() => setActiveTab('monthly')}
                             className={`${
-                              activeTab === 'installments'
+                              activeTab === 'monthly'
                                 ? 'border-blue-500 text-gray-900'
                                 : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
                             } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium`}
                           >
-                            Ratenpläne
+                            Monatliche Zahlungen
                           </button>
                           <button
                             onClick={() => setActiveTab('savings')}
@@ -217,12 +217,13 @@ function App() {
                   onUpdate={loadData}
                 />
               )}
-              {activeTab === 'installments' && (
-                <InstallmentPlans
+              {activeTab === 'monthly' && (
+                <MonthlyPayments
                   installmentPlans={installmentPlans}
+                  fixedCosts={fixedCosts}
+                  subscriptions={subscriptions}
                   familyMembers={familyMembers}
                   households={households}
-                  onUpdate={loadData}
                 />
               )}
               {activeTab === 'savings' && (
