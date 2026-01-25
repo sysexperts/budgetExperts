@@ -2,7 +2,8 @@
 
 <div align="center">
 
-![monetaX Logo](public/favicon.svg)
+<img src="public/favicon-small.svg" alt="monetaX Logo" width="32" height="32">
+<br>
 
 **Eine moderne, web-basierte Anwendung zur Budget-Planung und Finanzverwaltung für Einzelpersonen und Familien**
 
