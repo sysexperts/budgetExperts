@@ -12,16 +12,16 @@ const __dirname = path.dirname(__filename);
 const app = express();
 let db;
 
-// Verwende immer das Projektverzeichnis für die Datenbank
-const dbPath = path.join(__dirname, '..', 'budget.db');
+// Verwende immer das Docker Volume Verzeichnis für die Datenbank
+const dbPath = path.join(__dirname, '..', 'data', 'budget.db');
 
 function createBackup() {
   if (fs.existsSync(dbPath)) {
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
     let backupDir;
     
-    // Backup im Projektverzeichnis
-    backupDir = path.join(__dirname, '..');
+    // Backup im Docker Volume Verzeichnis
+    backupDir = path.join(__dirname, '..', 'data');
     
     const backupPath = path.join(backupDir, `budget_backup_${timestamp}.db`);
     fs.copyFileSync(dbPath, backupPath);
