@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Download } from 'lucide-react'
+import { Download, Menu, X } from 'lucide-react'
 import Dashboard from './components/Dashboard'
 import FixedCosts from './components/FixedCosts'
 import Subscriptions from './components/Subscriptions'
@@ -18,6 +18,7 @@ function App() {
     const savedTab = localStorage.getItem('activeTab')
     return (savedTab as Tab) || 'dashboard'
   })
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [familyMembers, setFamilyMembers] = useState<FamilyMember[]>([])
   const [fixedCosts, setFixedCosts] = useState<FixedCost[]>([])
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([])
@@ -199,9 +200,18 @@ function App() {
                         </button>
                       </div>
                       <div className="flex items-center">
+                        {/* Mobile menu button */}
+                        <div className="sm:hidden">
+                          <button
+                            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                            className="text-gray-400 hover:text-gray-600 p-2 rounded-md hover:bg-gray-100 transition-colors duration-200"
+                          >
+                            {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+                          </button>
+                        </div>
                         <button
                           onClick={() => handleExport('csv')}
-                          className="text-gray-400 hover:text-gray-600 p-2 rounded-md hover:bg-gray-100 transition-colors duration-200"
+                          className="text-gray-400 hover:text-gray-600 p-2 rounded-md hover:bg-gray-100 transition-colors duration-200 ml-2"
                           title="Export CSV"
                         >
                           <Download className="h-5 w-5" />
@@ -210,6 +220,84 @@ function App() {
                     </div>
                   </div>
                 </nav>
+
+                {/* Mobile menu */}
+                {mobileMenuOpen && (
+                  <div className="sm:hidden bg-white border-b border-gray-200">
+                    <div className="px-2 pt-2 pb-3 space-y-1">
+                      <button
+                        onClick={() => { setActiveTab('costs'); setMobileMenuOpen(false); }}
+                        className={`${
+                          activeTab === 'costs'
+                            ? 'bg-gray-100 text-gray-900 border-l-4 border-gray-900'
+                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 border-l-4 border-transparent'
+                        } block w-full text-left py-2 px-3 text-base font-medium transition-colors duration-200`}
+                      >
+                        Fixkosten
+                      </button>
+                      <button
+                        onClick={() => { setActiveTab('subscriptions'); setMobileMenuOpen(false); }}
+                        className={`${
+                          activeTab === 'subscriptions'
+                            ? 'bg-gray-100 text-gray-900 border-l-4 border-gray-900'
+                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 border-l-4 border-transparent'
+                        } block w-full text-left py-2 px-3 text-base font-medium transition-colors duration-200`}
+                      >
+                        Abonnements
+                      </button>
+                      <button
+                        onClick={() => { setActiveTab('installments'); setMobileMenuOpen(false); }}
+                        className={`${
+                          activeTab === 'installments'
+                            ? 'bg-gray-100 text-gray-900 border-l-4 border-gray-900'
+                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 border-l-4 border-transparent'
+                        } block w-full text-left py-2 px-3 text-base font-medium transition-colors duration-200`}
+                      >
+                        Ratenzahlungen
+                      </button>
+                      <button
+                        onClick={() => { setActiveTab('monthly'); setMobileMenuOpen(false); }}
+                        className={`${
+                          activeTab === 'monthly'
+                            ? 'bg-gray-100 text-gray-900 border-l-4 border-gray-900'
+                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 border-l-4 border-transparent'
+                        } block w-full text-left py-2 px-3 text-base font-medium transition-colors duration-200`}
+                      >
+                        Monatliche Zahlungen
+                      </button>
+                      <button
+                        onClick={() => { setActiveTab('savings'); setMobileMenuOpen(false); }}
+                        className={`${
+                          activeTab === 'savings'
+                            ? 'bg-gray-100 text-gray-900 border-l-4 border-gray-900'
+                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 border-l-4 border-transparent'
+                        } block w-full text-left py-2 px-3 text-base font-medium transition-colors duration-200`}
+                      >
+                        Sparziele
+                      </button>
+                      <button
+                        onClick={() => { setActiveTab('analytics'); setMobileMenuOpen(false); }}
+                        className={`${
+                          activeTab === 'analytics'
+                            ? 'bg-gray-100 text-gray-900 border-l-4 border-gray-900'
+                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 border-l-4 border-transparent'
+                        } block w-full text-left py-2 px-3 text-base font-medium transition-colors duration-200`}
+                      >
+                        Statistik
+                      </button>
+                      <button
+                        onClick={() => { setActiveTab('settings'); setMobileMenuOpen(false); }}
+                        className={`${
+                          activeTab === 'settings'
+                            ? 'bg-gray-100 text-gray-900 border-l-4 border-gray-900'
+                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 border-l-4 border-transparent'
+                        } block w-full text-left py-2 px-3 text-base font-medium transition-colors duration-200`}
+                      >
+                        Einstellungen
+                      </button>
+                    </div>
+                  </div>
+                )}
 
             <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
               {activeTab === 'dashboard' && (
