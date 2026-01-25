@@ -15,7 +15,14 @@ export default function Households({ onUpdate }: HouseholdsProps) {
   }, []);
 
   const fetchHouseholds = async () => {
-    const response = await fetch('/api/households');
+    const sessionId = localStorage.getItem('sessionId');
+    if (!sessionId) return;
+    
+    const response = await fetch('/api/households', {
+      headers: {
+        'Authorization': `Bearer ${sessionId}`
+      }
+    });
     const data = await response.json();
     setHouseholds(data);
   };
@@ -24,10 +31,16 @@ export default function Households({ onUpdate }: HouseholdsProps) {
     e.preventDefault();
     if (!newHousehold.name.trim()) return;
 
+    const sessionId = localStorage.getItem('sessionId');
+    if (!sessionId) return;
+
     try {
       const response = await fetch('/api/households', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${sessionId}`
+        },
         body: JSON.stringify(newHousehold),
       });
       
@@ -47,8 +60,16 @@ export default function Households({ onUpdate }: HouseholdsProps) {
   };
 
   const deleteHousehold = async (id: number) => {
+    const sessionId = localStorage.getItem('sessionId');
+    if (!sessionId) return;
+    
     if (confirm('Möchten Sie diesen Haushalt wirklich löschen? Alle zugehörigen Daten werden ebenfalls gelöscht.')) {
-      await fetch(`/api/households/${id}`, { method: 'DELETE' });
+      await fetch(`/api/households/${id}`, { 
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${sessionId}`
+        }
+      });
       await fetchHouseholds();
       if (onUpdate) onUpdate();
     }

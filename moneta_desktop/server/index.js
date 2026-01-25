@@ -12,16 +12,43 @@ const __dirname = path.dirname(__filename);
 const app = express();
 let db;
 
-// Verwende immer das Projektverzeichnis für die Datenbank
-const dbPath = path.join(__dirname, '..', 'budget.db');
+// Verwende /app/data für Docker, Benutzerdatenverzeichnis für Electron, sonst aktuelles Verzeichnis
+let dbPath;
+if (process.env.NODE_ENV === 'production') {
+  if (process.versions && process.versions.electron) {
+    // Electron Desktop App
+    const userDataPath = process.env.ELECTRON_USER_DATA || path.join(os.homedir(), 'AppData', 'Roaming', 'moneta');
+    if (!fs.existsSync(userDataPath)) {
+      fs.mkdirSync(userDataPath, { recursive: true });
+    }
+    dbPath = path.join(userDataPath, 'budget.db');
+  } else {
+    // Docker
+    dbPath = '/app/data/budget.db';
+  }
+} else {
+  // Entwicklung
+  dbPath = 'budget.db';
+}
 
 function createBackup() {
   if (fs.existsSync(dbPath)) {
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
     let backupDir;
     
-    // Backup im Projektverzeichnis
-    backupDir = path.join(__dirname, '..');
+    if (process.env.NODE_ENV === 'production') {
+      if (process.versions && process.versions.electron) {
+        // Electron Desktop App
+        const userDataPath = process.env.ELECTRON_USER_DATA || path.join(os.homedir(), 'AppData', 'Roaming', 'moneta');
+        backupDir = userDataPath;
+      } else {
+        // Docker
+        backupDir = '/app/data';
+      }
+    } else {
+      // Entwicklung
+      backupDir = '.';
+    }
     
     const backupPath = path.join(backupDir, `budget_backup_${timestamp}.db`);
     fs.copyFileSync(dbPath, backupPath);
@@ -186,7 +213,19 @@ async function initDatabase() {
   // Führe Migrationen durch um fehlende Spalten hinzuzufügen
   runMigrations();
   
-  // Standard-Benutzer nicht mehr nötig - lokale Anwendung
+  // Erstelle Standard-Benutzer falls noch keiner existiert
+  const userStmt = db.prepare('SELECT COUNT(*) as count FROM users');
+  userStmt.step();
+  const userCount = userStmt.getAsObject().count;
+  userStmt.free();
+  
+  if (userCount === 0) {
+    console.log('Erstelle Standard-Benutzer...');
+    const passwordHash = crypto.createHash('sha256').update('Kayseri3838').digest('hex');
+    db.run('INSERT INTO users (email, password_hash, name) VALUES (?, ?, ?)', 
+           ['vapurserdar@gmail.com', passwordHash, 'Vapurserdar']);
+    console.log('Benutzer vapurserdar@gmail.com erstellt');
+  }
   
   // Erstelle Standard-Kategorien falls noch keine existieren
   const stmt = db.prepare('SELECT COUNT(*) as count FROM categories');
@@ -223,21 +262,71 @@ function saveDatabase() {
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '../dist')));
 
-// Session Management entfernt - nicht mehr nötig
+// Session Management
+const sessions = new Map();
 
-// Keine Authentifizierung mehr nötig - lokale Anwendung
-function allowAccess(req, res, next) {
+// Middleware für Authentifizierung
+function requireAuth(req, res, next) {
+  const sessionId = req.headers.authorization?.replace('Bearer ', '');
+  const session = sessions.get(sessionId);
+  
+  if (!session) {
+    return res.status(401).json({ error: 'Nicht autorisiert' });
+  }
+  
+  req.user = session.user;
   next();
 }
 
-// Login API entfernt - nicht mehr nötig
+// Login API
+app.post('/api/login', (req, res) => {
+  const { email, password } = req.body;
+  
+  if (!email || !password) {
+    return res.status(400).json({ error: 'Email und Passwort erforderlich' });
+  }
+  
+  const passwordHash = crypto.createHash('sha256').update(password).digest('hex');
+  
+  const stmt = db.prepare('SELECT * FROM users WHERE email = ? AND password_hash = ?');
+  stmt.bind([email, passwordHash]);
+  
+  if (stmt.step()) {
+    const user = stmt.getAsObject();
+    stmt.free();
+    
+    // Erstelle Session
+    const sessionId = crypto.randomBytes(32).toString('hex');
+    sessions.set(sessionId, { user, createdAt: new Date() });
+    
+    res.json({ 
+      success: true, 
+      sessionId, 
+      user: { id: user.id, email: user.email, name: user.name }
+    });
+  } else {
+    stmt.free();
+    res.status(401).json({ error: 'Ungültige Login-Daten' });
+  }
+});
 
-// Logout API entfernt - nicht mehr nötig
+// Logout API
+app.post('/api/logout', (req, res) => {
+  const sessionId = req.headers.authorization?.replace('Bearer ', '');
+  sessions.delete(sessionId);
+  res.json({ success: true });
+});
 
-// Session API entfernt - nicht mehr nötig
+// Check Session API
+app.get('/api/session', requireAuth, (req, res) => {
+  res.json({ 
+    success: true, 
+    user: { id: req.user.id, email: req.user.email, name: req.user.name }
+  });
+});
 
 // Households API
-app.get('/api/households', allowAccess, (req, res) => {
+app.get('/api/households', requireAuth, (req, res) => {
   const stmt = db.prepare('SELECT * FROM households');
   const households = [];
   while (stmt.step()) {
@@ -248,7 +337,7 @@ app.get('/api/households', allowAccess, (req, res) => {
   res.json(households);
 });
 
-app.post('/api/households', allowAccess, (req, res) => {
+app.post('/api/households', requireAuth, (req, res) => {
   const { name, description } = req.body;
   db.run('INSERT INTO households (name, description) VALUES (?, ?)', [name, description || null]);
   const stmt = db.prepare('SELECT last_insert_rowid() as id');
@@ -259,14 +348,14 @@ app.post('/api/households', allowAccess, (req, res) => {
   res.json({ id, name, description });
 });
 
-app.delete('/api/households/:id', allowAccess, (req, res) => {
+app.delete('/api/households/:id', requireAuth, (req, res) => {
   db.run('DELETE FROM households WHERE id = ?', [req.params.id]);
   saveDatabase();
   res.json({ success: true });
 });
 
 // Categories API
-app.get('/api/categories', allowAccess, (req, res) => {
+app.get('/api/categories', requireAuth, (req, res) => {
   const stmt = db.prepare('SELECT * FROM categories ORDER BY name');
   const categories = [];
   while (stmt.step()) {
@@ -281,7 +370,7 @@ app.get('/api/categories', allowAccess, (req, res) => {
   res.json(categories);
 });
 
-app.post('/api/categories', allowAccess, (req, res) => {
+app.post('/api/categories', requireAuth, (req, res) => {
   const { name, type } = req.body;
   
   // Prüfe ob Kategorie bereits existiert
@@ -304,7 +393,7 @@ app.post('/api/categories', allowAccess, (req, res) => {
   res.json({ id, name, type: type || 'expense' });
 });
 
-app.put('/api/categories/:id', allowAccess, (req, res) => {
+app.put('/api/categories/:id', requireAuth, (req, res) => {
   const { name } = req.body;
   
   // Prüfe ob Kategorie mit diesem Namen bereits existiert (außer die aktuelle)
@@ -323,14 +412,14 @@ app.put('/api/categories/:id', allowAccess, (req, res) => {
   res.json({ success: true });
 });
 
-app.delete('/api/categories/:id', allowAccess, (req, res) => {
+app.delete('/api/categories/:id', requireAuth, (req, res) => {
   db.run('DELETE FROM categories WHERE id = ?', [req.params.id]);
   saveDatabase();
   res.json({ success: true });
 });
 
 // Family Members API
-app.get('/api/family-members', allowAccess, (req, res) => {
+app.get('/api/family-members', requireAuth, (req, res) => {
   const stmt = db.prepare('SELECT * FROM family_members');
   const members = [];
   while (stmt.step()) {
@@ -346,7 +435,7 @@ app.get('/api/family-members', allowAccess, (req, res) => {
   res.json(members);
 });
 
-app.post('/api/family-members', allowAccess, (req, res) => {
+app.post('/api/family-members', requireAuth, (req, res) => {
   const { name, role, householdId } = req.body;
   db.run('INSERT INTO family_members (name, role, household_id) VALUES (?, ?, ?)', [name, role || null, householdId || null]);
   const stmt = db.prepare('SELECT last_insert_rowid() as id');
@@ -357,13 +446,13 @@ app.post('/api/family-members', allowAccess, (req, res) => {
   res.json({ id, name, role, householdId });
 });
 
-app.delete('/api/family-members/:id', allowAccess, (req, res) => {
+app.delete('/api/family-members/:id', requireAuth, (req, res) => {
   db.run('DELETE FROM family_members WHERE id = ?', [req.params.id]);
   saveDatabase();
   res.json({ success: true });
 });
 
-app.get('/api/fixed-costs', allowAccess, (req, res) => {
+app.get('/api/fixed-costs', requireAuth, (req, res) => {
   const stmt = db.prepare('SELECT * FROM fixed_costs');
   const costs = [];
   while (stmt.step()) {
@@ -382,7 +471,7 @@ app.get('/api/fixed-costs', allowAccess, (req, res) => {
   res.json(costs);
 });
 
-app.post('/api/fixed-costs', allowAccess, (req, res) => {
+app.post('/api/fixed-costs', requireAuth, (req, res) => {
   const { name, category, amount, interval, familyMemberId, householdId } = req.body;
   db.run(
     'INSERT INTO fixed_costs (name, category, amount, interval, family_member_id, household_id) VALUES (?, ?, ?, ?, ?, ?)',
@@ -396,13 +485,13 @@ app.post('/api/fixed-costs', allowAccess, (req, res) => {
   res.json({ id, name, category, amount, interval, familyMemberId, householdId });
 });
 
-app.delete('/api/fixed-costs/:id', allowAccess, (req, res) => {
+app.delete('/api/fixed-costs/:id', requireAuth, (req, res) => {
   db.run('DELETE FROM fixed_costs WHERE id = ?', [req.params.id]);
   saveDatabase();
   res.json({ success: true });
 });
 
-app.get('/api/subscriptions', allowAccess, (req, res) => {
+app.get('/api/subscriptions', requireAuth, (req, res) => {
   const stmt = db.prepare('SELECT * FROM subscriptions');
   const subs = [];
   while (stmt.step()) {
@@ -422,7 +511,7 @@ app.get('/api/subscriptions', allowAccess, (req, res) => {
   res.json(subs);
 });
 
-app.post('/api/subscriptions', allowAccess, (req, res) => {
+app.post('/api/subscriptions', requireAuth, (req, res) => {
   const { name, category, amount, interval, paymentDate, familyMemberId, householdId } = req.body;
   db.run(
     'INSERT INTO subscriptions (name, category, amount, interval, payment_date, family_member_id, household_id) VALUES (?, ?, ?, ?, ?, ?, ?)',
@@ -436,14 +525,14 @@ app.post('/api/subscriptions', allowAccess, (req, res) => {
   res.json({ id, name, category, amount, interval, paymentDate, familyMemberId, householdId });
 });
 
-app.delete('/api/subscriptions/:id', allowAccess, (req, res) => {
+app.delete('/api/subscriptions/:id', requireAuth, (req, res) => {
   db.run('DELETE FROM subscriptions WHERE id = ?', [req.params.id]);
   saveDatabase();
   res.json({ success: true });
 });
 
 // Installment Plans API
-app.get('/api/installment-plans', allowAccess, (req, res) => {
+app.get('/api/installment-plans', requireAuth, (req, res) => {
   const stmt = db.prepare('SELECT * FROM installment_plans');
   const plans = [];
   while (stmt.step()) {
@@ -467,7 +556,7 @@ app.get('/api/installment-plans', allowAccess, (req, res) => {
   res.json(plans);
 });
 
-app.post('/api/installment-plans', allowAccess, (req, res) => {
+app.post('/api/installment-plans', requireAuth, (req, res) => {
   const {
     name,
     startDate,
@@ -521,13 +610,13 @@ app.post('/api/installment-plans', allowAccess, (req, res) => {
   });
 });
 
-app.delete('/api/installment-plans/:id', allowAccess, (req, res) => {
+app.delete('/api/installment-plans/:id', requireAuth, (req, res) => {
   db.run('DELETE FROM installment_plans WHERE id = ?', [req.params.id]);
   saveDatabase();
   res.json({ success: true });
 });
 
-app.get('/api/month-summary', allowAccess, (req, res) => {
+app.get('/api/month-summary', requireAuth, (req, res) => {
   let stmt = db.prepare('SELECT * FROM fixed_costs');
   const costs = [];
   while (stmt.step()) {
@@ -591,7 +680,7 @@ app.get('/api/month-summary', allowAccess, (req, res) => {
 });
 
 // API für Sparziele
-app.get('/api/savings-goals', allowAccess, (req, res) => {
+app.get('/api/savings-goals', requireAuth, (req, res) => {
   let stmt = db.prepare('SELECT * FROM savings_goals ORDER BY priority DESC, target_date ASC');
   const goals = [];
   while (stmt.step()) {
@@ -616,7 +705,7 @@ app.get('/api/debug/savings-goals-schema', (req, res) => {
   }
 });
 
-app.post('/api/savings-goals', allowAccess, (req, res) => {
+app.post('/api/savings-goals', requireAuth, (req, res) => {
   console.log('Received savings goal data:', JSON.stringify(req.body, null, 2));
   
   const { name, description, targetAmount, targetDate, category, priority, monthlyContribution, householdId, familyMemberId } = req.body;
@@ -651,7 +740,7 @@ app.post('/api/savings-goals', allowAccess, (req, res) => {
   }
 });
 
-app.put('/api/savings-goals/:id', allowAccess, (req, res) => {
+app.put('/api/savings-goals/:id', requireAuth, (req, res) => {
   const { id } = req.params;
   const { name, description, targetAmount, currentAmount, targetDate, category, priority, status, monthlyContribution } = req.body;
   
@@ -681,7 +770,7 @@ app.put('/api/savings-goals/:id', allowAccess, (req, res) => {
   }
 });
 
-app.delete('/api/savings-goals/:id', allowAccess, (req, res) => {
+app.delete('/api/savings-goals/:id', requireAuth, (req, res) => {
   const { id } = req.params;
   
   const stmt = db.prepare('DELETE FROM savings_goals WHERE id = ?');
@@ -691,7 +780,7 @@ app.delete('/api/savings-goals/:id', allowAccess, (req, res) => {
   res.json({ success: true });
 });
 
-app.post('/api/savings-goals/:id/contribute', allowAccess, (req, res) => {
+app.post('/api/savings-goals/:id/contribute', requireAuth, (req, res) => {
   const { id } = req.params;
   const { amount } = req.body;
   
@@ -708,7 +797,7 @@ app.post('/api/savings-goals/:id/contribute', allowAccess, (req, res) => {
 });
 
 // API für bezahlte Einträge
-app.get('/api/paid-items', allowAccess, (req, res) => {
+app.get('/api/paid-items', requireAuth, (req, res) => {
   let stmt = db.prepare('SELECT * FROM paid_items');
   const paidItems = [];
   while (stmt.step()) {
@@ -718,7 +807,7 @@ app.get('/api/paid-items', allowAccess, (req, res) => {
   res.json(paidItems);
 });
 
-app.post('/api/paid-items', allowAccess, (req, res) => {
+app.post('/api/paid-items', requireAuth, (req, res) => {
   const { itemId, itemType, paid } = req.body;
   
   // Prüfe ob Eintrag bereits existiert
@@ -741,7 +830,7 @@ app.post('/api/paid-items', allowAccess, (req, res) => {
   res.json({ success: true });
 });
 
-app.get('/api/export', allowAccess, (req, res) => {
+app.get('/api/export', requireAuth, (req, res) => {
   const format = req.query.format || 'json';
   
   let stmt = db.prepare('SELECT * FROM family_members');

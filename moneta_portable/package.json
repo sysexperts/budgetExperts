@@ -1,10 +1,9 @@
 {
-  "name": "moneta-x",
+  "name": "budget-planner",
   "version": "1.0.0",
-  "description": "Ein moderner Budget-Planer für Einzelpersonen und Familien - monetaX",
+  "description": "Lightweight web-based budget planner for individuals and families",
   "type": "module",
-  "main": "public/electron.cjs",
-  "author": "monetaX Team",
+  "main": "public/electron.js",
   "homepage": "./",
   "scripts": {
     "dev": "vite",
@@ -44,14 +43,14 @@
   },
   "build": {
     "appId": "com.moneta.budgetplanner",
-    "productName": "Moneta Budget Planner - Local",
+    "productName": "Moneta Budget Planner",
     "directories": {
       "output": "release"
     },
     "files": [
       "dist/**/*",
       "server/**/*",
-      "public/electron.cjs",
+      "public/electron.js",
       "public/preload.js",
       "node_modules/**/*"
     ],
@@ -62,30 +61,15 @@
       }
     ],
     "win": {
-      "target": [
-        {
-          "target": "nsis",
-          "arch": ["x64"]
-        }
-      ],
-      "sign": false,
-      "publisherName": "Local"
+      "target": "zip",
+      "sign": false
     },
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
-      "allowElevation": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
       "shortcutName": "Moneta Budget Planner"
-    },
-    "mac": {
-      "target": "dmg",
-      "icon": "public/icon.icns"
-    },
-    "linux": {
-      "target": "AppImage",
-      "icon": "public/icon.png"
     }
   }
 }

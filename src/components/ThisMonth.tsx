@@ -9,8 +9,15 @@ export default function ThisMonth() {
   }, [])
 
   const loadSummary = async () => {
+    const sessionId = localStorage.getItem('sessionId');
+    if (!sessionId) return;
+    
     try {
-      const response = await fetch('/api/month-summary')
+      const response = await fetch('/api/month-summary', {
+        headers: {
+          'Authorization': `Bearer ${sessionId}`
+        }
+      })
       const data = await response.json()
       setSummary(data)
     } catch (error) {

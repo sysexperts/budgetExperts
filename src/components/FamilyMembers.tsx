@@ -17,10 +17,16 @@ export default function FamilyMembers({ familyMembers, households, onUpdate }: F
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
+    const sessionId = localStorage.getItem('sessionId');
+    if (!sessionId) return;
+    
     try {
       const response = await fetch('/api/family-members', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${sessionId}`
+        },
         body: JSON.stringify({ name, role: role || undefined, householdId })
       })
       
@@ -43,8 +49,16 @@ export default function FamilyMembers({ familyMembers, households, onUpdate }: F
   }
 
   const handleDelete = async (id: number) => {
+    const sessionId = localStorage.getItem('sessionId');
+    if (!sessionId) return;
+    
     try {
-      await fetch(`/api/family-members/${id}`, { method: 'DELETE' })
+      await fetch(`/api/family-members/${id}`, { 
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${sessionId}`
+        }
+      })
       onUpdate()
     } catch (error) {
       console.error('Fehler beim Löschen des Mitglieds:', error)

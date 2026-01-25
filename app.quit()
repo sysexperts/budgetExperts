@@ -1,0 +1,1 @@
+        { label: 'Beenden', accelerator: process.platform === 'darwin' ? 'Cmd+Q' : 'Ctrl+Q', click: () = }

@@ -1,103 +1,79 @@
-# Budget Planner
+# moneta
 
-Ein leichtgewichtiger, webbasierter Budget-Planner für Einzelpersonen und Familien.
+A modern, web-based budget planning application for individuals and families.
 
 ## Features
 
-- **Haushalt & Familienmitglieder**: Verwalten Sie mehrere Familienmitglieder in einem Haushalt
-- **Fixkosten**: Wiederkehrende Kosten mit monatlichem oder jährlichem Intervall
-- **Abonnements**: Separate Verwaltung von Abos mit Zahlungsdatum
-- **Monatsübersicht**: Zentrale Ansicht aller Ausgaben des aktuellen Monats
-- **Statistik**: Grafische Auswertungen mit Charts (Kategorien, Fixkosten vs. Variable, pro Familienmitglied)
-- **Export**: CSV und JSON Export für gesamten Haushalt oder einzelne Monate
+- **User Authentication**: Secure login system with user-specific data
+- **Household Management**: Manage multiple households and family members
+- **Expense Tracking**: Fixed costs, subscriptions, and installment plans
+- **Savings Goals**: Set and track personal savings objectives
+- **Analytics**: Visual charts and spending insights
+- **Data Export**: CSV and JSON export functionality
 
-## Technologie
+## Quick Install
 
-- **Frontend**: React 18 + TypeScript + TailwindCSS
+### Linux/Proxmox (LXC/Container)
+```bash
+curl -sSL https://raw.githubusercontent.com/sysexperts/budgetExperts/main/install-moneta.sh | bash
+```
+
+### Windows
+```powershell
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/sysexperts/budgetExperts/main/install-moneta-windows.ps1" -OutFile "install-moneta-windows.ps1"
+.\install-moneta-windows.ps1
+```
+
+## Tech Stack
+
+- **Frontend**: React 18, TypeScript, TailwindCSS
+- **Backend**: Express.js, SQLite
+- **Authentication**: Session-based with SHA256 encryption
 - **Charts**: Recharts
 - **Icons**: Lucide React
-- **Backend**: Express.js
-- **Datenbank**: SQLite (lokal)
 - **Build**: Vite
-- **Container**: Docker
 
-## Schnellstart mit Docker
+## Default User
 
+- **Email**: vapurserdar@gmail.com
+- **Password**: Kayseri3838
+
+## Project Structure
+
+```
+moneta/
+├── src/                 # React frontend
+│   ├── components/      # UI components
+│   ├── types.ts        # TypeScript definitions
+│   └── App.tsx         # Main application
+├── server/             # Express backend
+│   └── index.js        # API server
+├── dist/               # Production build
+└── package.json        # Dependencies
+```
+
+## Manual Installation
+
+### Docker (Recommended)
 ```bash
+git clone https://github.com/sysexperts/budgetExperts.git
+cd budgetExperts
 docker compose up -d
 ```
 
-Die Anwendung ist dann unter `http://localhost:3001` erreichbar.
-
-## Lokale Entwicklung
-
-### Voraussetzungen
-
-- Node.js 18+
-- npm
-
-### Installation
-
+### Node.js
 ```bash
+git clone https://github.com/sysexperts/budgetExperts.git
+cd budgetExperts
 npm install
-```
-
-### Entwicklungsserver starten
-
-```bash
-npm run dev
-```
-
-Frontend läuft auf `http://localhost:3000`
-
-### Backend starten
-
-```bash
+npm run build
 npm start
 ```
 
-Backend läuft auf `http://localhost:3001`
+## Access
 
-### Production Build
+Application runs on `http://localhost:3001`
 
-```bash
-npm run build
-```
-
-## Projektstruktur
-
-```
-budget-planner/
-├── src/                    # React Frontend
-│   ├── components/         # React Komponenten
-│   ├── types.ts           # TypeScript Typen
-│   ├── App.tsx            # Haupt-App Komponente
-│   └── main.tsx           # Entry Point
-├── server/                # Express Backend
-│   └── index.js           # API Server
-├── docker-compose.yml     # Docker Compose Konfiguration
-├── Dockerfile             # Docker Image Definition
-└── package.json           # Dependencies
-```
-
-## API Endpoints
-
-- `GET /api/family-members` - Alle Familienmitglieder
-- `POST /api/family-members` - Neues Familienmitglied
-- `DELETE /api/family-members/:id` - Familienmitglied löschen
-- `GET /api/fixed-costs` - Alle Fixkosten
-- `POST /api/fixed-costs` - Neue Fixkosten
-- `DELETE /api/fixed-costs/:id` - Fixkosten löschen
-- `GET /api/subscriptions` - Alle Abonnements
-- `POST /api/subscriptions` - Neues Abonnement
-- `DELETE /api/subscriptions/:id` - Abonnement löschen
-- `GET /api/month-summary` - Monatsübersicht
-- `GET /api/export?format=csv|json` - Daten exportieren
-
-## Datenbank
-
-Die SQLite Datenbank wird automatisch beim ersten Start erstellt. Die Datei `budget.db` wird im Projektverzeichnis gespeichert.
-
-## Lizenz
+## License
 
 MIT

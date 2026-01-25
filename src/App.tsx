@@ -1,18 +1,15 @@
 import { useState, useEffect } from 'react'
-import { Users, Download, Languages } from 'lucide-react'
+import { Download, Languages } from 'lucide-react'
 import Dashboard from './components/Dashboard'
 import FixedCosts from './components/FixedCosts'
 import Subscriptions from './components/Subscriptions'
 import Analytics from './components/Analytics'
-import ThisMonth from './components/ThisMonth'
 import Settings from './components/Settings'
 import InstallmentPlans from './components/InstallmentPlans'
-import SetupWizard from './components/SetupWizard'
-import TutorialTooltip from './components/TutorialTooltip'
 import SavingsGoalsSimple from './components/SavingsGoalsSimple'
 import { FamilyMember, FixedCost, Subscription, Household, Category, InstallmentPlan } from './types'
 
-type Tab = 'dashboard' | 'analytics' | 'subscriptions' | 'costs' | 'thismonth' | 'settings' | 'installments' | 'savings'
+type Tab = 'dashboard' | 'analytics' | 'subscriptions' | 'costs' | 'settings' | 'installments' | 'savings'
 type Language = 'de' | 'en'
 
 function App() {
@@ -23,33 +20,34 @@ function App() {
   const [installmentPlans, setInstallmentPlans] = useState<InstallmentPlan[]>([])
   const [households, setHouseholds] = useState<Household[]>([])
   const [categories, setCategories] = useState<Category[]>([])
-  const [showSetupWizard, setShowSetupWizard] = useState(false)
-  const [showTutorial, setShowTutorial] = useState(false)
   const [language, setLanguage] = useState<Language>('de')
+  const sessionId = 'local-user' // Lokaler Benutzer - kein Login nötig
 
   useEffect(() => {
-    // Prüfe ob Setup bereits abgeschlossen wurde
-    const setupCompleted = localStorage.getItem('setupCompleted')
-    const tutorialCompleted = localStorage.getItem('tutorialCompleted')
-    
-    if (!setupCompleted) {
-      setShowSetupWizard(true)
-    } else if (!tutorialCompleted) {
-      setShowTutorial(true)
-    }
-    
+    // Login entfernt - direkt zur Anwendung
     loadData()
+    
+    // Setup-Assistent und Tutorial deaktiviert - direkt zur Anwendung
+    // Markiere als abgeschlossen, damit sie nicht mehr angezeigt werden
+    localStorage.setItem('setupCompleted', 'true')
+    localStorage.setItem('tutorialCompleted', 'true')
   }, [])
 
   const loadData = async () => {
+    if (!sessionId) return
+    
     try {
+      const headers = {
+        'Authorization': `Bearer ${sessionId}`
+      }
+      
       const [membersRes, costsRes, subsRes, installmentRes, householdsRes, categoriesRes] = await Promise.all([
-        fetch('/api/family-members'),
-        fetch('/api/fixed-costs'),
-        fetch('/api/subscriptions'),
-        fetch('/api/installment-plans'),
-        fetch('/api/households'),
-        fetch('/api/categories')
+        fetch('/api/family-members', { headers }),
+        fetch('/api/fixed-costs', { headers }),
+        fetch('/api/subscriptions', { headers }),
+        fetch('/api/installment-plans', { headers }),
+        fetch('/api/households', { headers }),
+        fetch('/api/categories', { headers })
       ])
       
       setFamilyMembers(await membersRes.json())
@@ -64,8 +62,14 @@ function App() {
   }
 
   const handleExport = async (format: 'csv' | 'json') => {
+    if (!sessionId) return
+    
     try {
-      const response = await fetch(`/api/export?format=${format}`)
+      const response = await fetch(`/api/export?format=${format}`, {
+        headers: {
+          'Authorization': `Bearer ${sessionId}`
+        }
+      })
       const blob = await response.blob()
       const url = window.URL.createObjectURL(blob)
       const a = document.createElement('a')
@@ -80,144 +84,122 @@ function App() {
     }
   }
 
-  const handleSetupComplete = () => {
-    setShowSetupWizard(false)
-    setShowTutorial(true)
-    loadData()
-  }
-
-  const handleTutorialComplete = () => {
-    setShowTutorial(false)
-  }
-
   return (
     <div className="min-h-screen bg-gray-50">
-      {showSetupWizard && <SetupWizard onComplete={handleSetupComplete} />}
-      {showTutorial && <TutorialTooltip onComplete={handleTutorialComplete} />}
-      
-      <div className="flex">
-        <div className="flex-1">
-            <nav className="bg-white border-b border-gray-200">
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex justify-between h-16">
-                  <div className="flex">
-                    <div className="flex-shrink-0 flex items-center gap-2">
-                      <div className="flex items-center">
-                        <span className="text-3xl font-black bg-gradient-to-r from-blue-300 via-blue-500 to-blue-700 bg-clip-text text-transparent tracking-tight">
-                          moneta
-                        </span>
-                        <div className="ml-1 flex flex-col items-center justify-center">
-                          <div className="w-2 h-2 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full animate-pulse"></div>
-                          <div className="w-1 h-1 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full mt-0.5"></div>
+      {/* Login entfernt - direkt zur Anwendung */}
+      <>
+        {/* Setup-Assistent und Tutorial entfernt */}
+        
+        <div className="flex">
+            <div className="flex-1">
+                <nav className="bg-white border-b border-gray-200">
+                  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="flex justify-between h-16">
+                      <div className="flex">
+                        <div className="flex-shrink-0 flex items-center gap-2">
+                          <div className="flex items-center">
+                            <span className="text-3xl font-black text-black tracking-tight">
+                              monetaX
+                            </span>
+                            <div className="ml-1 flex flex-col items-center justify-center">
+                              <div className="w-2 h-2 bg-black rounded-full animate-pulse"></div>
+                              <div className="w-1 h-1 bg-black rounded-full mt-0.5"></div>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
+                          <button
+                            onClick={() => setActiveTab('dashboard')}
+                            className={`${
+                              activeTab === 'dashboard'
+                                ? 'border-blue-500 text-gray-900'
+                                : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
+                            } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium`}
+                          >
+                            Übersicht
+                          </button>
+                          <button
+                            onClick={() => setActiveTab('costs')}
+                            className={`${
+                              activeTab === 'costs'
+                                ? 'border-blue-500 text-gray-900'
+                                : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
+                            } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium`}
+                          >
+                            Fixkosten
+                          </button>
+                          <button
+                            onClick={() => setActiveTab('subscriptions')}
+                            className={`${
+                              activeTab === 'subscriptions'
+                                ? 'border-blue-500 text-gray-900'
+                                : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
+                            } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium`}
+                          >
+                            Abonnements
+                          </button>
+                          <button
+                            onClick={() => setActiveTab('installments')}
+                            className={`${
+                              activeTab === 'installments'
+                                ? 'border-blue-500 text-gray-900'
+                                : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
+                            } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium`}
+                          >
+                            Ratenpläne
+                          </button>
+                          <button
+                            onClick={() => setActiveTab('savings')}
+                            className={`${
+                              activeTab === 'savings'
+                                ? 'border-blue-500 text-gray-900'
+                                : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
+                            } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium`}
+                          >
+                            Sparziele
+                          </button>
+                          <button
+                            onClick={() => setActiveTab('analytics')}
+                            className={`${
+                              activeTab === 'analytics'
+                                ? 'border-blue-500 text-gray-900'
+                                : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
+                            } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium`}
+                          >
+                            Statistik
+                          </button>
+                          <button
+                            onClick={() => setActiveTab('settings')}
+                            className={`${
+                              activeTab === 'settings'
+                                ? 'border-blue-500 text-gray-900'
+                                : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
+                            } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium`}
+                          >
+                            Einstellungen
+                          </button>
                         </div>
                       </div>
-                    </div>
-                    <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
-                      <button
-                        onClick={() => setActiveTab('dashboard')}
-                        className={`${
-                          activeTab === 'dashboard'
-                            ? 'border-blue-500 text-gray-900'
-                            : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
-                        } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium`}
-                      >
-                        Übersicht
-                      </button>
-                      <button
-                        onClick={() => setActiveTab('thismonth')}
-                        className={`${
-                          activeTab === 'thismonth'
-                            ? 'border-blue-500 text-gray-900'
-                            : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
-                        } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium`}
-                      >
-                        Dieser Monat
-                      </button>
-                      <button
-                        onClick={() => setActiveTab('costs')}
-                        className={`${
-                          activeTab === 'costs'
-                            ? 'border-blue-500 text-gray-900'
-                            : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
-                        } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium`}
-                      >
-                        Fixkosten
-                      </button>
-                      <button
-                        onClick={() => setActiveTab('subscriptions')}
-                        className={`${
-                          activeTab === 'subscriptions'
-                            ? 'border-blue-500 text-gray-900'
-                            : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
-                        } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium`}
-                      >
-                        Abonnements
-                      </button>
-                      <button
-                        onClick={() => setActiveTab('installments')}
-                        className={`${
-                          activeTab === 'installments'
-                            ? 'border-blue-500 text-gray-900'
-                            : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
-                        } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium`}
-                      >
-                        Ratenpläne
-                      </button>
-                      <button
-                        onClick={() => setActiveTab('savings')}
-                        className={`${
-                          activeTab === 'savings'
-                            ? 'border-blue-500 text-gray-900'
-                            : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
-                        } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium`}
-                      >
-                        Sparziele
-                      </button>
-                      <button
-                        onClick={() => setActiveTab('analytics')}
-                        className={`${
-                          activeTab === 'analytics'
-                            ? 'border-blue-500 text-gray-900'
-                            : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
-                        } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium`}
-                      >
-                        Statistik
-                      </button>
-                      <button
-                        onClick={() => setActiveTab('settings')}
-                        className={`${
-                          activeTab === 'settings'
-                            ? 'border-blue-500 text-gray-900'
-                            : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
-                        } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium`}
-                      >
-                        Einstellungen
-                      </button>
+                      <div className="flex items-center space-x-4">
+                        <button
+                          onClick={() => setLanguage(language === 'de' ? 'en' : 'de')}
+                          className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+                          title="Sprache wechseln"
+                        >
+                          <Languages className="h-5 w-5" />
+                          <span className="font-bold">{language.toUpperCase()}</span>
+                        </button>
+                        <button
+                          onClick={() => handleExport('csv')}
+                          className="text-gray-500 hover:text-gray-700"
+                          title="Export CSV"
+                        >
+                          <Download className="h-5 w-5" />
+                        </button>
+                      </div>
                     </div>
                   </div>
-                  <div className="flex items-center space-x-4">
-                    <button
-                      onClick={() => setLanguage(language === 'de' ? 'en' : 'de')}
-                      className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
-                      title="Sprache wechseln"
-                    >
-                      <Languages className="h-5 w-5" />
-                      <span className="font-bold">{language.toUpperCase()}</span>
-                    </button>
-                    <button
-                      onClick={() => handleExport('csv')}
-                      className="text-gray-500 hover:text-gray-700"
-                      title="Export CSV"
-                    >
-                      <Download className="h-5 w-5" />
-                    </button>
-                    <div className="h-8 w-8 rounded-full bg-gray-300 flex items-center justify-center">
-                      <Users className="h-5 w-5 text-gray-600" />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </nav>
+                </nav>
 
             <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
               {activeTab === 'dashboard' && (
@@ -228,7 +210,6 @@ function App() {
                   installmentPlans={installmentPlans}
                 />
               )}
-              {activeTab === 'thismonth' && <ThisMonth />}
               {activeTab === 'costs' && (
                 <FixedCosts 
                   fixedCosts={fixedCosts}
@@ -278,6 +259,7 @@ function App() {
             </main>
         </div>
       </div>
+        </>
     </div>
   )
 }

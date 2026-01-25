@@ -1,0 +1,1 @@
+  const totalExpenses = transactions.reduce((sum, t) = + t.amount, 0);
