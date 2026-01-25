@@ -284,9 +284,14 @@ app.get('/api/categories', allowAccess, (req, res) => {
 app.post('/api/categories', allowAccess, (req, res) => {
   const { name, type } = req.body;
   
+  // Validierung
+  if (!name || name.trim() === '') {
+    return res.status(400).json({ error: 'Kategoriename darf nicht leer sein' });
+  }
+  
   // Prüfe ob Kategorie bereits existiert
   const checkStmt = db.prepare('SELECT COUNT(*) as count FROM categories WHERE name = ?');
-  checkStmt.bind([name]);
+  checkStmt.bind([name.trim()]);
   checkStmt.step();
   const exists = checkStmt.getAsObject().count > 0;
   checkStmt.free();
@@ -295,13 +300,18 @@ app.post('/api/categories', allowAccess, (req, res) => {
     return res.status(400).json({ error: 'Kategorie existiert bereits' });
   }
   
-  db.run('INSERT INTO categories (name, type) VALUES (?, ?)', [name, type || 'expense']);
-  const stmt = db.prepare('SELECT last_insert_rowid() as id');
-  stmt.step();
-  const id = stmt.getAsObject().id;
-  stmt.free();
-  saveDatabase();
-  res.json({ id, name, type: type || 'expense' });
+  try {
+    db.run('INSERT INTO categories (name, type) VALUES (?, ?)', [name.trim(), type || 'expense']);
+    const stmt = db.prepare('SELECT last_insert_rowid() as id');
+    stmt.step();
+    const id = stmt.getAsObject().id;
+    stmt.free();
+    saveDatabase();
+    res.json({ id, name: name.trim(), type: type || 'expense' });
+  } catch (error) {
+    console.error('Fehler beim Erstellen der Kategorie:', error);
+    res.status(500).json({ error: 'Datenbankfehler: ' + error.message });
+  }
 });
 
 app.put('/api/categories/:id', allowAccess, (req, res) => {
