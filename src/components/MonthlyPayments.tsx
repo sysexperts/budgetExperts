@@ -20,20 +20,30 @@ export default function MonthlyPayments({
   const [selectedMonth, setSelectedMonth] = useState(new Date().toISOString().slice(0, 7)) // YYYY-MM format
   const [paidItems, setPaidItems] = useState<Record<string, boolean>>({})
 
-  // Lade paid-Items für den aktuellen Monat
+  // Lade paid-Items für den aktuellen Monat von der Datenbank
   useEffect(() => {
-    const saved = localStorage.getItem('paid-monthly-items')
-    const allPaidItems = saved ? JSON.parse(saved) : {}
-    // Nur die Items für den aktuellen Monat laden
-    const monthPaidItems = Object.keys(allPaidItems)
-      .filter(key => key.startsWith(`${selectedMonth}-`))
-      .reduce((acc, key) => {
-        const itemId = key.replace(`${selectedMonth}-`, '')
-        acc[itemId] = allPaidItems[key]
-        return acc
-      }, {} as Record<string, boolean>)
-    setPaidItems(monthPaidItems)
+    loadPaidItems();
   }, [selectedMonth])
+
+  const loadPaidItems = async () => {
+    try {
+      const response = await fetch('/api/paid-items');
+      const paidItemsData = await response.json();
+      
+      // Filtere nur die Items für den aktuellen Monat
+      const monthPaidItems = paidItemsData
+        .filter((item: any) => item.item_id.startsWith(`${selectedMonth}-`))
+        .reduce((acc: Record<string, boolean>, item: any) => {
+          const itemId = item.item_id.replace(`${selectedMonth}-`, '');
+          acc[itemId] = true; // Wenn es in der DB ist, ist es bezahlt
+          return acc;
+        }, {} as Record<string, boolean>)
+      
+      setPaidItems(monthPaidItems);
+    } catch (error) {
+      console.error('Fehler beim Laden der bezahlten Items:', error);
+    }
+  }
 
   // Alle monatlichen Zahlungen für den ausgewählten Monat
   const getAllMonthlyPayments = useMemo(() => {
@@ -107,24 +117,27 @@ export default function MonthlyPayments({
     return payments
   }, [fixedCosts, subscriptions, installmentPlans, selectedMonth])
 
-  // Toggle bezahlten Status
-  const togglePaidItem = (itemId: string) => {
+  // Toggle bezahlten Status über die Datenbank-API
+  const togglePaidItem = async (itemId: string) => {
     const monthKey = `${selectedMonth}-${itemId}`
-    const saved = localStorage.getItem('paid-monthly-items')
-    const allPaidItems = saved ? JSON.parse(saved) : {}
+    const isPaid = paidItems[itemId] || false
     
-    // Toggle den Status für den spezifischen Monat
-    allPaidItems[monthKey] = !allPaidItems[monthKey]
-    
-    // Speichere alle Items zurück
-    localStorage.setItem('paid-monthly-items', JSON.stringify(allPaidItems))
-    
-    // Update local state mit nur den Items für aktuellen Monat
-    const newPaidItems = {
-      ...paidItems,
-      [itemId]: !paidItems[itemId]
+    try {
+      await fetch('/api/paid-items', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          itemId: monthKey,
+          itemType: 'monthly_payment',
+          paid: !isPaid
+        })
+      });
+      
+      // Lade die Daten neu
+      await loadPaidItems();
+    } catch (error) {
+      console.error('Fehler beim Aktualisieren des Zahlungsstatus:', error);
     }
-    setPaidItems(newPaidItems)
   }
 
   // Prüfe ob ein Item bezahlt wurde
