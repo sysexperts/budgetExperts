@@ -167,23 +167,27 @@ export default function Categories({ onUpdate }: CategoriesProps) {
             </button>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Icon auswählen</label>
-            <div className="grid grid-cols-8 gap-2">
-              {availableIcons.map(({ name, icon: Icon }) => (
-                <button
-                  key={name}
-                  type="button"
-                  onClick={() => setSelectedIcon(name)}
-                  className={`p-2 rounded-md border-2 transition-colors ${
-                    selectedIcon === name
-                      ? 'border-purple-500 bg-purple-50'
-                      : 'border-gray-200 hover:border-gray-300'
-                  }`}
-                  title={name}
-                >
-                  <Icon className="w-5 h-5 text-gray-700" />
-                </button>
-              ))}
+            <label className="block text-sm font-medium text-gray-700 mb-3">Icon auswählen</label>
+            <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+              <div className="grid grid-cols-6 gap-3">
+                {availableIcons.map(({ name, icon: Icon }) => (
+                  <button
+                    key={name}
+                    type="button"
+                    onClick={() => setSelectedIcon(name)}
+                    className={`p-3 rounded-xl border-2 transition-all transform hover:scale-105 ${
+                      selectedIcon === name
+                        ? 'border-purple-500 bg-purple-100 shadow-md'
+                        : 'border-gray-300 bg-white hover:border-purple-300 hover:bg-purple-50'
+                    }`}
+                    title={name}
+                  >
+                    <Icon className={`w-6 h-6 ${
+                      selectedIcon === name ? 'text-purple-600' : 'text-gray-600'
+                    }`} />
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         </form>
@@ -212,22 +216,26 @@ export default function Categories({ onUpdate }: CategoriesProps) {
                         className="w-full px-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 mb-2"
                         autoFocus
                       />
-                      <div className="grid grid-cols-8 gap-1">
-                        {availableIcons.map(({ name, icon: Icon }) => (
-                          <button
-                            key={name}
-                            type="button"
-                            onClick={() => setEditingIcon(name)}
-                            className={`p-1 rounded border transition-colors ${
-                              editingIcon === name
-                                ? 'border-purple-500 bg-purple-50'
-                                : 'border-gray-200 hover:border-gray-300'
-                            }`}
-                            title={name}
-                          >
-                            <Icon className="w-4 h-4 text-gray-700" />
-                          </button>
-                        ))}
+                      <div className="bg-gray-50 rounded-lg p-3 border border-gray-200">
+                        <div className="grid grid-cols-6 gap-2">
+                          {availableIcons.map(({ name, icon: Icon }) => (
+                            <button
+                              key={name}
+                              type="button"
+                              onClick={() => setEditingIcon(name)}
+                              className={`p-2 rounded-lg border transition-all transform hover:scale-105 ${
+                                editingIcon === name
+                                  ? 'border-purple-500 bg-purple-100 shadow-md'
+                                  : 'border-gray-300 bg-white hover:border-purple-300 hover:bg-purple-50'
+                              }`}
+                              title={name}
+                            >
+                              <Icon className={`w-5 h-5 ${
+                                editingIcon === name ? 'text-purple-600' : 'text-gray-600'
+                              }`} />
+                            </button>
+                          ))}
+                        </div>
                       </div>
                     </div>
                     <div className="flex gap-2 ml-3">
