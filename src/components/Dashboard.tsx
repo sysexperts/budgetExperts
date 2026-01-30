@@ -149,7 +149,7 @@ export default function Dashboard({ familyMembers, fixedCosts, subscriptions, in
               <div className="w-full bg-gray-200 rounded-full h-2">
                 <div 
                   className={`h-2 rounded-full transition-all duration-500 ${
-                    budgetHealth > 50 ? 'bg-green-500' : budgetHealth > 25 ? 'bg-yellow-500' : 'bg-red-500'
+                    budgetHealth > 50 ? 'bg-maxcrowds-green' : budgetHealth > 25 ? 'bg-maxcrowds-green/70' : 'bg-maxcrowds-green/50'
                   }`}
                   style={{ width: `${Math.min(100, (monthlyTotal / budgetLimit * 100))}%` }}
                 ></div>
@@ -165,7 +165,7 @@ export default function Dashboard({ familyMembers, fixedCosts, subscriptions, in
                 <p className="text-3xl font-bold text-gray-900">{budgetHealth.toFixed(0)}%</p>
               </div>
               <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${
-                budgetHealth > 50 ? 'bg-green-500' : budgetHealth > 25 ? 'bg-yellow-500' : 'bg-red-500'
+                budgetHealth > 50 ? 'bg-maxcrowds-green' : budgetHealth > 25 ? 'bg-maxcrowds-green/70' : 'bg-maxcrowds-green/50'
               }`}>
                 <Target className="w-6 h-6 text-white" />
               </div>
@@ -177,7 +177,7 @@ export default function Dashboard({ familyMembers, fixedCosts, subscriptions, in
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2">
                 <div 
-                  className="h-2 rounded-full bg-green-500 transition-all duration-500"
+                  className="h-2 rounded-full bg-maxcrowds-green transition-all duration-500"
                   style={{ width: `${budgetHealth}%` }}
                 ></div>
               </div>
@@ -192,7 +192,7 @@ export default function Dashboard({ familyMembers, fixedCosts, subscriptions, in
                 <p className="text-3xl font-bold text-gray-900">€{subscriptionTotal.toFixed(2)}</p>
                 <p className="text-xs text-gray-500">{subscriptions.length} aktiv</p>
               </div>
-              <div className="w-12 h-12 bg-purple-500 rounded-lg flex items-center justify-center">
+              <div className="w-12 h-12 bg-maxcrowds-green/80 rounded-lg flex items-center justify-center">
                 <CreditCard className="w-6 h-6 text-white" />
               </div>
             </div>
@@ -203,7 +203,7 @@ export default function Dashboard({ familyMembers, fixedCosts, subscriptions, in
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2">
                 <div 
-                  className="h-2 rounded-full bg-purple-500 transition-all duration-500"
+                  className="h-2 rounded-full bg-maxcrowds-green/80 transition-all duration-500"
                   style={{ width: `${subscriptionPercentage}%` }}
                 ></div>
               </div>
@@ -218,7 +218,7 @@ export default function Dashboard({ familyMembers, fixedCosts, subscriptions, in
                 <p className="text-3xl font-bold text-gray-900">€{installmentTotal.toFixed(2)}</p>
                 <p className="text-xs text-gray-500">{installmentPlans.length} aktiv</p>
               </div>
-              <div className="w-12 h-12 bg-orange-500 rounded-lg flex items-center justify-center">
+              <div className="w-12 h-12 bg-maxcrowds-green/60 rounded-lg flex items-center justify-center">
                 <Coins className="w-6 h-6 text-white" />
               </div>
             </div>
@@ -229,7 +229,7 @@ export default function Dashboard({ familyMembers, fixedCosts, subscriptions, in
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2">
                 <div 
-                  className="h-2 rounded-full bg-orange-500 transition-all duration-500"
+                  className="h-2 rounded-full bg-maxcrowds-green/60 transition-all duration-500"
                   style={{ width: `${installmentPercentage}%` }}
                 ></div>
               </div>
