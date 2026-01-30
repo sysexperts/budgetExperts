@@ -24,77 +24,69 @@ export default function BudgetManagement({ onUpdate }: BudgetManagementProps) {
     loadBudgets()
   }, [])
 
-  const loadBudgets = async () => {
-    try {
-      const response = await fetch('/api/budgets')
-      if (response.ok) {
-        const data = await response.json()
-        setBudgets(data)
+  const loadBudgets = () => {
+    // Load from localStorage
+    const storedBudgets = localStorage.getItem('budgets')
+    if (storedBudgets) {
+      try {
+        const parsed = JSON.parse(storedBudgets)
+        setBudgets(parsed)
+      } catch (error) {
+        console.error('Fehler beim Laden der Budgets:', error)
+        setBudgets([])
       }
-    } catch (error) {
-      console.error('Fehler beim Laden der Budgets:', error)
     }
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const saveBudgets = (budgetsToSave: Budget[]) => {
+    // Save to localStorage
+    localStorage.setItem('budgets', JSON.stringify(budgetsToSave))
+    setBudgets(budgetsToSave)
+  }
+
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     
-    const budgetData = {
+    // Validate amount
+    const amount = parseFloat(formData.amount)
+    if (isNaN(amount) || amount <= 0) {
+      alert('Bitte geben Sie einen gültigen Betrag ein')
+      return
+    }
+    
+    const newBudget: Budget = {
+      id: editingBudget ? editingBudget.id : Date.now(),
       name: formData.name,
       type: formData.type,
-      amount: parseFloat(formData.amount),
+      amount: amount,
       period: formData.type === 'custom' ? formData.period : undefined,
       category: formData.category || undefined,
       description: formData.description || undefined,
-      isActive: formData.isActive
+      isActive: formData.isActive,
+      createdAt: editingBudget ? editingBudget.createdAt : new Date().toISOString(),
+      updatedAt: new Date().toISOString()
     }
 
-    try {
-      if (editingBudget) {
-        // Update existing budget
-        const updateResponse = await fetch(`/api/budgets/${editingBudget.id}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(budgetData)
-        })
-        if (updateResponse.ok) {
-          loadBudgets()
-          closeModal()
-          onUpdate()
-        }
-      } else {
-        // Create new budget
-        const createResponse = await fetch('/api/budgets', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(budgetData)
-        })
-        if (createResponse.ok) {
-          loadBudgets()
-          closeModal()
-          onUpdate()
-        }
-      }
-    } catch (error) {
-      console.error('Fehler beim Speichern des Budgets:', error)
+    let updatedBudgets: Budget[]
+    if (editingBudget) {
+      // Update existing budget
+      updatedBudgets = budgets.map(b => b.id === editingBudget.id ? newBudget : b)
+    } else {
+      // Add new budget
+      updatedBudgets = [...budgets, newBudget]
     }
+
+    saveBudgets(updatedBudgets)
+    closeModal()
+    onUpdate()
   }
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = (id: number) => {
     if (!confirm('Möchten Sie dieses Budget wirklich löschen?')) return
 
-    try {
-      const deleteResponse = await fetch(`/api/budgets/${id}`, {
-        method: 'DELETE'
-      })
-      
-      if (deleteResponse.ok) {
-        loadBudgets()
-        onUpdate()
-      }
-    } catch (error) {
-      console.error('Fehler beim Löschen des Budgets:', error)
-    }
+    const updatedBudgets = budgets.filter(b => b.id !== id)
+    saveBudgets(updatedBudgets)
+    onUpdate()
   }
 
   const openModal = (budget?: Budget) => {

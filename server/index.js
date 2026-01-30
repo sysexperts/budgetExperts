@@ -145,6 +145,19 @@ async function initDatabase() {
       FOREIGN KEY (household_id) REFERENCES households(id) ON DELETE CASCADE
     );
 
+    CREATE TABLE IF NOT EXISTS budgets (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      type TEXT NOT NULL CHECK (type IN ('monthly', 'yearly', 'custom')),
+      amount REAL NOT NULL,
+      period TEXT,
+      category TEXT,
+      description TEXT,
+      is_active BOOLEAN NOT NULL DEFAULT 1,
+      created_at TEXT NOT NULL DEFAULT (datetime('now')),
+      updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
+
     CREATE TABLE IF NOT EXISTS paid_items (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       item_id TEXT NOT NULL UNIQUE,
