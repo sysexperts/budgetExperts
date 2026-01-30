@@ -412,6 +412,16 @@ app.delete('/api/fixed-costs/:id', allowAccess, (req, res) => {
   res.json({ success: true });
 });
 
+app.put('/api/fixed-costs/:id', allowAccess, (req, res) => {
+  const { name, category, amount, interval, familyMemberId, householdId } = req.body;
+  db.run(
+    'UPDATE fixed_costs SET name = ?, category = ?, amount = ?, interval = ?, family_member_id = ?, household_id = ? WHERE id = ?',
+    [name, category, amount, interval, familyMemberId || null, householdId || null, req.params.id]
+  );
+  saveDatabase();
+  res.json({ success: true });
+});
+
 app.get('/api/subscriptions', allowAccess, (req, res) => {
   const stmt = db.prepare('SELECT * FROM subscriptions');
   const subs = [];

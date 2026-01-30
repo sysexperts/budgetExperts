@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { FamilyMember, FixedCost, Household, Category } from '../types'
-import { Plus, Trash2, DollarSign } from 'lucide-react'
+import { Plus, Trash2, DollarSign, Edit } from 'lucide-react'
 
 interface FixedCostsProps {
   fixedCosts: FixedCost[]
@@ -12,6 +12,7 @@ interface FixedCostsProps {
 
 export default function FixedCosts({ fixedCosts, familyMembers, households, categories, onUpdate }: FixedCostsProps) {
   const [showForm, setShowForm] = useState(false)
+  const [editingCost, setEditingCost] = useState<FixedCost | null>(null)
   const [name, setName] = useState('')
   const [category, setCategory] = useState('')
   const [amount, setAmount] = useState('')
@@ -23,30 +24,63 @@ export default function FixedCosts({ fixedCosts, familyMembers, households, cate
     e.preventDefault()
     
     try {
-      await fetch('/api/fixed-costs', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name,
-          category,
-          amount: parseFloat(amount),
-          interval,
-          familyMemberId: familyMemberId || undefined,
-          householdId: householdId || undefined
+      if (editingCost) {
+        // Update existing fixed cost
+        await fetch(`/api/fixed-costs/${editingCost.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name,
+            category,
+            amount: parseFloat(amount),
+            interval,
+            familyMemberId: familyMemberId || undefined,
+            householdId: householdId || undefined
+          })
         })
-      })
+      } else {
+        // Create new fixed cost
+        await fetch('/api/fixed-costs', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name,
+            category,
+            amount: parseFloat(amount),
+            interval,
+            familyMemberId: familyMemberId || undefined,
+            householdId: householdId || undefined
+          })
+        })
+      }
       
-      setName('')
-      setCategory('')
-      setAmount('')
-      setInterval('monthly')
-      setFamilyMemberId(undefined)
-      setHouseholdId(undefined)
+      resetForm()
       setShowForm(false)
+      setEditingCost(null)
       onUpdate()
     } catch (error) {
-      console.error('Fehler beim Hinzufügen der Fixkosten:', error)
+      console.error('Fehler beim Speichern der Fixkosten:', error)
     }
+  }
+
+  const resetForm = () => {
+    setName('')
+    setCategory('')
+    setAmount('')
+    setInterval('monthly')
+    setFamilyMemberId(undefined)
+    setHouseholdId(undefined)
+  }
+
+  const handleEdit = (cost: FixedCost) => {
+    setEditingCost(cost)
+    setName(cost.name)
+    setCategory(cost.category)
+    setAmount(cost.amount.toString())
+    setInterval(cost.interval)
+    setFamilyMemberId(cost.familyMemberId)
+    setHouseholdId(cost.householdId)
+    setShowForm(true)
   }
 
   const handleDelete = async (id: number) => {
@@ -63,11 +97,17 @@ export default function FixedCosts({ fixedCosts, familyMembers, households, cate
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-xl font-bold text-gray-900">Fixkosten</h2>
         <button
-          onClick={() => setShowForm(!showForm)}
+          onClick={() => {
+            setShowForm(!showForm)
+            if (!showForm) {
+              resetForm()
+              setEditingCost(null)
+            }
+          }}
           className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
         >
           <Plus className="h-5 w-5" />
-          <span>Fixkosten hinzufügen</span>
+          <span>{editingCost ? 'Fixkosten bearbeiten' : 'Fixkosten hinzufügen'}</span>
         </button>
       </div>
 
@@ -164,7 +204,11 @@ export default function FixedCosts({ fixedCosts, familyMembers, households, cate
             </button>
             <button
               type="button"
-              onClick={() => setShowForm(false)}
+              onClick={() => {
+                setShowForm(false)
+                setEditingCost(null)
+                resetForm()
+              }}
               className="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400"
             >
               Abbrechen
@@ -205,6 +249,13 @@ export default function FixedCosts({ fixedCosts, familyMembers, households, cate
                       {cost.interval === 'monthly' ? 'Monatlich' : 'Jährlich'} ({monthlyAmount.toFixed(2)} €/Monat)
                     </p>
                   </div>
+                  <button
+                    onClick={() => handleEdit(cost)}
+                    className="text-blue-600 hover:text-blue-800"
+                    title="Fixkosten bearbeiten"
+                  >
+                    <Edit className="h-5 w-5" />
+                  </button>
                   <button
                     onClick={() => handleDelete(cost.id)}
                     className="text-red-600 hover:text-red-800"
