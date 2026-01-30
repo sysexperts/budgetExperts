@@ -417,7 +417,7 @@ export default function SavingsGoalsSimple({ familyMembers }: SavingsGoalsSimple
                       <input
                         type="number"
                         placeholder="Betrag hinzufügen"
-                        className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                        className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-maxcrowds-green focus:border-maxcrowds-green"
                         onKeyDown={(e) => {
                           if (e.key === 'Enter') {
                             const input = e.target as HTMLInputElement
@@ -440,7 +440,7 @@ export default function SavingsGoalsSimple({ familyMembers }: SavingsGoalsSimple
                             }
                           }
                         }}
-                        className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm font-medium"
+                        className="bg-maxcrowds-green text-white px-4 py-2 rounded-lg hover:bg-maxcrowds-green-hover transition-colors text-sm font-medium"
                       >
                         Hinzufügen
                       </button>
