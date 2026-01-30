@@ -211,53 +211,53 @@ export default function Dashboard({ familyMembers, fixedCosts, subscriptions, in
               
               {/* Pie Chart Visualization */}
               <div className="flex justify-center mb-6">
-                <div className="relative w-48 h-48">
-                  <svg className="transform -rotate-90 w-48 h-48">
+                <div className="relative w-64 h-64 group cursor-pointer">
+                  <svg className="transform -rotate-90 w-64 h-64 transition-transform duration-300 group-hover:scale-105">
                     <circle
-                      cx="96"
-                      cy="96"
-                      r="80"
+                      cx="128"
+                      cy="128"
+                      r="100"
                       fill="none"
                       stroke="currentColor"
-                      strokeWidth="16"
+                      strokeWidth="20"
                       className="text-gray-200"
                     />
                     <circle
-                      cx="96"
-                      cy="96"
-                      r="80"
+                      cx="128"
+                      cy="128"
+                      r="100"
                       fill="none"
                       stroke="currentColor"
-                      strokeWidth="16"
-                      className="text-maxcrowds-green"
-                      strokeDasharray={`${2 * Math.PI * 80 * (fixedCostPercentage / 100)} ${2 * Math.PI * 80}`}
+                      strokeWidth="20"
+                      className="text-maxcrowds-green transition-all duration-300 group-hover:text-maxcrowds-green-hover"
+                      strokeDasharray={`${2 * Math.PI * 100 * (fixedCostPercentage / 100)} ${2 * Math.PI * 100}`}
                       transform="rotate(90)"
                       style={{ transformOrigin: 'center' }}
                     />
                     <circle
-                      cx="96"
-                      cy="96"
-                      r="80"
+                      cx="128"
+                      cy="128"
+                      r="100"
                       fill="none"
                       stroke="currentColor"
-                      strokeWidth="16"
-                      className="text-purple-500"
-                      strokeDasharray={`${2 * Math.PI * 80 * (subscriptionPercentage / 100)} ${2 * Math.PI * 80}`}
-                      strokeDashoffset={`${2 * Math.PI * 80 * (fixedCostPercentage / 100)}`}
+                      strokeWidth="20"
+                      className="text-purple-500 transition-all duration-300 group-hover:text-purple-600"
+                      strokeDasharray={`${2 * Math.PI * 100 * (subscriptionPercentage / 100)} ${2 * Math.PI * 100}`}
+                      strokeDashoffset={`${2 * Math.PI * 100 * (fixedCostPercentage / 100)}`}
                       transform="rotate(90)"
                       style={{ transformOrigin: 'center' }}
                     />
                     {includeInstallments && (
                       <circle
-                        cx="96"
-                        cy="96"
-                        r="80"
+                        cx="128"
+                        cy="128"
+                        r="100"
                         fill="none"
                         stroke="currentColor"
-                        strokeWidth="16"
-                        className="text-orange-500"
-                        strokeDasharray={`${2 * Math.PI * 80 * (installmentPercentage / 100)} ${2 * Math.PI * 80}`}
-                        strokeDashoffset={`${2 * Math.PI * 80 * ((fixedCostPercentage + subscriptionPercentage) / 100)}`}
+                        strokeWidth="20"
+                        className="text-orange-500 transition-all duration-300 group-hover:text-orange-600"
+                        strokeDasharray={`${2 * Math.PI * 100 * (installmentPercentage / 100)} ${2 * Math.PI * 100}`}
+                        strokeDashoffset={`${2 * Math.PI * 100 * ((fixedCostPercentage + subscriptionPercentage) / 100)}`}
                         transform="rotate(90)"
                         style={{ transformOrigin: 'center' }}
                       />
@@ -265,8 +265,14 @@ export default function Dashboard({ familyMembers, fixedCosts, subscriptions, in
                   </svg>
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="text-center">
-                      <p className="text-2xl font-bold text-gray-900">€{monthlyTotal.toFixed(0)}</p>
-                      <p className="text-sm text-gray-500">Gesamt</p>
+                      <p className="text-3xl font-bold text-gray-900 group-hover:text-maxcrowds-green transition-colors duration-300">€{monthlyTotal.toFixed(0)}</p>
+                      <p className="text-sm text-gray-500 group-hover:text-gray-700 transition-colors duration-300">Gesamt</p>
+                    </div>
+                  </div>
+                  {/* Tooltip on hover */}
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+                    <div className="bg-gray-900 text-white px-3 py-2 rounded-lg shadow-lg">
+                      <p className="text-xs font-medium">Klicke für Details</p>
                     </div>
                   </div>
                 </div>
