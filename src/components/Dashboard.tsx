@@ -42,10 +42,36 @@ export default function Dashboard({ familyMembers, fixedCosts, subscriptions, in
   const subscriptionPercentage = monthlyTotal > 0 ? (subscriptionTotal / monthlyTotal * 100) : 0
   const installmentPercentage = monthlyTotal > 0 ? (installmentTotal / monthlyTotal * 100) : 0
 
-  // Calculate budget health
-  const budgetLimit = 5000
-  const budgetHealth = monthlyTotal > 0 ? Math.max(0, ((budgetLimit - monthlyTotal) / budgetLimit * 100)) : 100
-  const savingsRate = monthlyTotal > 0 ? ((budgetLimit - monthlyTotal) / budgetLimit * 100) : 100
+  // Calculate budget health and remaining budget
+  const calculateBudgetData = () => {
+    // Get budgets from localStorage
+    const storedBudgets = localStorage.getItem('budgets')
+    let totalBudgetLimit = 5000 // Default fallback
+    
+    if (storedBudgets) {
+      try {
+        const budgets = JSON.parse(storedBudgets)
+        const activeBudgets = budgets.filter((b: any) => b.isActive)
+        
+        // Calculate total monthly budget from active budgets
+        totalBudgetLimit = activeBudgets.reduce((total: number, budget: any) => {
+          const monthlyAmount = budget.type === 'yearly' ? budget.amount / 12 : budget.amount
+          return total + monthlyAmount
+        }, 0)
+      } catch (error) {
+        console.error('Error loading budgets:', error)
+      }
+    }
+    
+    return {
+      budgetLimit: totalBudgetLimit,
+      remainingBudget: totalBudgetLimit - monthlyTotal,
+      budgetHealth: monthlyTotal > 0 ? Math.max(0, ((totalBudgetLimit - monthlyTotal) / totalBudgetLimit * 100)) : 100,
+      savingsRate: monthlyTotal > 0 ? ((totalBudgetLimit - monthlyTotal) / totalBudgetLimit * 100) : 100
+    }
+  }
+
+  const { budgetLimit, remainingBudget, budgetHealth, savingsRate } = calculateBudgetData()
 
   // Calculate real statistics (after monthlyTotal is defined)
   const calculateMonthlyChange = () => {
@@ -161,7 +187,7 @@ export default function Dashboard({ familyMembers, fixedCosts, subscriptions, in
           <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col h-full">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <p className="text-sm text-gray-600">Budget-Gesundheit</p>
+                <p className="text-sm text-gray-600">Budget-Status</p>
                 <p className="text-3xl font-bold text-gray-900">{budgetHealth.toFixed(0)}%</p>
               </div>
               <div className="w-12 h-12 bg-maxcrowds-green rounded-lg flex items-center justify-center">
@@ -170,13 +196,26 @@ export default function Dashboard({ familyMembers, fixedCosts, subscriptions, in
             </div>
             <div className="mt-auto">
               <div className="flex justify-between text-sm text-gray-600 mb-1">
+                <span>Budget-Limit</span>
+                <span className="font-semibold">€{budgetLimit.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between text-sm text-gray-600 mb-1">
+                <span>Ausgaben</span>
+                <span className="font-semibold">€{monthlyTotal.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between text-sm text-gray-600 mb-1">
                 <span>Verbleibend</span>
-                <span className="font-semibold">€{(budgetLimit - monthlyTotal).toFixed(2)}</span>
+                <span className={`font-semibold ${remainingBudget < 0 ? 'text-red-600' : 'text-green-600'}`}>
+                  €{Math.abs(remainingBudget).toFixed(2)}
+                  {remainingBudget < 0 ? ' (Überzogen)' : ''}
+                </span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2">
                 <div 
-                  className="h-2 rounded-full bg-maxcrowds-green-hover transition-all duration-500"
-                  style={{ width: `${budgetHealth}%` }}
+                  className={`h-2 rounded-full transition-all duration-500 ${
+                    budgetHealth > 50 ? 'bg-maxcrowds-green-hover' : budgetHealth > 25 ? 'bg-yellow-500' : 'bg-red-500'
+                  }`}
+                  style={{ width: `${Math.min(100, budgetHealth)}%` }}
                 ></div>
               </div>
             </div>
@@ -422,7 +461,7 @@ export default function Dashboard({ familyMembers, fixedCosts, subscriptions, in
                   </div>
                   <div>
                     <p className="text-xs text-gray-500 mb-1">Verbleibend</p>
-                    <p className="text-lg font-semibold text-gray-900">€{(budgetLimit - monthlyTotal).toFixed(2)}</p>
+                    <p className="text-lg font-semibold text-gray-900">€{Math.abs(remainingBudget).toFixed(2)}</p>
                   </div>
                 </div>
               </div>
@@ -552,15 +591,20 @@ export default function Dashboard({ familyMembers, fixedCosts, subscriptions, in
         <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Budget Zusammenfassung</h3>
-              <p className="text-sm text-gray-600">
-                Dein Budget ist {budgetHealth > 70 ? 'im grünen Bereich' : budgetHealth > 40 ? 'im gelben Bereich' : 'im kritischen Bereich'}.
-                {savingsRate > 20 && ' Du sparst gut!'}
-              </p>
+              <h3 className="text-lg font-semibold text-gray-900">Budget-Zusammenfassung</h3>
+              <p className="text-sm text-gray-500">Ihr aktueller Budget-Status</p>
             </div>
-            <div className="text-right">
-              <p className="text-2xl font-bold text-gray-900">€{monthlyTotal.toFixed(2)}</p>
-              <p className="text-sm text-gray-500">von €{budgetLimit.toFixed(2)} Budget</p>
+            <div className="flex items-center space-x-8">
+              <div className="text-center">
+                <p className="text-2xl font-bold text-gray-900">€{Math.abs(remainingBudget).toFixed(2)}</p>
+                <p className={`text-sm ${remainingBudget < 0 ? 'text-red-600' : 'text-green-600'}`}>
+                  {remainingBudget < 0 ? 'Budget überschritten' : 'Verbleibendes Budget'}
+                </p>
+              </div>
+              <div className="text-center">
+                <p className="text-2xl font-bold text-maxcrowds-green">{savingsRate.toFixed(0)}%</p>
+                <p className="text-sm text-gray-500">Sparquote</p>
+              </div>
             </div>
           </div>
         </div>
