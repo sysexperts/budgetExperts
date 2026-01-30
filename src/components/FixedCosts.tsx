@@ -97,12 +97,18 @@ export default function FixedCosts({ fixedCosts, familyMembers, households, cate
   }, 0)
 
   return (
-    <div className="bg-white rounded-lg shadow p-6">
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h2 className="text-xl font-bold text-gray-900">Fixkosten</h2>
-          <p className="text-3xl font-bold text-green-600 mt-2">{totalMonthly.toFixed(2)} €</p>
-        </div>
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-3xl font-bold text-gray-900">Fixkosten</h1>
+        <p className="text-gray-600 mt-1">Verwalte deine wiederkehrenden Fixkosten</p>
+      </div>
+
+      <div className="bg-white rounded-lg shadow p-6">
+        <div className="flex justify-between items-center mb-6">
+          <div>
+            <h2 className="text-xl font-bold text-gray-900">Monatliche Gesamtkosten</h2>
+            <p className="text-3xl font-bold text-green-600 mt-2">{totalMonthly.toFixed(2)} €</p>
+          </div>
         <button
           onClick={() => {
             setShowForm(!showForm)
@@ -276,6 +282,7 @@ export default function FixedCosts({ fixedCosts, familyMembers, households, cate
           })
         )}
       </div>
+    </div>
     </div>
   )
 }
