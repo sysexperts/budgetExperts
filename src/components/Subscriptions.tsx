@@ -150,7 +150,7 @@ export default function Subscriptions({ subscriptions, familyMembers, households
         <div className="flex justify-between items-center mb-6">
           <div>
             <h2 className="text-xl font-bold text-gray-900">Monatliche Gesamtkosten</h2>
-            <p className="text-3xl font-bold text-blue-600 mt-2">{totalMonthly.toFixed(2)} €</p>
+            <p className="text-3xl font-bold text-maxcrowds-green mt-2">{totalMonthly.toFixed(2)} €</p>
           </div>
           <button
             onClick={() => {
@@ -160,7 +160,7 @@ export default function Subscriptions({ subscriptions, familyMembers, households
                 setEditingSubscription(null)
               }
             }}
-            className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+            className="flex items-center space-x-2 bg-maxcrowds-green text-white px-4 py-2 rounded-lg hover:bg-maxcrowds-green-hover transition-colors"
           >
             <Plus className="h-5 w-5" />
             <span>{editingSubscription ? 'Abonnement bearbeiten' : 'Abonnement hinzufügen'}</span>
@@ -177,7 +177,7 @@ export default function Subscriptions({ subscriptions, familyMembers, households
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-maxcrowds-green focus:border-transparent"
                 />
               </div>
               <div>
@@ -186,7 +186,7 @@ export default function Subscriptions({ subscriptions, familyMembers, households
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-maxcrowds-green focus:border-transparent"
                 >
                   <option value="">Kategorie wählen</option>
                   {categories.map((cat) => (
@@ -204,7 +204,7 @@ export default function Subscriptions({ subscriptions, familyMembers, households
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-maxcrowds-green focus:border-transparent"
                 />
               </div>
               <div>
@@ -212,7 +212,7 @@ export default function Subscriptions({ subscriptions, familyMembers, households
                 <select
                   value={interval}
                   onChange={(e) => setInterval(e.target.value as 'monthly' | 'yearly')}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-maxcrowds-green focus:border-transparent"
                 >
                   <option value="monthly">Monatlich</option>
                   <option value="yearly">Jährlich</option>
@@ -227,7 +227,7 @@ export default function Subscriptions({ subscriptions, familyMembers, households
                   value={paymentDate}
                   onChange={(e) => setPaymentDate(e.target.value)}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-maxcrowds-green focus:border-transparent"
                 />
               </div>
               <div>
@@ -235,7 +235,7 @@ export default function Subscriptions({ subscriptions, familyMembers, households
                 <select
                   value={householdId || ''}
                   onChange={(e) => setHouseholdId(e.target.value ? parseInt(e.target.value) : undefined)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-maxcrowds-green focus:border-transparent"
                 >
                   <option value="">Kein Haushalt</option>
                   {households.map((household) => (
@@ -250,7 +250,7 @@ export default function Subscriptions({ subscriptions, familyMembers, households
                 <select
                   value={familyMemberId || ''}
                   onChange={(e) => setFamilyMemberId(e.target.value ? parseInt(e.target.value) : undefined)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-maxcrowds-green focus:border-transparent"
                 >
                   <option value="">Keins</option>
                   {familyMembers.map((member) => (
@@ -264,7 +264,7 @@ export default function Subscriptions({ subscriptions, familyMembers, households
             <div className="mt-4 flex space-x-2">
               <button
                 type="submit"
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+                className="bg-maxcrowds-green text-white px-4 py-2 rounded-lg hover:bg-maxcrowds-green-hover transition-colors"
               >
                 Speichern
               </button>
@@ -298,10 +298,10 @@ export default function Subscriptions({ subscriptions, familyMembers, households
                   className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100"
                 >
                   <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-blue-200 rounded-full flex items-center justify-center">
+                    <div className="w-10 h-10 bg-maxcrowds-light-gray rounded-full flex items-center justify-center">
                       {(() => {
                         const IconComponent = getCategoryIcon(sub.category, categories);
-                        return <IconComponent className="h-5 w-5 text-blue-700" />;
+                        return <IconComponent className="h-5 w-5 text-maxcrowds-green" />;
                       })()}
                     </div>
                     <div>
@@ -320,7 +320,7 @@ export default function Subscriptions({ subscriptions, familyMembers, households
                     </div>
                     <button
                       onClick={() => handleEdit(sub)}
-                      className="text-blue-600 hover:text-blue-800"
+                      className="text-maxcrowds-green hover:text-maxcrowds-green-hover"
                       title="Abonnement bearbeiten"
                     >
                       <Edit className="h-5 w-5" />

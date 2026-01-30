@@ -145,22 +145,22 @@ export default function FixedCosts({ fixedCosts, familyMembers, households, cate
         <div className="flex justify-between items-center mb-6">
           <div>
             <h2 className="text-xl font-bold text-gray-900">Monatliche Gesamtkosten</h2>
-            <p className="text-3xl font-bold text-green-600 mt-2">{totalMonthly.toFixed(2)} €</p>
+            <p className="text-3xl font-bold text-maxcrowds-green mt-2">{totalMonthly.toFixed(2)} €</p>
           </div>
-        <button
-          onClick={() => {
-            setShowForm(!showForm)
-            if (!showForm) {
-              resetForm()
-              setEditingCost(null)
-            }
-          }}
-          className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
-        >
-          <Plus className="h-5 w-5" />
-          <span>{editingCost ? 'Fixkosten bearbeiten' : 'Fixkosten hinzufügen'}</span>
-        </button>
-      </div>
+          <button
+            onClick={() => {
+              setShowForm(!showForm)
+              if (!showForm) {
+                resetForm()
+                setEditingCost(null)
+              }
+            }}
+            className="flex items-center space-x-2 bg-maxcrowds-green text-white px-4 py-2 rounded-lg hover:bg-maxcrowds-green-hover transition-colors"
+          >
+            <Plus className="h-5 w-5" />
+            <span>{editingCost ? 'Fixkosten bearbeiten' : 'Fixkosten hinzufügen'}</span>
+          </button>
+        </div>
 
       {showForm && (
         <form onSubmit={handleSubmit} className="mb-6 p-4 bg-gray-50 rounded-lg">
@@ -172,7 +172,7 @@ export default function FixedCosts({ fixedCosts, familyMembers, households, cate
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-maxcrowds-green focus:border-transparent"
                 placeholder="z.B. Miete, Strom"
               />
             </div>
@@ -182,7 +182,7 @@ export default function FixedCosts({ fixedCosts, familyMembers, households, cate
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-maxcrowds-green focus:border-transparent"
               >
                 <option value="">Kategorie wählen</option>
                 {categories.map((cat) => (
@@ -200,7 +200,7 @@ export default function FixedCosts({ fixedCosts, familyMembers, households, cate
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-maxcrowds-green focus:border-transparent"
                 placeholder="0.00"
               />
             </div>
@@ -209,7 +209,7 @@ export default function FixedCosts({ fixedCosts, familyMembers, households, cate
               <select
                 value={interval}
                 onChange={(e) => setInterval(e.target.value as 'monthly' | 'yearly')}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-maxcrowds-green focus:border-transparent"
               >
                 <option value="monthly">Monatlich</option>
                 <option value="yearly">Jährlich</option>
@@ -220,7 +220,7 @@ export default function FixedCosts({ fixedCosts, familyMembers, households, cate
               <select
                 value={householdId || ''}
                 onChange={(e) => setHouseholdId(e.target.value ? parseInt(e.target.value) : undefined)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-maxcrowds-green focus:border-transparent"
               >
                 <option value="">Kein Haushalt</option>
                 {households.map((household) => (
@@ -235,7 +235,7 @@ export default function FixedCosts({ fixedCosts, familyMembers, households, cate
               <select
                 value={familyMemberId || ''}
                 onChange={(e) => setFamilyMemberId(e.target.value ? parseInt(e.target.value) : undefined)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-maxcrowds-green focus:border-transparent"
               >
                 <option value="">Kein Mitglied</option>
                 {familyMembers.map((member) => (
@@ -249,7 +249,7 @@ export default function FixedCosts({ fixedCosts, familyMembers, households, cate
           <div className="mt-4 flex space-x-2">
             <button
               type="submit"
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+              className="bg-maxcrowds-green text-white px-4 py-2 rounded-lg hover:bg-maxcrowds-green-hover transition-colors"
             >
               Speichern
             </button>
@@ -283,10 +283,10 @@ export default function FixedCosts({ fixedCosts, familyMembers, households, cate
                 className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100"
               >
                 <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-green-200 rounded-full flex items-center justify-center">
+                  <div className="w-10 h-10 bg-maxcrowds-light-gray rounded-full flex items-center justify-center">
                     {(() => {
                       const IconComponent = getCategoryIcon(cost.category, categories);
-                      return <IconComponent className="h-5 w-5 text-green-700" />;
+                      return <IconComponent className="h-5 w-5 text-maxcrowds-green" />;
                     })()}
                   </div>
                   <div>
@@ -298,14 +298,14 @@ export default function FixedCosts({ fixedCosts, familyMembers, households, cate
                 </div>
                 <div className="flex items-center space-x-4">
                   <div className="text-right">
-                    <p className="font-semibold text-gray-900">{cost.amount.toFixed(2)} €</p>
+                    <p className="font-semibold text-maxcrowds-green">{cost.amount.toFixed(2)} €</p>
                     <p className="text-sm text-gray-500">
                       {cost.interval === 'monthly' ? 'Monatlich' : 'Jährlich'} ({monthlyAmount.toFixed(2)} €/Monat)
                     </p>
                   </div>
                   <button
                     onClick={() => handleEdit(cost)}
-                    className="text-blue-600 hover:text-blue-800"
+                    className="text-maxcrowds-green hover:text-maxcrowds-green-hover"
                     title="Fixkosten bearbeiten"
                   >
                     <Edit className="h-5 w-5" />

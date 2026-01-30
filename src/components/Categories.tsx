@@ -170,7 +170,7 @@ export default function Categories({ onUpdate }: CategoriesProps) {
             />
             <button
               type="submit"
-              className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-maxcrowds-green text-white rounded-md hover:bg-maxcrowds-green-hover transition-colors"
             >
               <Plus className="w-4 h-4" />
               Hinzufügen
@@ -186,7 +186,7 @@ export default function Categories({ onUpdate }: CategoriesProps) {
                   placeholder="Icons suchen..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm"
+                  className="w-full px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-maxcrowds-green focus:border-transparent text-sm"
                 />
               </div>
               
@@ -197,7 +197,7 @@ export default function Categories({ onUpdate }: CategoriesProps) {
                     onClick={() => setSelectedCategory('Alle')}
                     className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
                       selectedCategory === 'Alle'
-                        ? 'bg-purple-100 text-purple-700 border border-purple-200'
+                        ? 'bg-maxcrowds-green text-white border border-maxcrowds-green'
                         : 'bg-gray-100 text-gray-600 hover:bg-gray-200 border border-gray-200'
                     }`}
                   >
@@ -209,7 +209,7 @@ export default function Categories({ onUpdate }: CategoriesProps) {
                       onClick={() => setSelectedCategory(category)}
                       className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
                         selectedCategory === category
-                          ? 'bg-purple-100 text-purple-700 border border-purple-200'
+                          ? 'bg-maxcrowds-green text-white border border-maxcrowds-green'
                           : 'bg-gray-100 text-gray-600 hover:bg-gray-200 border border-gray-200'
                       }`}
                     >
@@ -229,13 +229,13 @@ export default function Categories({ onUpdate }: CategoriesProps) {
                       onClick={() => setSelectedIcon(name)}
                       className={`p-1.5 rounded border transition-all hover:scale-110 hover:shadow-md ${
                         selectedIcon === name
-                          ? 'border-purple-500 bg-purple-50 shadow-sm'
-                          : 'border-gray-200 hover:border-purple-300 bg-white'
+                          ? 'border-maxcrowds-green bg-maxcrowds-green/10 shadow-sm'
+                          : 'border-gray-200 hover:border-maxcrowds-green bg-white'
                       }`}
                       title={name}
                     >
                       <Icon className={`w-4 h-4 ${
-                        selectedIcon === name ? 'text-purple-600' : 'text-gray-600'
+                        selectedIcon === name ? 'text-maxcrowds-green' : 'text-gray-600'
                       }`} />
                     </button>
                   ))}
@@ -271,7 +271,7 @@ export default function Categories({ onUpdate }: CategoriesProps) {
                         type="text"
                         value={editingName}
                         onChange={(e) => setEditingName(e.target.value)}
-                        className="w-full px-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 mb-2"
+                        className="w-full px-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-maxcrowds-green focus:border-transparent mb-2"
                         autoFocus
                       />
                       <div className="bg-gray-50 rounded-lg p-3 border border-gray-200">
@@ -283,13 +283,13 @@ export default function Categories({ onUpdate }: CategoriesProps) {
                               onClick={() => setEditingIcon(name)}
                               className={`p-2 rounded-lg border transition-all transform hover:scale-105 ${
                                 editingIcon === name
-                                  ? 'border-purple-500 bg-purple-100 shadow-md'
-                                  : 'border-gray-300 bg-white hover:border-purple-300 hover:bg-purple-50'
+                                  ? 'border-maxcrowds-green bg-maxcrowds-green/10 shadow-md'
+                                  : 'border-gray-300 bg-white hover:border-maxcrowds-green hover:bg-maxcrowds-green/5'
                               }`}
                               title={name}
                             >
                               <Icon className={`w-5 h-5 ${
-                                editingIcon === name ? 'text-purple-600' : 'text-gray-600'
+                                editingIcon === name ? 'text-maxcrowds-green' : 'text-gray-600'
                               }`} />
                             </button>
                           ))}
@@ -299,7 +299,7 @@ export default function Categories({ onUpdate }: CategoriesProps) {
                     <div className="flex gap-2 ml-3">
                       <button
                         onClick={() => saveEdit(category.id)}
-                        className="p-1 text-green-600 hover:bg-green-50 rounded-md transition-colors"
+                        className="p-1 text-maxcrowds-green hover:bg-maxcrowds-green/10 rounded-md transition-colors"
                         title="Speichern"
                       >
                         <Check className="w-5 h-5" />
@@ -319,7 +319,7 @@ export default function Categories({ onUpdate }: CategoriesProps) {
                       {(() => {
                         const iconData = availableIcons.find(i => i.name === category.icon);
                         const Icon = iconData ? iconData.icon : Tag;
-                        return <Icon className="w-5 h-5 text-purple-600" />;
+                        return <Icon className="w-5 h-5 text-maxcrowds-green" />;
                       })()}
                       <span className="font-medium text-gray-800">{category.name}</span>
                     </div>
