@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Download, Menu, X } from 'lucide-react'
+import { Download, Menu, X, ChevronDown } from 'lucide-react'
 import Dashboard from './components/Dashboard'
 import FixedCosts from './components/FixedCosts'
 import Subscriptions from './components/Subscriptions'
@@ -19,6 +19,7 @@ function App() {
     return (savedTab as Tab) || 'dashboard'
   })
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [monthlyDropdownOpen, setMonthlyDropdownOpen] = useState(false)
   const [familyMembers, setFamilyMembers] = useState<FamilyMember[]>([])
   const [fixedCosts, setFixedCosts] = useState<FixedCost[]>([])
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([])
@@ -128,46 +129,67 @@ function App() {
                         </div>
                       </div>
                       <div className="hidden sm:ml-10 sm:flex sm:space-x-8">
-                        <button
-                          onClick={() => setActiveTab('costs')}
-                          className={`${
-                            activeTab === 'costs'
-                              ? 'text-gray-900 border-b-2 border-gray-900'
-                              : 'text-gray-500 border-b-2 border-transparent hover:text-gray-700 hover:border-gray-300'
-                          } px-1 pt-1 border-b-2 text-sm font-medium transition-colors duration-200`}
-                        >
-                          Fixkosten
-                        </button>
-                        <button
-                          onClick={() => setActiveTab('subscriptions')}
-                          className={`${
-                            activeTab === 'subscriptions'
-                              ? 'text-gray-900 border-b-2 border-gray-900'
-                              : 'text-gray-500 border-b-2 border-transparent hover:text-gray-700 hover:border-gray-300'
-                          } px-1 pt-1 border-b-2 text-sm font-medium transition-colors duration-200`}
-                        >
-                          Abonnements
-                        </button>
-                        <button
-                          onClick={() => setActiveTab('installments')}
-                          className={`${
-                            activeTab === 'installments'
-                              ? 'text-gray-900 border-b-2 border-gray-900'
-                              : 'text-gray-500 border-b-2 border-transparent hover:text-gray-700 hover:border-gray-300'
-                          } px-1 pt-1 border-b-2 text-sm font-medium transition-colors duration-200`}
-                        >
-                          Ratenzahlungen
-                        </button>
-                        <button
-                          onClick={() => setActiveTab('monthly')}
-                          className={`${
-                            activeTab === 'monthly'
-                              ? 'text-gray-900 border-b-2 border-gray-900'
-                              : 'text-gray-500 border-b-2 border-transparent hover:text-gray-700 hover:border-gray-300'
-                          } px-1 pt-1 border-b-2 text-sm font-medium transition-colors duration-200`}
-                        >
-                          Monatliche Zahlungen
-                        </button>
+                        {/* Monthly Payments Dropdown */}
+                        <div className="relative">
+                          <button
+                            onClick={() => setMonthlyDropdownOpen(!monthlyDropdownOpen)}
+                            className={`${
+                              ['monthly', 'costs', 'subscriptions', 'installments'].includes(activeTab)
+                                ? 'text-gray-900 border-b-2 border-gray-900'
+                                : 'text-gray-500 border-b-2 border-transparent hover:text-gray-700 hover:border-gray-300'
+                            } px-1 pt-1 border-b-2 text-sm font-medium transition-colors duration-200 flex items-center space-x-1`}
+                          >
+                            <span>Monatliche Zahlungen</span>
+                            <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${monthlyDropdownOpen ? 'rotate-180' : ''}`} />
+                          </button>
+                          
+                          {/* Dropdown Menu */}
+                          {monthlyDropdownOpen && (
+                            <div className="absolute top-full left-0 mt-1 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+                              <button
+                                onClick={() => { setActiveTab('monthly'); setMonthlyDropdownOpen(false); }}
+                                className={`${
+                                  activeTab === 'monthly'
+                                    ? 'bg-gray-100 text-gray-900'
+                                    : 'text-gray-700 hover:bg-gray-50'
+                                } block w-full text-left px-4 py-2 text-sm font-medium transition-colors duration-200`}
+                              >
+                                Übersicht
+                              </button>
+                              <button
+                                onClick={() => { setActiveTab('costs'); setMonthlyDropdownOpen(false); }}
+                                className={`${
+                                  activeTab === 'costs'
+                                    ? 'bg-gray-100 text-gray-900'
+                                    : 'text-gray-700 hover:bg-gray-50'
+                                } block w-full text-left px-4 py-2 text-sm font-medium transition-colors duration-200`}
+                              >
+                                Fixkosten
+                              </button>
+                              <button
+                                onClick={() => { setActiveTab('subscriptions'); setMonthlyDropdownOpen(false); }}
+                                className={`${
+                                  activeTab === 'subscriptions'
+                                    ? 'bg-gray-100 text-gray-900'
+                                    : 'text-gray-700 hover:bg-gray-50'
+                                } block w-full text-left px-4 py-2 text-sm font-medium transition-colors duration-200`}
+                              >
+                                Abonnements
+                              </button>
+                              <button
+                                onClick={() => { setActiveTab('installments'); setMonthlyDropdownOpen(false); }}
+                                className={`${
+                                  activeTab === 'installments'
+                                    ? 'bg-gray-100 text-gray-900'
+                                    : 'text-gray-700 hover:bg-gray-50'
+                                } block w-full text-left px-4 py-2 text-sm font-medium transition-colors duration-200`}
+                              >
+                                Ratenzahlungen
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                        
                         <button
                           onClick={() => setActiveTab('savings')}
                           className={`${
@@ -225,46 +247,52 @@ function App() {
                 {mobileMenuOpen && (
                   <div className="sm:hidden bg-white border-b border-gray-200">
                     <div className="px-2 pt-2 pb-3 space-y-1">
-                      <button
-                        onClick={() => { setActiveTab('costs'); setMobileMenuOpen(false); }}
-                        className={`${
-                          activeTab === 'costs'
-                            ? 'bg-gray-100 text-gray-900 border-l-4 border-gray-900'
-                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 border-l-4 border-transparent'
-                        } block w-full text-left py-2 px-3 text-base font-medium transition-colors duration-200`}
-                      >
-                        Fixkosten
-                      </button>
-                      <button
-                        onClick={() => { setActiveTab('subscriptions'); setMobileMenuOpen(false); }}
-                        className={`${
-                          activeTab === 'subscriptions'
-                            ? 'bg-gray-100 text-gray-900 border-l-4 border-gray-900'
-                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 border-l-4 border-transparent'
-                        } block w-full text-left py-2 px-3 text-base font-medium transition-colors duration-200`}
-                      >
-                        Abonnements
-                      </button>
-                      <button
-                        onClick={() => { setActiveTab('installments'); setMobileMenuOpen(false); }}
-                        className={`${
-                          activeTab === 'installments'
-                            ? 'bg-gray-100 text-gray-900 border-l-4 border-gray-900'
-                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 border-l-4 border-transparent'
-                        } block w-full text-left py-2 px-3 text-base font-medium transition-colors duration-200`}
-                      >
-                        Ratenzahlungen
-                      </button>
-                      <button
-                        onClick={() => { setActiveTab('monthly'); setMobileMenuOpen(false); }}
-                        className={`${
-                          activeTab === 'monthly'
-                            ? 'bg-gray-100 text-gray-900 border-l-4 border-gray-900'
-                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 border-l-4 border-transparent'
-                        } block w-full text-left py-2 px-3 text-base font-medium transition-colors duration-200`}
-                      >
-                        Monatliche Zahlungen
-                      </button>
+                      {/* Monthly Payments Mobile */}
+                      <div className="space-y-1">
+                        <button
+                          onClick={() => { setActiveTab('monthly'); setMobileMenuOpen(false); }}
+                          className={`${
+                            activeTab === 'monthly'
+                              ? 'bg-gray-100 text-gray-900 border-l-4 border-gray-900'
+                              : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 border-l-4 border-transparent'
+                          } block w-full text-left py-2 px-3 text-base font-medium transition-colors duration-200`}
+                        >
+                          Monatliche Zahlungen
+                        </button>
+                        <div className="pl-6 space-y-1">
+                          <button
+                            onClick={() => { setActiveTab('costs'); setMobileMenuOpen(false); }}
+                            className={`${
+                              activeTab === 'costs'
+                                ? 'bg-gray-100 text-gray-900 border-l-4 border-gray-900'
+                                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 border-l-4 border-transparent'
+                            } block w-full text-left py-2 px-3 text-sm font-medium transition-colors duration-200`}
+                          >
+                            Fixkosten
+                          </button>
+                          <button
+                            onClick={() => { setActiveTab('subscriptions'); setMobileMenuOpen(false); }}
+                            className={`${
+                              activeTab === 'subscriptions'
+                                ? 'bg-gray-100 text-gray-900 border-l-4 border-gray-900'
+                                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 border-l-4 border-transparent'
+                            } block w-full text-left py-2 px-3 text-sm font-medium transition-colors duration-200`}
+                          >
+                            Abonnements
+                          </button>
+                          <button
+                            onClick={() => { setActiveTab('installments'); setMobileMenuOpen(false); }}
+                            className={`${
+                              activeTab === 'installments'
+                                ? 'bg-gray-100 text-gray-900 border-l-4 border-gray-900'
+                                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 border-l-4 border-transparent'
+                            } block w-full text-left py-2 px-3 text-sm font-medium transition-colors duration-200`}
+                          >
+                            Ratenzahlungen
+                          </button>
+                        </div>
+                      </div>
+                      
                       <button
                         onClick={() => { setActiveTab('savings'); setMobileMenuOpen(false); }}
                         className={`${
