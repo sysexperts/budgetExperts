@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { FamilyMember, FixedCost, Subscription, InstallmentPlan } from '../types'
-import { DollarSign, TrendingUp, CreditCard, Coins, Users, MoreHorizontal, Target, Activity, Bell, Settings } from 'lucide-react'
+import { TrendingUp, CreditCard, Coins, Users, MoreHorizontal, Target, Activity, Bell, Settings } from 'lucide-react'
 
 interface DashboardProps {
   familyMembers: FamilyMember[]
@@ -127,8 +127,8 @@ export default function Dashboard({ familyMembers, fixedCosts, subscriptions, in
         <div className="w-full px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-4">
-              <div className="w-8 h-8 bg-maxcrowds-green rounded-lg flex items-center justify-center">
-                <DollarSign className="w-5 h-5 text-white" />
+              <div className="w-8 h-8 bg-maxcrowds-green rounded-lg flex items-center justify-center overflow-hidden">
+                <img src="/logo.png" alt="Logo" className="w-6 h-6 object-contain" />
               </div>
               <div>
                 <h1 className="text-2xl font-semibold text-gray-900">Budget Dashboard</h1>
