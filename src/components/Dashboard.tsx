@@ -88,7 +88,7 @@ export default function Dashboard({ familyMembers, fixedCosts, subscriptions, in
                 <p className="text-3xl font-bold text-gray-900">€{monthlyTotal.toFixed(2)}</p>
               </div>
               <div className="w-12 h-12 bg-maxcrowds-green rounded-lg flex items-center justify-center">
-                <DollarSign className="w-6 h-6 text-white" />
+                <span className="text-white font-bold text-lg">€</span>
               </div>
             </div>
             
@@ -103,7 +103,7 @@ export default function Dashboard({ familyMembers, fixedCosts, subscriptions, in
                   className={`h-2 rounded-full transition-all duration-500 ${
                     budgetHealth > 50 ? 'bg-green-500' : budgetHealth > 25 ? 'bg-yellow-500' : 'bg-red-500'
                   }`}
-                  style={{ width: `${Math.min(100, (monthlyTotal / budgetLimit * 100)}%` }}
+                  style={{ width: `${Math.min(100, (monthlyTotal / budgetLimit * 100))}%` }}
                 ></div>
               </div>
             </div>
