@@ -34,7 +34,7 @@ export default function Settings({ households, familyMembers, fixedCosts, subscr
               onClick={() => setActiveTab('households')}
               className={`flex-1 px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
                 activeTab === 'households'
-                  ? 'border-blue-500 text-blue-600 bg-blue-50'
+                  ? 'border-maxcrowds-green text-maxcrowds-green bg-maxcrowds-green/10'
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'
               }`}
             >
@@ -44,7 +44,7 @@ export default function Settings({ households, familyMembers, fixedCosts, subscr
               onClick={() => setActiveTab('members')}
               className={`flex-1 px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
                 activeTab === 'members'
-                  ? 'border-blue-500 text-blue-600 bg-blue-50'
+                  ? 'border-maxcrowds-green text-maxcrowds-green bg-maxcrowds-green/10'
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'
               }`}
             >
@@ -54,7 +54,7 @@ export default function Settings({ households, familyMembers, fixedCosts, subscr
               onClick={() => setActiveTab('categories')}
               className={`flex-1 px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
                 activeTab === 'categories'
-                  ? 'border-blue-500 text-blue-600 bg-blue-50'
+                  ? 'border-maxcrowds-green text-maxcrowds-green bg-maxcrowds-green/10'
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'
               }`}
             >
@@ -64,7 +64,7 @@ export default function Settings({ households, familyMembers, fixedCosts, subscr
               onClick={() => setActiveTab('export')}
               className={`flex-1 px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
                 activeTab === 'export'
-                  ? 'border-blue-500 text-blue-600 bg-blue-50'
+                  ? 'border-maxcrowds-green text-maxcrowds-green bg-maxcrowds-green/10'
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'
               }`}
             >
@@ -99,22 +99,22 @@ export default function Settings({ households, familyMembers, fixedCosts, subscr
         </div>
       </div>
 
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+      <div className="bg-maxcrowds-light-gray border border-maxcrowds-green/20 rounded-lg p-6">
         <h3 className="font-bold text-gray-800 mb-3 flex items-center gap-2">
-          <ChevronRight className="w-5 h-5 text-blue-600" />
+          <ChevronRight className="w-5 h-5 text-maxcrowds-green" />
           Über diese Einstellungen
         </h3>
         <ul className="space-y-2 text-sm text-gray-700">
           <li className="flex items-start gap-2">
-            <span className="text-blue-600 font-bold">•</span>
+            <span className="text-maxcrowds-green font-bold">•</span>
             <span><strong>Haushalte:</strong> Verwalte verschiedene Haushalte und deren Beschreibungen</span>
           </li>
           <li className="flex items-start gap-2">
-            <span className="text-blue-600 font-bold">•</span>
+            <span className="text-maxcrowds-green font-bold">•</span>
             <span><strong>Familienmitglieder:</strong> Füge Personen hinzu und ordne sie Haushalten zu</span>
           </li>
           <li className="flex items-start gap-2">
-            <span className="text-blue-600 font-bold">•</span>
+            <span className="text-maxcrowds-green font-bold">•</span>
             <span><strong>Kategorien:</strong> Erstelle und bearbeite Ausgabenkategorien für bessere Übersicht</span>
           </li>
         </ul>

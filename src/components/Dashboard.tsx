@@ -142,7 +142,7 @@ export default function Dashboard({ familyMembers, fixedCosts, subscriptions, in
             type="checkbox"
             checked={includeInstallments}
             onChange={(e) => setIncludeInstallments(e.target.checked)}
-            className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+            className="w-4 h-4 text-maxcrowds-green border-gray-300 rounded focus:ring-maxcrowds-green"
           />
           <span className="text-sm font-medium text-gray-700">Ratenpläne in Berechnung einbeziehen</span>
           <span className="text-xs text-gray-500">
@@ -160,11 +160,11 @@ export default function Dashboard({ familyMembers, fixedCosts, subscriptions, in
                 {combinedMonthly.toFixed(2)}€
               </p>
               {combinedMonthly > 0 && (
-                <p className="text-sm text-blue-500 mt-2">+6.2% vom letzten Monat</p>
+                <p className="text-sm text-maxcrowds-green mt-2">+6.2% vom letzten Monat</p>
               )}
             </div>
-            <div className="bg-blue-50 p-3 rounded-lg">
-              <DollarSign className="h-8 w-8 text-blue-500" />
+            <div className="bg-maxcrowds-light-gray p-3 rounded-lg">
+              <DollarSign className="h-8 w-8 text-maxcrowds-green" />
             </div>
           </div>
         </div>
@@ -177,11 +177,11 @@ export default function Dashboard({ familyMembers, fixedCosts, subscriptions, in
                 {subscriptionTotal.toFixed(2)}€
               </p>
               {subscriptionTotal > 0 && (
-                <p className="text-sm text-blue-500 mt-2">+2.1% (Neu: Disney+)</p>
+                <p className="text-sm text-maxcrowds-green mt-2">+2.1% (Neu: Disney+)</p>
               )}
             </div>
-            <div className="bg-blue-50 p-3 rounded-lg">
-              <CreditCard className="h-8 w-8 text-blue-500" />
+            <div className="bg-maxcrowds-light-gray p-3 rounded-lg">
+              <CreditCard className="h-8 w-8 text-maxcrowds-green" />
             </div>
           </div>
         </div>
@@ -194,11 +194,11 @@ export default function Dashboard({ familyMembers, fixedCosts, subscriptions, in
                 {installmentTotal.toFixed(2)}€
               </p>
               {installmentTotal > 0 && (
-                <p className="text-sm text-blue-500 mt-2">Aktive Ratenzahlungen</p>
+                <p className="text-sm text-maxcrowds-green mt-2">Aktive Ratenzahlungen</p>
               )}
             </div>
-            <div className="bg-blue-50 p-3 rounded-lg">
-              <Coins className="h-8 w-8 text-blue-500" />
+            <div className="bg-maxcrowds-light-gray p-3 rounded-lg">
+              <Coins className="h-8 w-8 text-maxcrowds-green" />
             </div>
           </div>
         </div>
@@ -211,11 +211,11 @@ export default function Dashboard({ familyMembers, fixedCosts, subscriptions, in
                 {fixedCostRatio.toFixed(0)}%
               </p>
               {fixedCostRatio > 0 && (
-                <p className="text-sm text-blue-500 mt-2">-1.5% optimiert</p>
+                <p className="text-sm text-maxcrowds-green mt-2">-1.5% optimiert</p>
               )}
             </div>
-            <div className="bg-blue-50 p-3 rounded-lg">
-              <TrendingUp className="h-8 w-8 text-blue-500" />
+            <div className="bg-maxcrowds-light-gray p-3 rounded-lg">
+              <TrendingUp className="h-8 w-8 text-maxcrowds-green" />
             </div>
           </div>
         </div>
@@ -232,19 +232,19 @@ export default function Dashboard({ familyMembers, fixedCosts, subscriptions, in
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {/* Gesamtausgaben Card */}
-          <div className="bg-gradient-to-br from-blue-100 to-blue-50 rounded-xl p-6 text-blue-900 shadow-lg transform hover:scale-105 transition-all duration-200">
+          <div className="bg-gradient-to-br from-maxcrowds-green/10 to-maxcrowds-green/5 rounded-xl p-6 text-maxcrowds-dark-gray shadow-lg transform hover:scale-105 transition-all duration-200">
             <div className="flex items-center justify-between mb-4">
-              <div className="bg-blue-200 p-2 rounded-lg">
-                <DollarSign className="h-6 w-6 text-blue-700" />
+              <div className="bg-maxcrowds-green/20 p-2 rounded-lg">
+                <DollarSign className="h-6 w-6 text-maxcrowds-green" />
               </div>
               <div className="text-right">
-                <p className="text-blue-700 text-sm font-medium">Gesamt</p>
+                <p className="text-maxcrowds-green text-sm font-medium">Gesamt</p>
                 <p className="text-3xl font-bold">{combinedMonthly.toFixed(0)}€</p>
               </div>
             </div>
             <div className="flex items-center justify-between text-sm">
-              <span className="text-blue-700">Monatliche Ausgaben</span>
-              <span className="bg-blue-300 px-2 py-1 rounded-full text-xs">100%</span>
+              <span className="text-maxcrowds-green">Monatliche Ausgaben</span>
+              <span className="bg-maxcrowds-green/20 px-2 py-1 rounded-full text-xs">100%</span>
             </div>
           </div>
 
@@ -391,7 +391,7 @@ export default function Dashboard({ familyMembers, fixedCosts, subscriptions, in
                   onClick={() => setInstallmentFilter('all')}
                   className={`px-3 py-1 text-sm font-medium rounded-md transition-colors ${
                     installmentFilter === 'all'
-                      ? 'bg-blue-500 text-white'
+                      ? 'bg-maxcrowds-green text-white'
                       : 'text-gray-700 hover:text-gray-900'
                   }`}
                 >
@@ -460,7 +460,7 @@ export default function Dashboard({ familyMembers, fixedCosts, subscriptions, in
                             setPaidInstallments(newPaidInstallments)
                             localStorage.setItem('paid-installments', JSON.stringify(newPaidInstallments))
                           }}
-                          className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                          className="w-4 h-4 text-maxcrowds-green border-gray-300 rounded focus:ring-maxcrowds-green"
                           title={`Rate für ${new Date(selectedMonth + '-01').toLocaleString('de-DE', { month: 'long', year: 'numeric' })} als bezahlt markieren`}
                         />
                         <label className="ml-2 text-xs text-gray-500 cursor-pointer">
@@ -583,10 +583,10 @@ export default function Dashboard({ familyMembers, fixedCosts, subscriptions, in
             {familyMembers.map((member) => (
               <div
                 key={member.id}
-                className="flex items-center space-x-2 bg-blue-50 px-4 py-2 rounded-full"
+                className="flex items-center space-x-2 bg-maxcrowds-light-gray px-4 py-2 rounded-full"
               >
-                <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                  <span className="text-blue-600 font-semibold text-sm">
+                <div className="w-8 h-8 bg-maxcrowds-green/20 rounded-full flex items-center justify-center">
+                  <span className="text-maxcrowds-green font-semibold text-sm">
                     {member.name.charAt(0)}
                   </span>
                 </div>
