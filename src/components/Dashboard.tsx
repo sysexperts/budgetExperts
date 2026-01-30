@@ -144,6 +144,17 @@ export default function Dashboard({ familyMembers, fixedCosts, subscriptions, in
             </div>
             
             <div className="flex items-center space-x-4">
+              {/* Quick Action Buttons */}
+              <button onClick={handleAddExpense} className="flex items-center space-x-2 px-4 py-2 bg-maxcrowds-green text-white rounded-lg hover:bg-maxcrowds-green-hover transition-colors">
+                <span className="text-white font-bold">€</span>
+                <span className="text-sm font-medium">Ausgabe hinzufügen</span>
+              </button>
+              <button onClick={handleExportReport} className="flex items-center space-x-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+                <TrendingUp className="w-4 h-4" />
+                <span className="text-sm font-medium">Bericht exportieren</span>
+              </button>
+              
+              {/* Original Header Buttons */}
               <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
                 <MoreHorizontal className="w-5 h-5" />
               </button>
