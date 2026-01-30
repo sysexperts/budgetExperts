@@ -91,6 +91,19 @@ export interface SavingsGoal {
   updatedAt: string;
 }
 
+export interface Budget {
+  id: number;
+  name: string;
+  type: 'monthly' | 'yearly' | 'custom';
+  amount: number;
+  period?: string; // for custom budgets, e.g., "2024-01", "Q1-2024"
+  category?: string;
+  description?: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface Statistics {
   byCategory: { [key: string]: number };
   fixedVsVariable: { fixed: number; variable: number };

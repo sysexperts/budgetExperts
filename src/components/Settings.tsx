@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { Settings as SettingsIcon, ChevronRight, Download } from 'lucide-react';
+import { Settings as SettingsIcon, ChevronRight, Download, DollarSign } from 'lucide-react';
 import Households from './Households';
 import FamilyMembers from './FamilyMembers';
 import Categories from './Categories';
 import ExportReports from './ExportReports';
+import BudgetManagement from './BudgetManagement';
 import { Household, FamilyMember } from '../types';
 
 interface SettingsProps {
@@ -15,7 +16,7 @@ interface SettingsProps {
   onUpdate: () => void;
 }
 
-type SettingsTab = 'households' | 'members' | 'categories' | 'export';
+type SettingsTab = 'households' | 'members' | 'categories' | 'budget' | 'export';
 
 export default function Settings({ households, familyMembers, fixedCosts, subscriptions, installmentPlans, onUpdate }: SettingsProps) {
   const [activeTab, setActiveTab] = useState<SettingsTab>('households');
@@ -61,6 +62,17 @@ export default function Settings({ households, familyMembers, fixedCosts, subscr
               Kategorien
             </button>
             <button
+              onClick={() => setActiveTab('budget')}
+              className={`flex-1 px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
+                activeTab === 'budget'
+                  ? 'border-maxcrowds-green text-maxcrowds-green bg-maxcrowds-green/10'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+              }`}
+            >
+              <DollarSign className="w-4 h-4 mr-2" />
+              Budget
+            </button>
+            <button
               onClick={() => setActiveTab('export')}
               className={`flex-1 px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
                 activeTab === 'export'
@@ -87,6 +99,9 @@ export default function Settings({ households, familyMembers, fixedCosts, subscr
           )}
           {activeTab === 'categories' && (
             <Categories onUpdate={onUpdate} />
+          )}
+          {activeTab === 'budget' && (
+            <BudgetManagement onUpdate={onUpdate} />
           )}
           {activeTab === 'export' && (
             <ExportReports 
@@ -116,6 +131,10 @@ export default function Settings({ households, familyMembers, fixedCosts, subscr
           <li className="flex items-start gap-2">
             <span className="text-maxcrowds-green font-bold">•</span>
             <span><strong>Kategorien:</strong> Erstelle und bearbeite Ausgabenkategorien für bessere Übersicht</span>
+          </li>
+          <li className="flex items-start gap-2">
+            <span className="text-maxcrowds-green font-bold">•</span>
+            <span><strong>Budget:</strong> Setze monatliche und jährliche Budget-Limits für deine Ausgaben</span>
           </li>
         </ul>
       </div>
