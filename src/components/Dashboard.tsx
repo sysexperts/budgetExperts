@@ -135,7 +135,7 @@ export default function Dashboard({ familyMembers, fixedCosts, subscriptions, in
                 <p className="text-sm text-gray-600">Monatliche Ausgaben</p>
                 <p className="text-3xl font-bold text-gray-900">€{monthlyTotal.toFixed(2)}</p>
               </div>
-              <div className="w-12 h-12 bg-maxcrowds-green rounded-lg flex items-center justify-center">
+              <div className="w-12 h-12 bg-maxcrowds-green-hover rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-lg">€</span>
               </div>
             </div>
@@ -165,7 +165,7 @@ export default function Dashboard({ familyMembers, fixedCosts, subscriptions, in
                 <p className="text-3xl font-bold text-gray-900">{budgetHealth.toFixed(0)}%</p>
               </div>
               <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${
-                budgetHealth > 50 ? 'bg-maxcrowds-green' : budgetHealth > 25 ? 'bg-maxcrowds-green/70' : 'bg-maxcrowds-green/50'
+                budgetHealth > 50 ? 'bg-maxcrowds-green-hover' : budgetHealth > 25 ? 'bg-maxcrowds-green/80' : 'bg-maxcrowds-green/60'
               }`}>
                 <Target className="w-6 h-6 text-white" />
               </div>
@@ -192,7 +192,7 @@ export default function Dashboard({ familyMembers, fixedCosts, subscriptions, in
                 <p className="text-3xl font-bold text-gray-900">€{subscriptionTotal.toFixed(2)}</p>
                 <p className="text-xs text-gray-500">{subscriptions.length} aktiv</p>
               </div>
-              <div className="w-12 h-12 bg-maxcrowds-green/80 rounded-lg flex items-center justify-center">
+              <div className="w-12 h-12 bg-maxcrowds-green/90 rounded-lg flex items-center justify-center">
                 <CreditCard className="w-6 h-6 text-white" />
               </div>
             </div>
@@ -218,7 +218,7 @@ export default function Dashboard({ familyMembers, fixedCosts, subscriptions, in
                 <p className="text-3xl font-bold text-gray-900">€{installmentTotal.toFixed(2)}</p>
                 <p className="text-xs text-gray-500">{installmentPlans.length} aktiv</p>
               </div>
-              <div className="w-12 h-12 bg-maxcrowds-green/60 rounded-lg flex items-center justify-center">
+              <div className="w-12 h-12 bg-maxcrowds-green/70 rounded-lg flex items-center justify-center">
                 <Coins className="w-6 h-6 text-white" />
               </div>
             </div>
