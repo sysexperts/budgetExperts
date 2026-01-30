@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Tag, Plus, Trash2, Edit2, Check, X, Home, Car, ShoppingCart, Utensils, Heart, Briefcase, Gamepad2, Book, Dumbbell, Music, Film, Plane, Coffee, Smartphone, Laptop, Shirt, Pill, GraduationCap, Baby, Dog, Cat, TreePine, Zap, Shield, Wrench } from 'lucide-react';
+import { Tag, Plus, Trash2, Edit2, Check, X, Home, Car, ShoppingCart, Utensils, Heart, Briefcase, Gamepad2, Book, Dumbbell, Music, Film, Plane, Coffee, Smartphone, Laptop, Shirt, Pill, GraduationCap, Baby, Dog, Cat, TreePine, Zap, Shield, Wrench, DollarSign } from 'lucide-react';
 import { Category } from '../types';
 
 interface CategoriesProps {
@@ -7,33 +7,35 @@ interface CategoriesProps {
 }
 
 const availableIcons = [
-  { name: 'Tag', icon: Tag, default: true },
-  { name: 'Home', icon: Home },
-  { name: 'Car', icon: Car },
-  { name: 'ShoppingCart', icon: ShoppingCart },
-  { name: 'Utensils', icon: Utensils },
-  { name: 'Heart', icon: Heart },
-  { name: 'Briefcase', icon: Briefcase },
-  { name: 'Gamepad2', icon: Gamepad2 },
-  { name: 'Book', icon: Book },
-  { name: 'Dumbbell', icon: Dumbbell },
-  { name: 'Music', icon: Music },
-  { name: 'Film', icon: Film },
-  { name: 'Plane', icon: Plane },
-  { name: 'Coffee', icon: Coffee },
-  { name: 'Smartphone', icon: Smartphone },
-  { name: 'Laptop', icon: Laptop },
-  { name: 'Shirt', icon: Shirt },
-  { name: 'Pill', icon: Pill },
-  { name: 'GraduationCap', icon: GraduationCap },
-  { name: 'Baby', icon: Baby },
-  { name: 'Dog', icon: Dog },
-  { name: 'Cat', icon: Cat },
-  { name: 'TreePine', icon: TreePine },
-  { name: 'Zap', icon: Zap },
-  { name: 'Shield', icon: Shield },
-  { name: 'Wrench', icon: Wrench }
+  { name: 'Tag', icon: DollarSign, category: 'Allgemein' },
+  { name: 'Home', icon: Home, category: 'Wohnen' },
+  { name: 'Car', icon: Car, category: 'Transport' },
+  { name: 'ShoppingCart', icon: ShoppingCart, category: 'Einkaufen' },
+  { name: 'Utensils', icon: Utensils, category: 'Essen' },
+  { name: 'Heart', icon: Heart, category: 'Gesundheit' },
+  { name: 'Briefcase', icon: Briefcase, category: 'Arbeit' },
+  { name: 'Gamepad2', icon: Gamepad2, category: 'Unterhaltung' },
+  { name: 'Book', icon: Book, category: 'Bildung' },
+  { name: 'Dumbbell', icon: Dumbbell, category: 'Sport' },
+  { name: 'Music', icon: Music, category: 'Medien' },
+  { name: 'Film', icon: Film, category: 'Medien' },
+  { name: 'Plane', icon: Plane, category: 'Reisen' },
+  { name: 'Coffee', icon: Coffee, category: 'Essen' },
+  { name: 'Smartphone', icon: Smartphone, category: 'Technik' },
+  { name: 'Laptop', icon: Laptop, category: 'Technik' },
+  { name: 'Shirt', icon: Shirt, category: 'Kleidung' },
+  { name: 'Pill', icon: Pill, category: 'Gesundheit' },
+  { name: 'GraduationCap', icon: GraduationCap, category: 'Bildung' },
+  { name: 'Baby', icon: Baby, category: 'Familie' },
+  { name: 'Dog', icon: Dog, category: 'Tiere' },
+  { name: 'Cat', icon: Cat, category: 'Tiere' },
+  { name: 'TreePine', icon: TreePine, category: 'Natur' },
+  { name: 'Zap', icon: Zap, category: 'Allgemein' },
+  { name: 'Shield', icon: Shield, category: 'Sicherheit' },
+  { name: 'Wrench', icon: Wrench, category: 'Werkzeug' }
 ];
+
+const iconCategories = [...new Set(availableIcons.map(icon => icon.category))];
 
 export default function Categories({ onUpdate }: CategoriesProps) {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -42,6 +44,14 @@ export default function Categories({ onUpdate }: CategoriesProps) {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editingName, setEditingName] = useState('');
   const [editingIcon, setEditingIcon] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('Alle');
+
+  const filteredIcons = availableIcons.filter(icon => {
+    const matchesSearch = icon.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = selectedCategory === 'Alle' || icon.category === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
 
   useEffect(() => {
     fetchCategories();
@@ -168,25 +178,73 @@ export default function Categories({ onUpdate }: CategoriesProps) {
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-3">Icon auswählen</label>
-            <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-              <div className="grid grid-cols-6 gap-3">
-                {availableIcons.map(({ name, icon: Icon }) => (
+            <div className="border border-gray-300 rounded-lg bg-white shadow-sm">
+              {/* Search Bar */}
+              <div className="p-3 border-b border-gray-200">
+                <input
+                  type="text"
+                  placeholder="Icons suchen..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm"
+                />
+              </div>
+              
+              {/* Category Filter */}
+              <div className="p-3 border-b border-gray-200">
+                <div className="flex flex-wrap gap-1">
                   <button
-                    key={name}
-                    type="button"
-                    onClick={() => setSelectedIcon(name)}
-                    className={`p-3 rounded-xl border-2 transition-all transform hover:scale-105 ${
-                      selectedIcon === name
-                        ? 'border-purple-500 bg-purple-100 shadow-md'
-                        : 'border-gray-300 bg-white hover:border-purple-300 hover:bg-purple-50'
+                    onClick={() => setSelectedCategory('Alle')}
+                    className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                      selectedCategory === 'Alle'
+                        ? 'bg-purple-100 text-purple-700 border border-purple-200'
+                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200 border border-gray-200'
                     }`}
-                    title={name}
                   >
-                    <Icon className={`w-6 h-6 ${
-                      selectedIcon === name ? 'text-purple-600' : 'text-gray-600'
-                    }`} />
+                    Alle
                   </button>
-                ))}
+                  {iconCategories.map(category => (
+                    <button
+                      key={category}
+                      onClick={() => setSelectedCategory(category)}
+                      className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                        selectedCategory === category
+                          ? 'bg-purple-100 text-purple-700 border border-purple-200'
+                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200 border border-gray-200'
+                      }`}
+                    >
+                      {category}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              
+              {/* Icon Grid */}
+              <div className="p-3 max-h-48 overflow-y-auto">
+                <div className="grid grid-cols-8 gap-2">
+                  {filteredIcons.map(({ name, icon: Icon }) => (
+                    <button
+                      key={name}
+                      type="button"
+                      onClick={() => setSelectedIcon(name)}
+                      className={`p-2 rounded-lg border transition-all hover:scale-110 hover:shadow-md ${
+                        selectedIcon === name
+                          ? 'border-purple-500 bg-purple-50 shadow-sm'
+                          : 'border-gray-200 hover:border-purple-300 bg-white'
+                      }`}
+                      title={name}
+                    >
+                      <Icon className={`w-5 h-5 ${
+                        selectedIcon === name ? 'text-purple-600' : 'text-gray-600'
+                      }`} />
+                    </button>
+                  ))}
+                </div>
+                {filteredIcons.length === 0 && (
+                  <div className="text-center py-4 text-gray-500 text-sm">
+                    Keine Icons gefunden
+                  </div>
+                )}
               </div>
             </div>
           </div>
