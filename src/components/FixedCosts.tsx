@@ -92,10 +92,17 @@ export default function FixedCosts({ fixedCosts, familyMembers, households, cate
     }
   }
 
+  const totalMonthly = fixedCosts.reduce((sum, cost) => {
+    return sum + (cost.interval === 'monthly' ? cost.amount : cost.amount / 12)
+  }, 0)
+
   return (
     <div className="bg-white rounded-lg shadow p-6">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-bold text-gray-900">Fixkosten</h2>
+        <div>
+          <h2 className="text-xl font-bold text-gray-900">Fixkosten</h2>
+          <p className="text-3xl font-bold text-green-600 mt-2">{totalMonthly.toFixed(2)} €</p>
+        </div>
         <button
           onClick={() => {
             setShowForm(!showForm)
