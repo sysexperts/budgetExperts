@@ -209,6 +209,69 @@ export default function Dashboard({ familyMembers, fixedCosts, subscriptions, in
                 </div>
               </div>
               
+              {/* Pie Chart Visualization */}
+              <div className="flex justify-center mb-6">
+                <div className="relative w-48 h-48">
+                  <svg className="transform -rotate-90 w-48 h-48">
+                    <circle
+                      cx="96"
+                      cy="96"
+                      r="80"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="16"
+                      className="text-gray-200"
+                    />
+                    <circle
+                      cx="96"
+                      cy="96"
+                      r="80"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="16"
+                      className="text-maxcrowds-green"
+                      strokeDasharray={`${2 * Math.PI * 80 * (fixedCostPercentage / 100)} ${2 * Math.PI * 80}`}
+                      transform="rotate(90)"
+                      style={{ transformOrigin: 'center' }}
+                    />
+                    <circle
+                      cx="96"
+                      cy="96"
+                      r="80"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="16"
+                      className="text-purple-500"
+                      strokeDasharray={`${2 * Math.PI * 80 * (subscriptionPercentage / 100)} ${2 * Math.PI * 80}`}
+                      strokeDashoffset={`${2 * Math.PI * 80 * (fixedCostPercentage / 100)}`}
+                      transform="rotate(90)"
+                      style={{ transformOrigin: 'center' }}
+                    />
+                    {includeInstallments && (
+                      <circle
+                        cx="96"
+                        cy="96"
+                        r="80"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="16"
+                        className="text-orange-500"
+                        strokeDasharray={`${2 * Math.PI * 80 * (installmentPercentage / 100)} ${2 * Math.PI * 80}`}
+                        strokeDashoffset={`${2 * Math.PI * 80 * ((fixedCostPercentage + subscriptionPercentage) / 100)}`}
+                        transform="rotate(90)"
+                        style={{ transformOrigin: 'center' }}
+                      />
+                    )}
+                  </svg>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="text-center">
+                      <p className="text-2xl font-bold text-gray-900">€{monthlyTotal.toFixed(0)}</p>
+                      <p className="text-sm text-gray-500">Gesamt</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               {/* Simple Chart Representation */}
               <div className="space-y-4">
                 <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
