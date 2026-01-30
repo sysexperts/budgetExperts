@@ -120,12 +120,7 @@ function App() {
                     <div className="flex justify-between h-16">
                       <div className="flex items-center">
                         <div className="flex items-center cursor-pointer" onClick={() => setActiveTab('dashboard')}>
-                          <span className="text-2xl font-light tracking-tight text-gray-900" style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif' }}>
-                            moneta
-                          </span>
-                          <span className="text-2xl font-bold tracking-tight text-blue-600" style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif' }}>
-                            X
-                          </span>
+                          <img src="/logo.png" alt="monetaX" className="h-8 w-auto object-contain" />
                         </div>
                       </div>
                       <div className="hidden sm:ml-10 sm:flex sm:space-x-8">
