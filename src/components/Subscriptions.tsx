@@ -112,7 +112,7 @@ export default function Subscriptions({ subscriptions, familyMembers, households
         <div className="flex justify-between items-center mb-6">
           <div>
             <h2 className="text-xl font-bold text-gray-900">Monatliche Gesamtkosten</h2>
-            <p className="text-3xl font-bold text-blue-600 mt-2">${totalMonthly.toFixed(2)}</p>
+            <p className="text-3xl font-bold text-blue-600 mt-2">{totalMonthly.toFixed(2)} €</p>
           </div>
           <button
             onClick={() => {
