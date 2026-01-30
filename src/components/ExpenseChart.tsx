@@ -40,7 +40,7 @@ export default function ExpenseChart({ history, currentTotal, budgetLimit }: Exp
 
   // Generate chart points
   const chartHeight = 150
-  const chartWidth = 600
+  const chartWidth = 300  // Reduced from 600
   const padding = 30
 
   const chartPoints = filteredHistory.map((entry, index) => {
