@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
-import { Download, Menu, X, ChevronDown } from 'lucide-react'
+import { Download, Menu, X } from 'lucide-react'
+import { Menu as HeadlessMenu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import Dashboard from './components/Dashboard'
 import FixedCosts from './components/FixedCosts'
 import Subscriptions from './components/Subscriptions'
@@ -19,7 +20,6 @@ function App() {
     return (savedTab as Tab) || 'dashboard'
   })
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [monthlyDropdownOpen, setMonthlyDropdownOpen] = useState(false)
   const [familyMembers, setFamilyMembers] = useState<FamilyMember[]>([])
   const [fixedCosts, setFixedCosts] = useState<FixedCost[]>([])
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([])
@@ -129,10 +129,9 @@ function App() {
                         </div>
                       </div>
                       <div className="hidden sm:ml-10 sm:flex sm:space-x-8">
-                        {/* Monthly Payments Dropdown */}
-                        <div className="relative">
-                          <button
-                            onClick={() => setMonthlyDropdownOpen(!monthlyDropdownOpen)}
+                        {/* Monthly Payments Dropdown with Headless UI */}
+                        <HeadlessMenu>
+                          <MenuButton
                             className={`${
                               ['monthly', 'costs', 'subscriptions', 'installments'].includes(activeTab)
                                 ? 'text-gray-900 border-b-2 border-gray-900'
@@ -140,14 +139,19 @@ function App() {
                             } px-1 pt-1 border-b-2 text-sm font-medium transition-colors duration-200 flex items-center space-x-1`}
                           >
                             <span>Monatliche Zahlungen</span>
-                            <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${monthlyDropdownOpen ? 'rotate-180' : ''}`} />
-                          </button>
+                            <svg className="w-4 h-4 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                            </svg>
+                          </MenuButton>
                           
-                          {/* Dropdown Menu */}
-                          {monthlyDropdownOpen && (
-                            <div className="absolute top-full left-0 mt-1 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+                          <MenuItems
+                            transition
+                            anchor="bottom"
+                            className="absolute left-0 mt-1 w-48 origin-top rounded-lg bg-white border border-gray-200 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50 transition duration-200 ease-out data-closed:scale-95 data-closed:opacity-0"
+                          >
+                            <MenuItem>
                               <button
-                                onClick={() => { setActiveTab('monthly'); setMonthlyDropdownOpen(false); }}
+                                onClick={() => setActiveTab('monthly')}
                                 className={`${
                                   activeTab === 'monthly'
                                     ? 'bg-gray-100 text-gray-900'
@@ -156,8 +160,10 @@ function App() {
                               >
                                 Übersicht
                               </button>
+                            </MenuItem>
+                            <MenuItem>
                               <button
-                                onClick={() => { setActiveTab('costs'); setMonthlyDropdownOpen(false); }}
+                                onClick={() => setActiveTab('costs')}
                                 className={`${
                                   activeTab === 'costs'
                                     ? 'bg-gray-100 text-gray-900'
@@ -166,8 +172,10 @@ function App() {
                               >
                                 Fixkosten
                               </button>
+                            </MenuItem>
+                            <MenuItem>
                               <button
-                                onClick={() => { setActiveTab('subscriptions'); setMonthlyDropdownOpen(false); }}
+                                onClick={() => setActiveTab('subscriptions')}
                                 className={`${
                                   activeTab === 'subscriptions'
                                     ? 'bg-gray-100 text-gray-900'
@@ -176,8 +184,10 @@ function App() {
                               >
                                 Abonnements
                               </button>
+                            </MenuItem>
+                            <MenuItem>
                               <button
-                                onClick={() => { setActiveTab('installments'); setMonthlyDropdownOpen(false); }}
+                                onClick={() => setActiveTab('installments')}
                                 className={`${
                                   activeTab === 'installments'
                                     ? 'bg-gray-100 text-gray-900'
@@ -186,9 +196,9 @@ function App() {
                               >
                                 Ratenzahlungen
                               </button>
-                            </div>
-                          )}
-                        </div>
+                            </MenuItem>
+                          </MenuItems>
+                        </HeadlessMenu>
                         
                         <button
                           onClick={() => setActiveTab('savings')}
