@@ -127,21 +127,21 @@ export default function Dashboard({ familyMembers, fixedCosts, subscriptions, in
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Key Metrics */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {/* Total Expenses */}
-          <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition-shadow">
+          <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col h-full">
             <div className="flex items-center justify-between mb-4">
               <div>
                 <p className="text-sm text-gray-600">Monatliche Ausgaben</p>
                 <p className="text-3xl font-bold text-gray-900">€{monthlyTotal.toFixed(2)}</p>
               </div>
-              <div className="w-12 h-12 bg-maxcrowds-dark-gray rounded-lg flex items-center justify-center">
+              <div className="w-12 h-12 bg-maxcrowds-green rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-lg">€</span>
               </div>
             </div>
             
             {/* Progress Bar */}
-            <div className="mt-4">
+            <div className="mt-auto">
               <div className="flex justify-between text-sm text-gray-600 mb-1">
                 <span>Budget genutzt</span>
                 <span>{budgetHealth.toFixed(0)}%</span>
@@ -158,17 +158,17 @@ export default function Dashboard({ familyMembers, fixedCosts, subscriptions, in
           </div>
 
           {/* Budget Health */}
-          <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition-shadow">
+          <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col h-full">
             <div className="flex items-center justify-between mb-4">
               <div>
                 <p className="text-sm text-gray-600">Budget-Gesundheit</p>
                 <p className="text-3xl font-bold text-gray-900">{budgetHealth.toFixed(0)}%</p>
               </div>
-              <div className="w-12 h-12 bg-maxcrowds-dark-gray rounded-lg flex items-center justify-center">
+              <div className="w-12 h-12 bg-maxcrowds-green rounded-lg flex items-center justify-center">
                 <Target className="w-6 h-6 text-white" />
               </div>
             </div>
-            <div className="mt-4">
+            <div className="mt-auto">
               <div className="flex justify-between text-sm text-gray-600 mb-1">
                 <span>Verbleibend</span>
                 <span className="font-semibold">€{(budgetLimit - monthlyTotal).toFixed(2)}</span>
@@ -183,18 +183,18 @@ export default function Dashboard({ familyMembers, fixedCosts, subscriptions, in
           </div>
 
           {/* Subscriptions */}
-          <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition-shadow">
+          <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col h-full">
             <div className="flex items-center justify-between mb-4">
               <div>
                 <p className="text-sm text-gray-600">Abonnements</p>
                 <p className="text-3xl font-bold text-gray-900">€{subscriptionTotal.toFixed(2)}</p>
                 <p className="text-xs text-gray-500">{subscriptions.length} aktiv</p>
               </div>
-              <div className="w-12 h-12 bg-maxcrowds-dark-gray rounded-lg flex items-center justify-center">
+              <div className="w-12 h-12 bg-maxcrowds-green rounded-lg flex items-center justify-center">
                 <CreditCard className="w-6 h-6 text-white" />
               </div>
             </div>
-            <div className="mt-4">
+            <div className="mt-auto">
               <div className="flex justify-between text-sm text-gray-600 mb-1">
                 <span>Anteil</span>
                 <span className="font-semibold">{subscriptionPercentage.toFixed(1)}%</span>
@@ -209,18 +209,18 @@ export default function Dashboard({ familyMembers, fixedCosts, subscriptions, in
           </div>
 
           {/* Installment Plans */}
-          <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition-shadow">
+          <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col h-full">
             <div className="flex items-center justify-between mb-4">
               <div>
                 <p className="text-sm text-gray-600">Ratenpläne</p>
                 <p className="text-3xl font-bold text-gray-900">€{installmentTotal.toFixed(2)}</p>
                 <p className="text-xs text-gray-500">{installmentPlans.length} aktiv</p>
               </div>
-              <div className="w-12 h-12 bg-maxcrowds-dark-gray rounded-lg flex items-center justify-center">
+              <div className="w-12 h-12 bg-maxcrowds-green rounded-lg flex items-center justify-center">
                 <Coins className="w-6 h-6 text-white" />
               </div>
             </div>
-            <div className="mt-4">
+            <div className="mt-auto">
               <div className="flex justify-between text-sm text-gray-600 mb-1">
                 <span>Anteil</span>
                 <span className="font-semibold">{installmentPercentage.toFixed(1)}%</span>
