@@ -14,7 +14,40 @@ export default function Dashboard({ familyMembers, fixedCosts, subscriptions, in
   const [selectedPeriod, setSelectedPeriod] = useState('month')
   const [showChartDetails, setShowChartDetails] = useState(false)
 
-  // Calculate real statistics
+  // Calculate monthly totals first
+  const calculateMonthlyTotal = () => {
+    const fixedTotal = fixedCosts.reduce((sum, cost) => {
+      return sum + (cost.interval === 'monthly' ? cost.amount : cost.amount / 12)
+    }, 0)
+
+    const subsTotal = subscriptions.reduce((sum, sub) => {
+      return sum + (sub.interval === 'monthly' ? sub.amount : sub.amount / 12)
+    }, 0)
+
+    const installmentTotal = includeInstallments ? installmentPlans.reduce((sum, plan) => sum + plan.monthlyAmount, 0) : 0
+
+    return fixedTotal + subsTotal + installmentTotal
+  }
+
+  const monthlyTotal = calculateMonthlyTotal()
+  const subscriptionTotal = subscriptions.reduce((sum, sub) => {
+    return sum + (sub.interval === 'monthly' ? sub.amount : sub.amount / 12)
+  }, 0)
+
+  const installmentTotal = includeInstallments ? installmentPlans.reduce((sum, plan) => sum + plan.monthlyAmount, 0) : 0
+  const fixedCostTotal = monthlyTotal - subscriptionTotal - installmentTotal
+
+  // Calculate percentages
+  const fixedCostPercentage = monthlyTotal > 0 ? (fixedCostTotal / monthlyTotal * 100) : 0
+  const subscriptionPercentage = monthlyTotal > 0 ? (subscriptionTotal / monthlyTotal * 100) : 0
+  const installmentPercentage = monthlyTotal > 0 ? (installmentTotal / monthlyTotal * 100) : 0
+
+  // Calculate budget health
+  const budgetLimit = 5000
+  const budgetHealth = monthlyTotal > 0 ? Math.max(0, ((budgetLimit - monthlyTotal) / budgetLimit * 100)) : 100
+  const savingsRate = monthlyTotal > 0 ? ((budgetLimit - monthlyTotal) / budgetLimit * 100) : 100
+
+  // Calculate real statistics (after monthlyTotal is defined)
   const calculateMonthlyChange = () => {
     // Mock previous month calculation (would normally come from historical data)
     const previousMonthTotal = monthlyTotal * 0.94 // Mock: 6% increase
@@ -60,39 +93,6 @@ export default function Dashboard({ familyMembers, fixedCosts, subscriptions, in
     linkElement.setAttribute('download', exportFileDefaultName)
     linkElement.click()
   }
-
-  // Calculate monthly totals
-  const calculateMonthlyTotal = () => {
-    const fixedTotal = fixedCosts.reduce((sum, cost) => {
-      return sum + (cost.interval === 'monthly' ? cost.amount : cost.amount / 12)
-    }, 0)
-
-    const subsTotal = subscriptions.reduce((sum, sub) => {
-      return sum + (sub.interval === 'monthly' ? sub.amount : sub.amount / 12)
-    }, 0)
-
-    const installmentTotal = includeInstallments ? installmentPlans.reduce((sum, plan) => sum + plan.monthlyAmount, 0) : 0
-
-    return fixedTotal + subsTotal + installmentTotal
-  }
-
-  const monthlyTotal = calculateMonthlyTotal()
-  const subscriptionTotal = subscriptions.reduce((sum, sub) => {
-    return sum + (sub.interval === 'monthly' ? sub.amount : sub.amount / 12)
-  }, 0)
-
-  const installmentTotal = includeInstallments ? installmentPlans.reduce((sum, plan) => sum + plan.monthlyAmount, 0) : 0
-  const fixedCostTotal = monthlyTotal - subscriptionTotal - installmentTotal
-
-  // Calculate percentages
-  const fixedCostPercentage = monthlyTotal > 0 ? (fixedCostTotal / monthlyTotal * 100) : 0
-  const subscriptionPercentage = monthlyTotal > 0 ? (subscriptionTotal / monthlyTotal * 100) : 0
-  const installmentPercentage = monthlyTotal > 0 ? (installmentTotal / monthlyTotal * 100) : 0
-
-  // Calculate budget health
-  const budgetLimit = 5000
-  const budgetHealth = monthlyTotal > 0 ? Math.max(0, ((budgetLimit - monthlyTotal) / budgetLimit * 100)) : 100
-  const savingsRate = monthlyTotal > 0 ? ((budgetLimit - monthlyTotal) / budgetLimit * 100) : 100
 
   return (
     <div className="min-h-screen bg-gray-50">
