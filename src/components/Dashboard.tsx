@@ -187,7 +187,7 @@ export default function Dashboard({ familyMembers, fixedCosts, subscriptions, in
           <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col h-full">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <p className="text-sm text-gray-600">Budget-Status</p>
+                <p className="text-sm text-gray-600">Budget</p>
                 <p className="text-3xl font-bold text-gray-900">{budgetHealth.toFixed(0)}%</p>
               </div>
               <div className="w-12 h-12 bg-maxcrowds-green rounded-lg flex items-center justify-center">
