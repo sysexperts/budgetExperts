@@ -149,7 +149,7 @@ export default function Dashboard({ familyMembers, fixedCosts, subscriptions, in
               <div className="w-full bg-gray-200 rounded-full h-2">
                 <div 
                   className={`h-2 rounded-full transition-all duration-500 ${
-                    budgetHealth > 50 ? 'bg-maxcrowds-green' : budgetHealth > 25 ? 'bg-maxcrowds-green/70' : 'bg-maxcrowds-green/50'
+                    budgetHealth > 50 ? 'bg-maxcrowds-green-hover' : budgetHealth > 25 ? 'bg-maxcrowds-green/80' : 'bg-maxcrowds-green/60'
                   }`}
                   style={{ width: `${Math.min(100, (monthlyTotal / budgetLimit * 100))}%` }}
                 ></div>
@@ -177,7 +177,7 @@ export default function Dashboard({ familyMembers, fixedCosts, subscriptions, in
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2">
                 <div 
-                  className="h-2 rounded-full bg-maxcrowds-green transition-all duration-500"
+                  className="h-2 rounded-full bg-maxcrowds-green-hover transition-all duration-500"
                   style={{ width: `${budgetHealth}%` }}
                 ></div>
               </div>
@@ -203,7 +203,7 @@ export default function Dashboard({ familyMembers, fixedCosts, subscriptions, in
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2">
                 <div 
-                  className="h-2 rounded-full bg-maxcrowds-green/80 transition-all duration-500"
+                  className="h-2 rounded-full bg-maxcrowds-green-hover/80 transition-all duration-500"
                   style={{ width: `${subscriptionPercentage}%` }}
                 ></div>
               </div>
@@ -229,7 +229,7 @@ export default function Dashboard({ familyMembers, fixedCosts, subscriptions, in
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2">
                 <div 
-                  className="h-2 rounded-full bg-maxcrowds-green/60 transition-all duration-500"
+                  className="h-2 rounded-full bg-maxcrowds-green-hover/60 transition-all duration-500"
                   style={{ width: `${installmentPercentage}%` }}
                 ></div>
               </div>
