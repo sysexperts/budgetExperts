@@ -71,7 +71,7 @@ export default function FamilyMembers({ familyMembers, households, onUpdate }: F
         <h2 className="text-xl font-bold text-gray-900">Familienmitglieder</h2>
         <button
           onClick={() => setShowForm(!showForm)}
-          className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+          className="flex items-center space-x-2 bg-maxcrowds-green text-white px-4 py-2 rounded-lg hover:bg-maxcrowds-green-hover"
         >
           <Plus className="h-5 w-5" />
           <span>Mitglied hinzufügen</span>
@@ -121,7 +121,7 @@ export default function FamilyMembers({ familyMembers, households, onUpdate }: F
           <div className="mt-4 flex space-x-2">
             <button
               type="submit"
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+              className="bg-maxcrowds-green text-white px-4 py-2 rounded-lg hover:bg-maxcrowds-green-hover"
             >
               Speichern
             </button>
@@ -148,13 +148,13 @@ export default function FamilyMembers({ familyMembers, households, onUpdate }: F
                 className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100"
               >
                 <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-blue-200 rounded-full flex items-center justify-center">
-                    <User className="h-5 w-5 text-blue-700" />
+                  <div className="w-10 h-10 bg-maxcrowds-light-gray rounded-full flex items-center justify-center">
+                    <User className="h-5 w-5 text-maxcrowds-green" />
                   </div>
                   <div>
                     <p className="font-medium text-gray-900">{member.name}</p>
                     {member.role && <p className="text-sm text-gray-500">{member.role}</p>}
-                    {household && <p className="text-xs text-blue-600">{household.name}</p>}
+                    {household && <p className="text-xs text-maxcrowds-green">{household.name}</p>}
                   </div>
                 </div>
                 <button

@@ -70,7 +70,7 @@ export default function Households({ onUpdate }: HouseholdsProps) {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3">
-        <Home className="w-8 h-8 text-blue-600" />
+        <Home className="w-8 h-8 text-maxcrowds-green" />
         <h2 className="text-2xl font-bold text-gray-800">Haushalte verwalten</h2>
       </div>
 
@@ -106,7 +106,7 @@ export default function Households({ onUpdate }: HouseholdsProps) {
           </div>
           <button
             type="submit"
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-maxcrowds-green text-white rounded-md hover:bg-maxcrowds-green-hover transition-colors"
           >
             <Plus className="w-4 h-4" />
             Haushalt hinzufügen
@@ -129,7 +129,7 @@ export default function Households({ onUpdate }: HouseholdsProps) {
               >
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
-                    <Home className="w-5 h-5 text-blue-600" />
+                    <Home className="w-5 h-5 text-maxcrowds-green" />
                     <h4 className="font-semibold text-gray-800">{household.name}</h4>
                   </div>
                   {household.description && (

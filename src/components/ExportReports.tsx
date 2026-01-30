@@ -115,7 +115,7 @@ export default function ExportReports({ familyMembers, fixedCosts, subscriptions
         <h3 className="text-xl font-semibold text-gray-900 mb-6">Aktuelle Übersicht</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <div className="bg-white rounded-lg p-4 text-center">
-            <div className="text-3xl font-bold text-blue-600">{calculateTotalExpenses().toFixed(2)}€</div>
+            <div className="text-3xl font-bold text-maxcrowds-green">{calculateTotalExpenses().toFixed(2)}€</div>
             <div className="text-sm text-gray-600 mt-1">Monatliche Ausgaben</div>
           </div>
           <div className="bg-white rounded-lg p-4 text-center">
@@ -142,7 +142,7 @@ export default function ExportReports({ familyMembers, fixedCosts, subscriptions
             onClick={() => setExportType('csv')}
             className={`p-4 rounded-lg border-2 transition-all ${
               exportType === 'csv' 
-                ? 'border-blue-500 bg-blue-50' 
+                ? 'border-maxcrowds-green bg-maxcrowds-green/10' 
                 : 'border-gray-200 hover:border-gray-300'
             }`}
           >
@@ -155,7 +155,7 @@ export default function ExportReports({ familyMembers, fixedCosts, subscriptions
             onClick={() => setExportType('pdf')}
             className={`p-4 rounded-lg border-2 transition-all ${
               exportType === 'pdf' 
-                ? 'border-blue-500 bg-blue-50' 
+                ? 'border-maxcrowds-green bg-maxcrowds-green/10' 
                 : 'border-gray-200 hover:border-gray-300'
             }`}
           >
@@ -168,7 +168,7 @@ export default function ExportReports({ familyMembers, fixedCosts, subscriptions
             onClick={() => setExportType('monthly')}
             className={`p-4 rounded-lg border-2 transition-all ${
               exportType === 'monthly' 
-                ? 'border-blue-500 bg-blue-50' 
+                ? 'border-maxcrowds-green bg-maxcrowds-green/10' 
                 : 'border-gray-200 hover:border-gray-300'
             }`}
           >
@@ -202,7 +202,7 @@ export default function ExportReports({ familyMembers, fixedCosts, subscriptions
         <button
           onClick={handleExport}
           disabled={isExporting}
-          className="w-full flex items-center justify-center space-x-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-400"
+          className="w-full flex items-center justify-center space-x-2 bg-maxcrowds-green text-white px-6 py-3 rounded-lg hover:bg-maxcrowds-green-hover transition-colors disabled:bg-gray-400"
         >
           {isExporting ? (
             <>
@@ -223,7 +223,7 @@ export default function ExportReports({ familyMembers, fixedCosts, subscriptions
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Export-Tipps</h3>
         <div className="space-y-3 text-sm text-gray-600">
           <div className="flex items-start space-x-2">
-            <div className="w-2 h-2 bg-blue-500 rounded-full mt-1.5"></div>
+            <div className="w-2 h-2 bg-maxcrowds-green rounded-full mt-1.5"></div>
             <p><strong>CSV Export:</strong> Perfekt für Excel-Analyse und Datenverarbeitung</p>
           </div>
           <div className="flex items-start space-x-2">
