@@ -282,7 +282,7 @@ export default function MonthlyPayments({
                         type="checkbox"
                         checked={isPaid}
                         onChange={() => togglePaidItem(payment.id)}
-                        className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                        className="w-4 h-4 text-maxcrowds-green border-gray-300 rounded focus:ring-maxcrowds-green"
                         title={`Als bezahlt markieren für ${new Date(selectedMonth + '-01').toLocaleString('de-DE', { month: 'long', year: 'numeric' })}`}
                       />
                       <label className="ml-2 text-xs text-gray-500 cursor-pointer">
