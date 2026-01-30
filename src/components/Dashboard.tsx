@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { FamilyMember, FixedCost, Subscription, InstallmentPlan } from '../types'
-import { DollarSign, TrendingUp, CreditCard, Coins, Users, MoreHorizontal, Target, Activity, Bell, Settings, Plus, FileText } from 'lucide-react'
+import { DollarSign, TrendingUp, CreditCard, Coins, Users, MoreHorizontal, Target, Activity, Bell, Settings } from 'lucide-react'
 
 interface DashboardProps {
   familyMembers: FamilyMember[]
@@ -95,7 +95,7 @@ export default function Dashboard({ familyMembers, fixedCosts, subscriptions, in
   const savingsRate = monthlyTotal > 0 ? ((budgetLimit - monthlyTotal) / budgetLimit * 100) : 100
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
