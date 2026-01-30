@@ -221,20 +221,20 @@ export default function Categories({ onUpdate }: CategoriesProps) {
               
               {/* Icon Grid */}
               <div className="p-3 max-h-48 overflow-y-auto">
-                <div className="grid grid-cols-8 gap-2">
+                <div className="grid grid-cols-10 gap-1">
                   {filteredIcons.map(({ name, icon: Icon }) => (
                     <button
                       key={name}
                       type="button"
                       onClick={() => setSelectedIcon(name)}
-                      className={`p-2 rounded-lg border transition-all hover:scale-110 hover:shadow-md ${
+                      className={`p-1.5 rounded border transition-all hover:scale-110 hover:shadow-md ${
                         selectedIcon === name
                           ? 'border-purple-500 bg-purple-50 shadow-sm'
                           : 'border-gray-200 hover:border-purple-300 bg-white'
                       }`}
                       title={name}
                     >
-                      <Icon className={`w-5 h-5 ${
+                      <Icon className={`w-4 h-4 ${
                         selectedIcon === name ? 'text-purple-600' : 'text-gray-600'
                       }`} />
                     </button>
