@@ -191,7 +191,7 @@ export default function SavingsGoals({ familyMembers }: SavingsGoalsProps) {
         <h2 className="text-2xl font-bold text-gray-900">Sparziele</h2>
         <button
           onClick={() => setShowAddForm(true)}
-          className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+          className="flex items-center space-x-2 bg-maxcrowds-green text-white px-4 py-2 rounded-lg hover:bg-maxcrowds-green-hover transition-colors"
         >
           <Plus className="h-4 w-4" />
           <span>Neues Sparziel</span>
@@ -213,7 +213,7 @@ export default function SavingsGoals({ familyMembers }: SavingsGoalsProps) {
                   required
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maxcrowds-green focus:border-maxcrowds-green"
                   placeholder="z.B. Urlaub 2025"
                 />
               </div>
@@ -226,7 +226,7 @@ export default function SavingsGoals({ familyMembers }: SavingsGoalsProps) {
                   step="0.01"
                   value={formData.targetAmount}
                   onChange={(e) => setFormData({ ...formData, targetAmount: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maxcrowds-green focus:border-maxcrowds-green"
                   placeholder="5000"
                 />
               </div>
@@ -237,7 +237,7 @@ export default function SavingsGoals({ familyMembers }: SavingsGoalsProps) {
                   required
                   value={formData.targetDate}
                   onChange={(e) => setFormData({ ...formData, targetDate: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maxcrowds-green focus:border-maxcrowds-green"
                 />
               </div>
               <div>
@@ -249,7 +249,7 @@ export default function SavingsGoals({ familyMembers }: SavingsGoalsProps) {
                   step="0.01"
                   value={formData.monthlyContribution}
                   onChange={(e) => setFormData({ ...formData, monthlyContribution: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maxcrowds-green focus:border-maxcrowds-green"
                   placeholder="250"
                 />
               </div>
@@ -258,7 +258,7 @@ export default function SavingsGoals({ familyMembers }: SavingsGoalsProps) {
                 <select
                   value={formData.category}
                   onChange={(e) => setFormData({ ...formData, category: e.target.value as any })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maxcrowds-green focus:border-maxcrowds-green"
                 >
                   {categories.map(cat => (
                     <option key={cat.value} value={cat.value}>
@@ -272,7 +272,7 @@ export default function SavingsGoals({ familyMembers }: SavingsGoalsProps) {
                 <select
                   value={formData.priority}
                   onChange={(e) => setFormData({ ...formData, priority: e.target.value as any })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maxcrowds-green focus:border-maxcrowds-green"
                 >
                   {priorities.map(prio => (
                     <option key={prio.value} value={prio.value}>
@@ -287,7 +287,7 @@ export default function SavingsGoals({ familyMembers }: SavingsGoalsProps) {
                   <select
                     value={formData.familyMemberId}
                     onChange={(e) => setFormData({ ...formData, familyMemberId: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-maxcrowds-green focus:border-maxcrowds-green"
                   >
                     <option value="">Gemeinsam</option>
                     {familyMembers.map(member => (
@@ -319,7 +319,7 @@ export default function SavingsGoals({ familyMembers }: SavingsGoalsProps) {
               </button>
               <button
                 type="submit"
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                className="px-4 py-2 bg-maxcrowds-green text-white rounded-lg hover:bg-maxcrowds-green-hover transition-colors"
               >
                 {editingGoal ? 'Speichern' : 'Erstellen'}
               </button>
@@ -352,7 +352,7 @@ export default function SavingsGoals({ familyMembers }: SavingsGoalsProps) {
                 <div className="flex space-x-2">
                   <button
                     onClick={() => handleEdit(goal)}
-                    className="text-gray-400 hover:text-blue-600 transition-colors"
+                    className="text-gray-400 hover:text-maxcrowds-green transition-colors"
                   >
                     <Edit2 className="h-4 w-4" />
                   </button>
@@ -459,7 +459,7 @@ export default function SavingsGoals({ familyMembers }: SavingsGoalsProps) {
           <p className="text-gray-600 mb-4">Erstelle dein erstes Sparziel, um deine Ersparnisse zu verfolgen.</p>
           <button
             onClick={() => setShowAddForm(true)}
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+            className="bg-maxcrowds-green text-white px-4 py-2 rounded-lg hover:bg-maxcrowds-green-hover transition-colors"
           >
             Sparziel erstellen
           </button>
