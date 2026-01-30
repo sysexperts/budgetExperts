@@ -164,9 +164,7 @@ export default function Dashboard({ familyMembers, fixedCosts, subscriptions, in
                 <p className="text-sm text-gray-600">Budget-Gesundheit</p>
                 <p className="text-3xl font-bold text-gray-900">{budgetHealth.toFixed(0)}%</p>
               </div>
-              <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${
-                budgetHealth > 50 ? 'bg-maxcrowds-dark-gray' : budgetHealth > 25 ? 'bg-maxcrowds-dark-gray/80' : 'bg-maxcrowds-dark-gray/60'
-              }`}>
+              <div className="w-12 h-12 bg-maxcrowds-dark-gray rounded-lg flex items-center justify-center">
                 <Target className="w-6 h-6 text-white" />
               </div>
             </div>
@@ -192,7 +190,7 @@ export default function Dashboard({ familyMembers, fixedCosts, subscriptions, in
                 <p className="text-3xl font-bold text-gray-900">€{subscriptionTotal.toFixed(2)}</p>
                 <p className="text-xs text-gray-500">{subscriptions.length} aktiv</p>
               </div>
-              <div className="w-12 h-12 bg-maxcrowds-dark-gray/80 rounded-lg flex items-center justify-center">
+              <div className="w-12 h-12 bg-maxcrowds-dark-gray rounded-lg flex items-center justify-center">
                 <CreditCard className="w-6 h-6 text-white" />
               </div>
             </div>
@@ -218,7 +216,7 @@ export default function Dashboard({ familyMembers, fixedCosts, subscriptions, in
                 <p className="text-3xl font-bold text-gray-900">€{installmentTotal.toFixed(2)}</p>
                 <p className="text-xs text-gray-500">{installmentPlans.length} aktiv</p>
               </div>
-              <div className="w-12 h-12 bg-maxcrowds-dark-gray/70 rounded-lg flex items-center justify-center">
+              <div className="w-12 h-12 bg-maxcrowds-dark-gray rounded-lg flex items-center justify-center">
                 <Coins className="w-6 h-6 text-white" />
               </div>
             </div>
