@@ -462,6 +462,16 @@ app.delete('/api/subscriptions/:id', allowAccess, (req, res) => {
   res.json({ success: true });
 });
 
+app.put('/api/subscriptions/:id', allowAccess, (req, res) => {
+  const { name, category, amount, interval, paymentDate, familyMemberId, householdId } = req.body;
+  db.run(
+    'UPDATE subscriptions SET name = ?, category = ?, amount = ?, interval = ?, payment_date = ?, family_member_id = ?, household_id = ? WHERE id = ?',
+    [name, category, amount, interval, paymentDate, familyMemberId || null, householdId || null, req.params.id]
+  );
+  saveDatabase();
+  res.json({ success: true });
+});
+
 // Installment Plans API
 app.get('/api/installment-plans', allowAccess, (req, res) => {
   const stmt = db.prepare('SELECT * FROM installment_plans');
