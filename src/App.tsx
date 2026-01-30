@@ -120,7 +120,7 @@ function App() {
                     <div className="flex justify-between h-16">
                       <div className="flex items-center">
                         <div className="flex items-center cursor-pointer" onClick={() => setActiveTab('dashboard')}>
-                          <img src="/logo.png" alt="monetaX" className="h-[60px] w-auto object-contain" />
+                          <img src="/logo.png" alt="monetaX" className="h-[80px] w-auto object-contain" />
                         </div>
                       </div>
                       <div className="hidden sm:ml-10 sm:flex sm:space-x-8">
