@@ -8,6 +8,7 @@ export interface Category {
   id: number;
   name: string;
   type: 'expense' | 'income';
+  icon?: string;
 }
 
 export interface FamilyMember {

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { FamilyMember, FixedCost, Household, Category } from '../types'
-import { Plus, Trash2, DollarSign, Edit } from 'lucide-react'
+import { Plus, Trash2, DollarSign, Edit, Home, Car, ShoppingCart, Utensils, Heart, Briefcase, Gamepad2, Book, Dumbbell, Music, Film, Plane, Coffee, Smartphone, Laptop, Shirt, Pill, GraduationCap, Baby, Dog, Cat, TreePine, Zap, Shield, Wrench } from 'lucide-react'
 
 interface FixedCostsProps {
   fixedCosts: FixedCost[]
@@ -9,6 +9,44 @@ interface FixedCostsProps {
   categories: Category[]
   onUpdate: () => void
 }
+
+const availableIcons = [
+  { name: 'Tag', icon: DollarSign },
+  { name: 'Home', icon: Home },
+  { name: 'Car', icon: Car },
+  { name: 'ShoppingCart', icon: ShoppingCart },
+  { name: 'Utensils', icon: Utensils },
+  { name: 'Heart', icon: Heart },
+  { name: 'Briefcase', icon: Briefcase },
+  { name: 'Gamepad2', icon: Gamepad2 },
+  { name: 'Book', icon: Book },
+  { name: 'Dumbbell', icon: Dumbbell },
+  { name: 'Music', icon: Music },
+  { name: 'Film', icon: Film },
+  { name: 'Plane', icon: Plane },
+  { name: 'Coffee', icon: Coffee },
+  { name: 'Smartphone', icon: Smartphone },
+  { name: 'Laptop', icon: Laptop },
+  { name: 'Shirt', icon: Shirt },
+  { name: 'Pill', icon: Pill },
+  { name: 'GraduationCap', icon: GraduationCap },
+  { name: 'Baby', icon: Baby },
+  { name: 'Dog', icon: Dog },
+  { name: 'Cat', icon: Cat },
+  { name: 'TreePine', icon: TreePine },
+  { name: 'Zap', icon: Zap },
+  { name: 'Shield', icon: Shield },
+  { name: 'Wrench', icon: Wrench }
+];
+
+const getCategoryIcon = (categoryName: string, categories: Category[]) => {
+  const category = categories.find(c => c.name === categoryName);
+  if (category && category.icon) {
+    const iconData = availableIcons.find(i => i.name === category.icon);
+    return iconData ? iconData.icon : DollarSign;
+  }
+  return DollarSign;
+};
 
 export default function FixedCosts({ fixedCosts, familyMembers, households, categories, onUpdate }: FixedCostsProps) {
   const [showForm, setShowForm] = useState(false)
@@ -246,7 +284,10 @@ export default function FixedCosts({ fixedCosts, familyMembers, households, cate
               >
                 <div className="flex items-center space-x-3">
                   <div className="w-10 h-10 bg-green-200 rounded-full flex items-center justify-center">
-                    <DollarSign className="h-5 w-5 text-green-700" />
+                    {(() => {
+                      const IconComponent = getCategoryIcon(cost.category, categories);
+                      return <IconComponent className="h-5 w-5 text-green-700" />;
+                    })()}
                   </div>
                   <div>
                     <p className="font-medium text-gray-900">{cost.name}</p>

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { FamilyMember, Subscription, Household, Category } from '../types'
-import { Plus, Trash2, CreditCard, Edit } from 'lucide-react'
+import { Plus, Trash2, CreditCard, Edit, Home, Car, ShoppingCart, Utensils, Heart, Briefcase, Gamepad2, Book, Dumbbell, Music, Film, Plane, Coffee, Smartphone, Laptop, Shirt, Pill, GraduationCap, Baby, Dog, Cat, TreePine, Zap, Shield, Wrench } from 'lucide-react'
 
 interface SubscriptionsProps {
   subscriptions: Subscription[]
@@ -9,6 +9,44 @@ interface SubscriptionsProps {
   categories: Category[]
   onUpdate: () => void
 }
+
+const availableIcons = [
+  { name: 'Tag', icon: CreditCard },
+  { name: 'Home', icon: Home },
+  { name: 'Car', icon: Car },
+  { name: 'ShoppingCart', icon: ShoppingCart },
+  { name: 'Utensils', icon: Utensils },
+  { name: 'Heart', icon: Heart },
+  { name: 'Briefcase', icon: Briefcase },
+  { name: 'Gamepad2', icon: Gamepad2 },
+  { name: 'Book', icon: Book },
+  { name: 'Dumbbell', icon: Dumbbell },
+  { name: 'Music', icon: Music },
+  { name: 'Film', icon: Film },
+  { name: 'Plane', icon: Plane },
+  { name: 'Coffee', icon: Coffee },
+  { name: 'Smartphone', icon: Smartphone },
+  { name: 'Laptop', icon: Laptop },
+  { name: 'Shirt', icon: Shirt },
+  { name: 'Pill', icon: Pill },
+  { name: 'GraduationCap', icon: GraduationCap },
+  { name: 'Baby', icon: Baby },
+  { name: 'Dog', icon: Dog },
+  { name: 'Cat', icon: Cat },
+  { name: 'TreePine', icon: TreePine },
+  { name: 'Zap', icon: Zap },
+  { name: 'Shield', icon: Shield },
+  { name: 'Wrench', icon: Wrench }
+];
+
+const getCategoryIcon = (categoryName: string, categories: Category[]) => {
+  const category = categories.find(c => c.name === categoryName);
+  if (category && category.icon) {
+    const iconData = availableIcons.find(i => i.name === category.icon);
+    return iconData ? iconData.icon : CreditCard;
+  }
+  return CreditCard;
+};
 
 export default function Subscriptions({ subscriptions, familyMembers, households, categories, onUpdate }: SubscriptionsProps) {
   const [showForm, setShowForm] = useState(false)
@@ -261,7 +299,10 @@ export default function Subscriptions({ subscriptions, familyMembers, households
                 >
                   <div className="flex items-center space-x-3">
                     <div className="w-10 h-10 bg-blue-200 rounded-full flex items-center justify-center">
-                      <CreditCard className="h-5 w-5 text-blue-700" />
+                      {(() => {
+                        const IconComponent = getCategoryIcon(sub.category, categories);
+                        return <IconComponent className="h-5 w-5 text-blue-700" />;
+                      })()}
                     </div>
                     <div>
                       <p className="font-medium text-gray-900">{sub.name}</p>

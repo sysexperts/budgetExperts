@@ -68,6 +68,12 @@ function runMigrations() {
     db.run('ALTER TABLE subscriptions ADD COLUMN household_id INTEGER');
   }
   
+  // Migration 4: Füge icon zu categories hinzu
+  if (!columnExists('categories', 'icon')) {
+    console.log('Migration: Füge icon zu categories hinzu');
+    db.run('ALTER TABLE categories ADD COLUMN icon TEXT');
+  }
+  
   console.log('Migrationen abgeschlossen');
   saveDatabase();
 }
@@ -274,7 +280,8 @@ app.get('/api/categories', allowAccess, (req, res) => {
     categories.push({
       id: row.id,
       name: row.name,
-      type: row.type
+      type: row.type,
+      icon: row.icon
     });
   }
   stmt.free();
@@ -282,7 +289,7 @@ app.get('/api/categories', allowAccess, (req, res) => {
 });
 
 app.post('/api/categories', allowAccess, (req, res) => {
-  const { name, type } = req.body;
+  const { name, type, icon } = req.body;
   
   // Validierung
   if (!name || name.trim() === '') {
@@ -301,13 +308,13 @@ app.post('/api/categories', allowAccess, (req, res) => {
   }
   
   try {
-    db.run('INSERT INTO categories (name, type) VALUES (?, ?)', [name.trim(), type || 'expense']);
+    db.run('INSERT INTO categories (name, type, icon) VALUES (?, ?, ?)', [name.trim(), type || 'expense', icon || null]);
     const stmt = db.prepare('SELECT last_insert_rowid() as id');
     stmt.step();
     const id = stmt.getAsObject().id;
     stmt.free();
     saveDatabase();
-    res.json({ id, name: name.trim(), type: type || 'expense' });
+    res.json({ id, name: name.trim(), type: type || 'expense', icon: icon || null });
   } catch (error) {
     console.error('Fehler beim Erstellen der Kategorie:', error);
     res.status(500).json({ error: 'Datenbankfehler: ' + error.message });
@@ -315,7 +322,7 @@ app.post('/api/categories', allowAccess, (req, res) => {
 });
 
 app.put('/api/categories/:id', allowAccess, (req, res) => {
-  const { name } = req.body;
+  const { name, icon } = req.body;
   
   // Prüfe ob Kategorie mit diesem Namen bereits existiert (außer die aktuelle)
   const checkStmt = db.prepare('SELECT COUNT(*) as count FROM categories WHERE name = ? AND id != ?');
@@ -328,7 +335,7 @@ app.put('/api/categories/:id', allowAccess, (req, res) => {
     return res.status(400).json({ error: 'Kategorie existiert bereits' });
   }
   
-  db.run('UPDATE categories SET name = ? WHERE id = ?', [name, req.params.id]);
+  db.run('UPDATE categories SET name = ?, icon = ? WHERE id = ?', [name, icon || null, req.params.id]);
   saveDatabase();
   res.json({ success: true });
 });
