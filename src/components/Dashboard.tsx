@@ -12,6 +12,7 @@ interface DashboardProps {
 export default function Dashboard({ familyMembers, fixedCosts, subscriptions, installmentPlans }: DashboardProps) {
   const [includeInstallments, setIncludeInstallments] = useState(true)
   const [selectedPeriod, setSelectedPeriod] = useState('month')
+  const [showChartDetails, setShowChartDetails] = useState(false)
 
   // Calculate monthly totals
   const calculateMonthlyTotal = () => {
@@ -211,7 +212,7 @@ export default function Dashboard({ familyMembers, fixedCosts, subscriptions, in
               
               {/* Pie Chart Visualization */}
               <div className="flex justify-center mb-6">
-                <div className="relative w-64 h-64 group cursor-pointer">
+                <div className="relative w-64 h-64 group cursor-pointer" onClick={() => setShowChartDetails(!showChartDetails)}>
                   <svg className="transform -rotate-90 w-64 h-64 transition-transform duration-300 group-hover:scale-105">
                     <circle
                       cx="128"
@@ -272,11 +273,58 @@ export default function Dashboard({ familyMembers, fixedCosts, subscriptions, in
                   {/* Tooltip on hover */}
                   <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
                     <div className="bg-gray-900 text-white px-3 py-2 rounded-lg shadow-lg">
-                      <p className="text-xs font-medium">Klicke für Details</p>
+                      <p className="text-xs font-medium">{showChartDetails ? 'Klicke zum Schließen' : 'Klicke für Details'}</p>
                     </div>
                   </div>
                 </div>
               </div>
+
+              {/* Chart Details */}
+              {showChartDetails && (
+                <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                  <h4 className="text-sm font-semibold text-gray-900 mb-3">Detaillierte Ausgaben-Aufteilung</h4>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between text-sm">
+                      <div className="flex items-center space-x-2">
+                        <div className="w-3 h-3 bg-maxcrowds-green rounded-full"></div>
+                        <span className="text-gray-700">Fixkosten</span>
+                      </div>
+                      <div className="text-right">
+                        <span className="font-semibold text-gray-900">€{fixedCostTotal.toFixed(2)}</span>
+                        <span className="text-gray-500 ml-2">({fixedCostPercentage.toFixed(1)}%)</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between text-sm">
+                      <div className="flex items-center space-x-2">
+                        <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
+                        <span className="text-gray-700">Abonnements</span>
+                      </div>
+                      <div className="text-right">
+                        <span className="font-semibold text-gray-900">€{subscriptionTotal.toFixed(2)}</span>
+                        <span className="text-gray-500 ml-2">({subscriptionPercentage.toFixed(1)}%)</span>
+                      </div>
+                    </div>
+                    {includeInstallments && (
+                      <div className="flex items-center justify-between text-sm">
+                        <div className="flex items-center space-x-2">
+                          <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
+                          <span className="text-gray-700">Ratenpläne</span>
+                        </div>
+                        <div className="text-right">
+                          <span className="font-semibold text-gray-900">€{installmentTotal.toFixed(2)}</span>
+                          <span className="text-gray-500 ml-2">({installmentPercentage.toFixed(1)}%)</span>
+                        </div>
+                      </div>
+                    )}
+                    <div className="pt-2 mt-2 border-t border-gray-200">
+                      <div className="flex items-center justify-between text-sm font-semibold">
+                        <span className="text-gray-900">Gesamt</span>
+                        <span className="text-gray-900">€{monthlyTotal.toFixed(2)}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Simple Chart Representation */}
               <div className="space-y-4">
