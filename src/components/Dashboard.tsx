@@ -586,28 +586,7 @@ export default function Dashboard({ familyMembers, fixedCosts, subscriptions, in
           </div>
         </div>
 
-        {/* Footer Summary */}
-        <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900">Budget-Zusammenfassung</h3>
-              <p className="text-sm text-gray-500">Ihr aktueller Budget-Status</p>
-            </div>
-            <div className="flex items-center space-x-8">
-              <div className="text-center">
-                <p className="text-2xl font-bold text-gray-900">€{Math.abs(remainingBudget).toFixed(2)}</p>
-                <p className={`text-sm ${remainingBudget < 0 ? 'text-red-600' : 'text-green-600'}`}>
-                  {remainingBudget < 0 ? 'Budget überschritten' : 'Verbleibendes Budget'}
-                </p>
-              </div>
-              <div className="text-center">
-                <p className="text-2xl font-bold text-maxcrowds-green">{savingsRate.toFixed(0)}%</p>
-                <p className="text-sm text-gray-500">Sparquote</p>
-              </div>
-            </div>
-          </div>
         </div>
-      </div>
     </div>
   )
 }
