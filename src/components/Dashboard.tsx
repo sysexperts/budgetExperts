@@ -132,7 +132,6 @@ export default function Dashboard({ familyMembers, fixedCosts, subscriptions, in
               </div>
               <div>
                 <h1 className="text-2xl font-semibold text-gray-900">Budget Dashboard</h1>
-                <p className="text-sm text-gray-500">Monat {new Date().toLocaleString('de-DE', { month: 'long', year: 'numeric' })}</p>
               </div>
             </div>
             
