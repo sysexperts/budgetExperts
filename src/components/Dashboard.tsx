@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { FamilyMember, FixedCost, Subscription, InstallmentPlan } from '../types'
 import { DollarSign, TrendingUp, CreditCard, Coins, Users, MoreHorizontal, Target, Activity, Bell, Settings } from 'lucide-react'
+import ExpenseChart from './ExpenseChart'
+import ExpenseTrackerComponent from './ExpenseTrackerComponent'
 
 interface DashboardProps {
   familyMembers: FamilyMember[]
@@ -12,7 +14,13 @@ interface DashboardProps {
 export default function Dashboard({ familyMembers, fixedCosts, subscriptions, installmentPlans }: DashboardProps) {
   const [includeInstallments, setIncludeInstallments] = useState(true)
   const [selectedPeriod, setSelectedPeriod] = useState('month')
-  const [showChartDetails, setShowChartDetails] = useState(false)
+
+  // Initialize expense tracking
+  const { expenseData, currentTotal: trackedTotal, budgetLimit: trackedBudget } = ExpenseTrackerComponent({ 
+    fixedCosts, 
+    subscriptions, 
+    installmentPlans 
+  })
 
   // Calculate monthly totals first
   const calculateMonthlyTotal = () => {
@@ -164,25 +172,21 @@ export default function Dashboard({ familyMembers, fixedCosts, subscriptions, in
                 <span className="text-white font-bold text-lg">€</span>
               </div>
             </div>
-            
-            {/* Progress Bar */}
             <div className="mt-auto">
               <div className="flex justify-between text-sm text-gray-600 mb-1">
-                <span>Budget genutzt</span>
-                <span>{budgetHealth.toFixed(0)}%</span>
+                <span>Verbleibend</span>
+                <span className="font-semibold">€{Math.abs(budgetLimit - monthlyTotal).toFixed(2)}</span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2">
                 <div 
-                  className={`h-2 rounded-full transition-all duration-500 ${
-                    budgetHealth > 50 ? 'bg-maxcrowds-green-hover' : budgetHealth > 25 ? 'bg-maxcrowds-green/80' : 'bg-maxcrowds-green/60'
-                  }`}
+                  className="h-2 rounded-full bg-maxcrowds-green-hover transition-all duration-500"
                   style={{ width: `${Math.min(100, (monthlyTotal / budgetLimit * 100))}%` }}
                 ></div>
               </div>
             </div>
           </div>
 
-          {/* Budget Health */}
+          {/* Budget */}
           <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col h-full">
             <div className="flex items-center justify-between mb-4">
               <div>
@@ -246,13 +250,12 @@ export default function Dashboard({ familyMembers, fixedCosts, subscriptions, in
             </div>
           </div>
 
-          {/* Installment Plans */}
+          {/* Savings Rate */}
           <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col h-full">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <p className="text-sm text-gray-600">Ratenpläne</p>
-                <p className="text-3xl font-bold text-gray-900">€{installmentTotal.toFixed(2)}</p>
-                <p className="text-xs text-gray-500">{installmentPlans.length} aktiv</p>
+                <p className="text-sm text-gray-600">Sparquote</p>
+                <p className="text-3xl font-bold text-gray-900">{savingsRate.toFixed(0)}%</p>
               </div>
               <div className="w-12 h-12 bg-maxcrowds-green rounded-lg flex items-center justify-center">
                 <Coins className="w-6 h-6 text-white" />
@@ -260,21 +263,32 @@ export default function Dashboard({ familyMembers, fixedCosts, subscriptions, in
             </div>
             <div className="mt-auto">
               <div className="flex justify-between text-sm text-gray-600 mb-1">
-                <span>Anteil</span>
-                <span className="font-semibold">{installmentPercentage.toFixed(1)}%</span>
+                <span>Monatlich</span>
+                <span className="font-semibold">€{(budgetLimit * savingsRate / 100).toFixed(2)}</span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2">
                 <div 
-                  className="h-2 rounded-full bg-maxcrowds-green-hover/60 transition-all duration-500"
-                  style={{ width: `${installmentPercentage}%` }}
+                  className="h-2 rounded-full bg-maxcrowds-green transition-all duration-500"
+                  style={{ width: `${savingsRate}%` }}
                 ></div>
               </div>
             </div>
           </div>
         </div>
 
+        {/* Expense History Chart */}
+        {expenseData && (
+          <div className="mt-8">
+            <ExpenseChart 
+              history={expenseData.history} 
+              currentTotal={trackedTotal} 
+              budgetLimit={trackedBudget} 
+            />
+          </div>
+        )}
+
         {/* Main Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
           {/* Expense Breakdown */}
           <div className="lg:col-span-2">
             <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
@@ -293,122 +307,6 @@ export default function Dashboard({ familyMembers, fixedCosts, subscriptions, in
                 </div>
               </div>
               
-              {/* Pie Chart Visualization */}
-              <div className="flex justify-center mb-6">
-                <div className="relative w-64 h-64 group cursor-pointer" onClick={() => setShowChartDetails(!showChartDetails)}>
-                  <svg className="transform -rotate-90 w-64 h-64 transition-transform duration-300 group-hover:scale-105">
-                    <circle
-                      cx="128"
-                      cy="128"
-                      r="100"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="20"
-                      className="text-gray-200"
-                    />
-                    <circle
-                      cx="128"
-                      cy="128"
-                      r="100"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="20"
-                      className="text-maxcrowds-green transition-all duration-300 group-hover:text-maxcrowds-green-hover"
-                      strokeDasharray={`${2 * Math.PI * 100 * (fixedCostPercentage / 100)} ${2 * Math.PI * 100}`}
-                      transform="rotate(90)"
-                      style={{ transformOrigin: 'center' }}
-                    />
-                    <circle
-                      cx="128"
-                      cy="128"
-                      r="100"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="20"
-                      className="text-purple-500 transition-all duration-300 group-hover:text-purple-600"
-                      strokeDasharray={`${2 * Math.PI * 100 * (subscriptionPercentage / 100)} ${2 * Math.PI * 100}`}
-                      strokeDashoffset={`${2 * Math.PI * 100 * (fixedCostPercentage / 100)}`}
-                      transform="rotate(90)"
-                      style={{ transformOrigin: 'center' }}
-                    />
-                    {includeInstallments && (
-                      <circle
-                        cx="128"
-                        cy="128"
-                        r="100"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="20"
-                        className="text-orange-500 transition-all duration-300 group-hover:text-orange-600"
-                        strokeDasharray={`${2 * Math.PI * 100 * (installmentPercentage / 100)} ${2 * Math.PI * 100}`}
-                        strokeDashoffset={`${2 * Math.PI * 100 * ((fixedCostPercentage + subscriptionPercentage) / 100)}`}
-                        transform="rotate(90)"
-                        style={{ transformOrigin: 'center' }}
-                      />
-                    )}
-                  </svg>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="text-center">
-                      <p className="text-3xl font-bold text-gray-900 group-hover:text-maxcrowds-green transition-colors duration-300">€{monthlyTotal.toFixed(0)}</p>
-                      <p className="text-sm text-gray-500 group-hover:text-gray-700 transition-colors duration-300">Gesamt</p>
-                    </div>
-                  </div>
-                  {/* Tooltip on hover */}
-                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-                    <div className="bg-gray-900 text-white px-3 py-2 rounded-lg shadow-lg">
-                      <p className="text-xs font-medium">{showChartDetails ? 'Klicke zum Schließen' : 'Klicke für Details'}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Chart Details */}
-              {showChartDetails && (
-                <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                  <h4 className="text-sm font-semibold text-gray-900 mb-3">Detaillierte Ausgaben-Aufteilung</h4>
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between text-sm">
-                      <div className="flex items-center space-x-2">
-                        <div className="w-3 h-3 bg-maxcrowds-green rounded-full"></div>
-                        <span className="text-gray-700">Fixkosten</span>
-                      </div>
-                      <div className="text-right">
-                        <span className="font-semibold text-gray-900">€{fixedCostTotal.toFixed(2)}</span>
-                        <span className="text-gray-500 ml-2">({fixedCostPercentage.toFixed(1)}%)</span>
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between text-sm">
-                      <div className="flex items-center space-x-2">
-                        <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
-                        <span className="text-gray-700">Abonnements</span>
-                      </div>
-                      <div className="text-right">
-                        <span className="font-semibold text-gray-900">€{subscriptionTotal.toFixed(2)}</span>
-                        <span className="text-gray-500 ml-2">({subscriptionPercentage.toFixed(1)}%)</span>
-                      </div>
-                    </div>
-                    {includeInstallments && (
-                      <div className="flex items-center justify-between text-sm">
-                        <div className="flex items-center space-x-2">
-                          <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
-                          <span className="text-gray-700">Ratenpläne</span>
-                        </div>
-                        <div className="text-right">
-                          <span className="font-semibold text-gray-900">€{installmentTotal.toFixed(2)}</span>
-                          <span className="text-gray-500 ml-2">({installmentPercentage.toFixed(1)}%)</span>
-                        </div>
-                      </div>
-                    )}
-                    <div className="pt-2 mt-2 border-t border-gray-200">
-                      <div className="flex items-center justify-between text-sm font-semibold">
-                        <span className="text-gray-900">Gesamt</span>
-                        <span className="text-gray-900">€{monthlyTotal.toFixed(2)}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
               {/* Simple Chart Representation */}
               <div className="space-y-4">
                 <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
@@ -585,8 +483,7 @@ export default function Dashboard({ familyMembers, fixedCosts, subscriptions, in
             </div>
           </div>
         </div>
-
-        </div>
+      </div>
     </div>
   )
 }
