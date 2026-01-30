@@ -448,7 +448,7 @@ export default function Dashboard({ familyMembers, fixedCosts, subscriptions, in
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Schnellaktionen</h3>
               <div className="space-y-3">
                 <button className="w-full flex items-center justify-center space-x-2 p-3 bg-maxcrowds-green text-white rounded-lg hover:bg-maxcrowds-green-hover transition-colors">
-                  <DollarSign className="w-4 h-4" />
+                  <span className="text-white font-bold">€</span>
                   <span className="text-sm font-medium">Ausgabe hinzufügen</span>
                 </button>
                 <button className="w-full flex items-center justify-center space-x-2 p-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
