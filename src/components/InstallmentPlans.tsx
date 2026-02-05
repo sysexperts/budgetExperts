@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { Plus, Trash2, Coins } from 'lucide-react'
+import { Plus, Trash2, Coins, Edit } from 'lucide-react'
 import { FamilyMember, Household, InstallmentPlan } from '../types'
 
 interface InstallmentPlansProps {
@@ -22,6 +22,7 @@ function monthsBetween(start: string, end: string) {
 
 export default function InstallmentPlans({ installmentPlans, familyMembers, households, onUpdate }: InstallmentPlansProps) {
   const [showForm, setShowForm] = useState(false)
+  const [editingPlan, setEditingPlan] = useState<InstallmentPlan | null>(null)
   const [name, setName] = useState('')
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState('')
@@ -34,24 +35,10 @@ export default function InstallmentPlans({ installmentPlans, familyMembers, hous
   const [familyMemberId, setFamilyMemberId] = useState<number | undefined>()
   const [householdId, setHouseholdId] = useState<number | undefined>()
   const [selectedMonth, setSelectedMonth] = useState(new Date().toISOString().slice(0, 7)) // YYYY-MM format
-  const [paidInstallments, setPaidInstallments] = useState<Record<string, boolean>>(() => {
-    const saved = localStorage.getItem('paid-installments')
-    return saved ? JSON.parse(saved) : {}
-  })
 
   const totalMonthly = useMemo(() => installmentPlans.reduce((sum, plan) => sum + plan.monthlyAmount, 0), [installmentPlans])
 
-  // Speichere bezahlte Raten im localStorage
-  const togglePaidInstallment = (planId: number, month: string) => {
-    const key = `${planId}-${month}`
-    const newPaidInstallments = {
-      ...paidInstallments,
-      [key]: !paidInstallments[key]
-    }
-    setPaidInstallments(newPaidInstallments)
-    localStorage.setItem('paid-installments', JSON.stringify(newPaidInstallments))
-  }
-
+  
   // Generiere Monate für den Filter
   const generateMonthOptions = () => {
     const options = []
@@ -74,27 +61,15 @@ export default function InstallmentPlans({ installmentPlans, familyMembers, hous
     return options
   }
 
-  // Prüfe ob eine Rate für den ausgewählten Monat bezahlt wurde
-  const isInstallmentPaid = (planId: number, month: string) => {
-    const key = `${planId}-${month}`
-    return paidInstallments[key] || false
-  }
-
-  // Berechne unbezahlte Raten für den ausgewählten Monat
-  const getUnpaidInstallmentsForMonth = () => {
-    return installmentPlans.filter(plan => !isInstallmentPaid(plan.id, selectedMonth))
-  }
-
-  const unpaidMonthlyTotal = useMemo(() => {
-    return getUnpaidInstallmentsForMonth().reduce((sum, plan) => sum + plan.monthlyAmount, 0)
-  }, [installmentPlans, selectedMonth, paidInstallments])
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
     try {
-      await fetch('/api/installment-plans', {
-        method: 'POST',
+      const url = editingPlan ? `/api/installment-plans/${editingPlan.id}` : '/api/installment-plans'
+      const method = editingPlan ? 'PUT' : 'POST'
+      
+      await fetch(url, {
+        method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name,
@@ -111,22 +86,43 @@ export default function InstallmentPlans({ installmentPlans, familyMembers, hous
         })
       })
 
-      setName('')
-      setStartDate('')
-      setEndDate('')
-      setMonthlyAmount('')
-      setTotalAmount('')
-      setDownPayment('')
-      setInterestRate('')
-      setPaymentDay('')
-      setNotes('')
-      setFamilyMemberId(undefined)
-      setHouseholdId(undefined)
-      setShowForm(false)
+      resetForm()
       onUpdate()
     } catch (error) {
-      console.error('Fehler beim Hinzufügen des Ratenplans:', error)
+      console.error('Fehler beim Speichern des Ratenplans:', error)
     }
+  }
+
+  const resetForm = () => {
+    setName('')
+    setStartDate('')
+    setEndDate('')
+    setMonthlyAmount('')
+    setTotalAmount('')
+    setDownPayment('')
+    setInterestRate('')
+    setPaymentDay('')
+    setNotes('')
+    setFamilyMemberId(undefined)
+    setHouseholdId(undefined)
+    setShowForm(false)
+    setEditingPlan(null)
+  }
+
+  const handleEdit = (plan: InstallmentPlan) => {
+    setEditingPlan(plan)
+    setName(plan.name)
+    setStartDate(plan.startDate)
+    setEndDate(plan.endDate)
+    setMonthlyAmount(plan.monthlyAmount.toString())
+    setTotalAmount(plan.totalAmount?.toString() || '')
+    setDownPayment(plan.downPayment?.toString() || '')
+    setInterestRate(plan.interestRate?.toString() || '')
+    setPaymentDay(plan.paymentDay?.toString() || '')
+    setNotes(plan.notes || '')
+    setFamilyMemberId(plan.familyMemberId || undefined)
+    setHouseholdId(plan.householdId || undefined)
+    setShowForm(true)
   }
 
   const handleDelete = async (id: number) => {
@@ -164,9 +160,8 @@ export default function InstallmentPlans({ installmentPlans, familyMembers, hous
           </div>
           
           <div className="text-right">
-            <div className="text-sm text-gray-600">Unbezahlte Raten im {new Date(selectedMonth + '-01').toLocaleString('de-DE', { month: 'long', year: 'numeric' })}</div>
-            <div className="text-2xl font-bold text-gray-900">{unpaidMonthlyTotal.toFixed(2)} €</div>
-            <div className="text-xs text-gray-500">von {totalMonthly.toFixed(2)} € gesamt</div>
+            <div className="text-sm text-gray-600">Gesamtrate im {new Date(selectedMonth + '-01').toLocaleString('de-DE', { month: 'long', year: 'numeric' })}</div>
+            <div className="text-2xl font-bold text-gray-900">{totalMonthly.toFixed(2)} €</div>
           </div>
         </div>
       </div>
@@ -182,7 +177,7 @@ export default function InstallmentPlans({ installmentPlans, familyMembers, hous
             className="flex items-center justify-center space-x-2 bg-maxcrowds-green text-white px-4 py-2 rounded-lg hover:bg-maxcrowds-green-hover"
           >
             <Plus className="h-5 w-5" />
-            <span>Ratenplan hinzufügen</span>
+            <span>{editingPlan ? 'Ratenplan bearbeiten' : 'Ratenplan hinzufügen'}</span>
           </button>
         </div>
 
@@ -320,7 +315,7 @@ export default function InstallmentPlans({ installmentPlans, familyMembers, hous
               </button>
               <button
                 type="button"
-                onClick={() => setShowForm(false)}
+                onClick={resetForm}
                 className="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400"
               >
                 Abbrechen
@@ -359,22 +354,8 @@ export default function InstallmentPlans({ installmentPlans, familyMembers, hous
                     </div>
                   </div>
                   <div className="flex items-center space-x-4">
-                    {/* Checkbox für bezahlte Rate */}
-                    <div className="flex items-center">
-                      <input
-                        type="checkbox"
-                        checked={isInstallmentPaid(plan.id, selectedMonth)}
-                        onChange={() => togglePaidInstallment(plan.id, selectedMonth)}
-                        className="w-4 h-4 text-maxcrowds-green border-gray-300 rounded focus:ring-maxcrowds-green"
-                        title={`Rate für ${new Date(selectedMonth + '-01').toLocaleString('de-DE', { month: 'long', year: 'numeric' })} als bezahlt markieren`}
-                      />
-                      <label className="ml-2 text-xs text-gray-500 cursor-pointer">
-                        {isInstallmentPaid(plan.id, selectedMonth) ? 'Bezahlt' : 'Offen'}
-                      </label>
-                    </div>
-                    
                     <div className="text-right">
-                      <p className={`font-semibold ${isInstallmentPaid(plan.id, selectedMonth) ? 'text-gray-400 line-through' : 'text-gray-900'}`}>
+                      <p className="font-semibold text-gray-900">
                         {plan.monthlyAmount.toFixed(2)} €
                       </p>
                       <p className="text-sm text-gray-500">Monatliche Rate</p>
@@ -388,6 +369,13 @@ export default function InstallmentPlans({ installmentPlans, familyMembers, hous
                         </p>
                       )}
                     </div>
+                    <button
+                      onClick={() => handleEdit(plan)}
+                      className="text-blue-600 hover:text-blue-800"
+                      title="Ratenplan bearbeiten"
+                    >
+                      <Edit className="h-5 w-5" />
+                    </button>
                     <button
                       onClick={() => handleDelete(plan.id)}
                       className="text-red-600 hover:text-red-800"
